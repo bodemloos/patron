@@ -52,6 +52,7 @@ export default function FloorPlan() {
   const [view, setView] = useState({ x: 0, y: 0, scale: 1 });
   const pointersRef = useRef(new Map());        // pointerId → {x, y} client coords
   const pinchRef = useRef(null);                // pinch session start metrics
+  const panRef = useRef(null);                  // single-finger pan session
 
   function clamp(n, lo, hi) { return Math.max(lo, Math.min(hi, n)); }
 
@@ -181,9 +182,14 @@ export default function FloorPlan() {
   }
   function resetView() { setView({ x: 0, y: 0, scale: 1 }); }
 
-  // ---- Multi-touch pinch + wheel zoom on the SVG container -----------
+  // ---- Multi-touch pinch + single-finger pan + wheel zoom -----------
+  // Pan threshold (px in client coords). Below this, a single-pointer
+  // drag is treated as a tap so table click handlers still fire.
+  const PAN_THRESHOLD = 6;
+
   function onSvgPointerDown(e) {
     pointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
     if (pointersRef.current.size === 2) {
       const [a, b] = [...pointersRef.current.values()];
       pinchRef.current = {
@@ -191,12 +197,27 @@ export default function FloorPlan() {
         midClient: { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 },
         startView: view,
       };
+      // Once a pinch starts, abort any pending single-finger pan.
+      panRef.current = null;
+    } else if (pointersRef.current.size === 1) {
+      // Stage a possible pan session — only commits after the user
+      // moves more than PAN_THRESHOLD pixels AND only when zoomed in,
+      // so tap-to-open-POS keeps working at default zoom.
+      panRef.current = {
+        pointerId: e.pointerId,
+        startClient: { x: e.clientX, y: e.clientY },
+        startView: view,
+        moved: false,
+      };
     }
   }
+
   function onSvgPointerMoveZoom(e) {
     if (pointersRef.current.has(e.pointerId)) {
       pointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
     }
+
+    // Pinch takes priority over single-finger pan.
     if (pointersRef.current.size === 2 && pinchRef.current) {
       const [a, b] = [...pointersRef.current.values()];
       const newDist = Math.hypot(b.x - a.x, b.y - a.y);
@@ -211,11 +232,38 @@ export default function FloorPlan() {
         x: newMidVb.x - (startMidVb.x - sv.x) * (newScale / sv.scale),
         y: newMidVb.y - (startMidVb.y - sv.y) * (newScale / sv.scale),
       });
+      return;
+    }
+
+    // Single-finger pan — only when zoomed in past 1× so default-view
+    // taps don't accidentally drift the canvas.
+    if (panRef.current && panRef.current.pointerId === e.pointerId) {
+      const ps = panRef.current;
+      if (ps.startView.scale <= 1.01) return;
+      const dx = e.clientX - ps.startClient.x;
+      const dy = e.clientY - ps.startClient.y;
+      if (!ps.moved) {
+        if (Math.hypot(dx, dy) < PAN_THRESHOLD) return;
+        ps.moved = true;
+        // Capture so the gesture survives the finger leaving any
+        // child element (a table, a room band, etc.).
+        containerRef.current?.setPointerCapture?.(e.pointerId);
+      }
+      const rect = containerRef.current.getBoundingClientRect();
+      setView({
+        scale: ps.startView.scale,
+        x: ps.startView.x + dx * (CANVAS_W / rect.width),
+        y: ps.startView.y + dy * (CANVAS_H / rect.height),
+      });
     }
   }
+
   function onSvgPointerUpZoom(e) {
     pointersRef.current.delete(e.pointerId);
     if (pointersRef.current.size < 2) pinchRef.current = null;
+    if (panRef.current && panRef.current.pointerId === e.pointerId) {
+      panRef.current = null;
+    }
   }
   function onWheel(e) {
     if (!e.deltaY) return;
