@@ -1,0 +1,859 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="color-scheme" content="dark light" />
+<title>Patron — From floor plan to bookkeeping</title>
+<meta name="description" content="Patron runs your restaurant: floor plan, POS, kitchen tickets, reservations, stock, payroll, and bookkeeping — in one place." />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  /*
+    Patron — marketing landing page.
+    Self-contained dark-neutral aesthetic matching the app. The few
+    interactive bits (scroll reveals, year stamp) live in a single
+    <script> block at the bottom.
+  */
+  :root {
+    --bg: #0f0f10;
+    --surface: #1c1c1d;
+    --surface-2: #232325;
+    --surface-3: #2c2c2e;
+    --border: rgba(255, 255, 255, 0.06);
+    --border-bright: rgba(255, 255, 255, 0.12);
+    --text: #f5f5f5;
+    --text-muted: #a3a3a3;
+    --text-dim: #737373;
+    --brand: #ea580c;
+    --brand-bright: #fb923c;
+    --brand-soft: rgba(234, 88, 12, 0.16);
+    --shadow: 0 12px 40px -12px rgba(0, 0, 0, 0.7);
+    --shadow-glow: 0 8px 24px -8px rgba(234, 88, 12, 0.55), 0 0 14px -4px rgba(249, 115, 22, 0.3);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 16px;
+    line-height: 1.55;
+    overflow-x: hidden;
+  }
+  a { color: inherit; text-decoration: none; }
+  ::selection { background: var(--brand-soft); }
+
+  /* ---- top nav ---- */
+  .nav {
+    position: sticky; top: 0; z-index: 20;
+    backdrop-filter: blur(12px);
+    background: rgba(15, 15, 16, 0.72);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-inner {
+    max-width: 1200px; margin: 0 auto;
+    padding: 14px 24px;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  }
+  .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 500; }
+  .brand-mark { color: var(--brand-bright); display: block; }
+  .brand-name { font-weight: 500; letter-spacing: -0.01em; }
+  .nav-links { display: none; gap: 24px; font-size: 14px; color: var(--text-muted); }
+  .nav-links a:hover { color: var(--text); }
+  @media (min-width: 720px) { .nav-links { display: flex; } }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 9px 16px;
+    border-radius: 12px; border: 0;
+    font: inherit; font-weight: 500; font-size: 14px;
+    cursor: pointer; transition: filter 0.15s, transform 0.05s;
+  }
+  .btn:active { transform: translateY(1px); }
+  .btn-primary { background: var(--brand); color: #fff; box-shadow: var(--shadow-glow); }
+  .btn-primary:hover { filter: brightness(1.08); }
+  .btn-ghost {
+    background: var(--surface-2); color: var(--text);
+    border: 1px solid var(--border-bright);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+  .btn-ghost:hover { background: var(--surface-3); }
+
+  /* ---- hero ---- */
+  .hero {
+    position: relative;
+    padding: 80px 24px 60px;
+    overflow: hidden;
+  }
+  .hero::before, .hero::after {
+    content: ""; position: absolute; pointer-events: none;
+    border-radius: 999px; filter: blur(80px);
+    opacity: 0.5;
+  }
+  .hero::before {
+    width: 600px; height: 600px; left: -200px; top: -100px;
+    background: radial-gradient(circle, rgba(234, 88, 12, 0.5), transparent 60%);
+  }
+  .hero::after {
+    width: 600px; height: 600px; right: -200px; top: 100px;
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.35), transparent 60%);
+  }
+  .hero-inner {
+    position: relative;
+    max-width: 1200px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr; gap: 48px;
+    align-items: center;
+  }
+  @media (min-width: 980px) { .hero-inner { grid-template-columns: 1.05fr 1fr; gap: 64px; } }
+
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 12px; border-radius: 999px;
+    background: var(--brand-soft); color: var(--brand-bright);
+    font-size: 12px; font-weight: 500; letter-spacing: 0.04em;
+    margin-bottom: 18px;
+  }
+  .eyebrow .dot { width: 6px; height: 6px; border-radius: 999px; background: var(--brand-bright); box-shadow: 0 0 12px var(--brand-bright); }
+  h1 {
+    font-size: clamp(40px, 7vw, 64px);
+    line-height: 1.04; font-weight: 500;
+    letter-spacing: -0.02em;
+    margin: 0 0 20px;
+  }
+  h1 .accent {
+    background: linear-gradient(135deg, var(--brand-bright) 30%, #f0a973 70%);
+    -webkit-background-clip: text; background-clip: text;
+    color: transparent;
+  }
+  .hero-sub {
+    font-size: clamp(16px, 2vw, 19px);
+    color: var(--text-muted);
+    max-width: 540px;
+    margin: 0 0 28px;
+  }
+  .cta-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .meta-row {
+    margin-top: 28px; display: flex; gap: 24px; flex-wrap: wrap;
+    color: var(--text-dim); font-size: 13px;
+  }
+  .meta-row strong { color: var(--text); font-weight: 500; }
+
+  /* hero floor-plan mockup card */
+  .hero-art {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 18px;
+    box-shadow: var(--shadow);
+  }
+  .hero-art-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 4px 12px;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px; color: var(--text-muted);
+  }
+  .hero-art-head .pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 999px;
+    background: var(--surface-2); color: var(--text);
+    font-weight: 500; font-size: 11px;
+  }
+
+  /* feature grid */
+  section { padding: 80px 24px; position: relative; }
+  .container { max-width: 1200px; margin: 0 auto; }
+  .section-eyebrow {
+    font-size: 12px; font-weight: 500; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--brand-bright);
+    margin-bottom: 12px;
+  }
+  .section-title {
+    font-size: clamp(28px, 4vw, 40px);
+    font-weight: 500; letter-spacing: -0.015em;
+    margin: 0 0 12px;
+  }
+  .section-sub {
+    color: var(--text-muted);
+    max-width: 640px; margin: 0 0 40px;
+    font-size: 17px;
+  }
+
+  .features {
+    display: grid; gap: 14px;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 640px) { .features { grid-template-columns: 1fr 1fr; } }
+  @media (min-width: 980px) { .features { grid-template-columns: repeat(3, 1fr); } }
+  .feature {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 22px;
+    box-shadow: 0 4px 24px -12px rgba(0, 0, 0, 0.5);
+    transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+  .feature:hover {
+    transform: translateY(-2px);
+    border-color: var(--border-bright);
+    box-shadow: 0 8px 32px -10px rgba(0, 0, 0, 0.7);
+  }
+  .feature .icon {
+    width: 36px; height: 36px;
+    display: grid; place-items: center;
+    border-radius: 10px;
+    background: var(--brand-soft); color: var(--brand-bright);
+    margin-bottom: 14px;
+  }
+  .feature h3 {
+    margin: 0 0 6px;
+    font-size: 17px; font-weight: 500;
+  }
+  .feature p {
+    margin: 0;
+    font-size: 14px; color: var(--text-muted); line-height: 1.6;
+  }
+
+  /* how it works */
+  .flow {
+    display: grid; gap: 16px;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 880px) { .flow { grid-template-columns: repeat(3, 1fr); align-items: stretch; } }
+  .flow-step {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 24px;
+    position: relative;
+  }
+  .flow-step .num {
+    position: absolute; top: 18px; right: 22px;
+    font-size: 36px; font-weight: 600; color: var(--surface-3);
+    line-height: 1;
+  }
+  .flow-step h4 { margin: 0 0 8px; font-size: 17px; font-weight: 500; }
+  .flow-step p { margin: 0; color: var(--text-muted); font-size: 14px; }
+  .flow-step .preview {
+    margin-top: 18px;
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 12px; padding: 12px; min-height: 100px;
+    display: grid; place-items: center;
+    color: var(--text-dim); font-size: 12px;
+  }
+
+  /* embed showcase */
+  .embed-row {
+    display: grid; gap: 24px;
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+  @media (min-width: 980px) { .embed-row { grid-template-columns: 440px 1fr; } }
+  .embed-art {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    padding: 18px;
+    box-shadow: var(--shadow);
+  }
+  .embed-art iframe {
+    border: 0; display: block; width: 100%; height: 540px;
+    border-radius: 14px; background: transparent;
+  }
+  .embed-list {
+    list-style: none; padding: 0; margin: 0 0 18px;
+    display: grid; gap: 10px;
+  }
+  .embed-list li {
+    display: flex; gap: 10px; align-items: flex-start;
+    color: var(--text);
+    font-size: 15px; line-height: 1.55;
+  }
+  .embed-list .check {
+    flex-shrink: 0; width: 20px; height: 20px;
+    border-radius: 6px; background: var(--brand-soft); color: var(--brand-bright);
+    display: grid; place-items: center; margin-top: 1px;
+  }
+  pre.code {
+    margin: 0;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px 16px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 13px; color: var(--text-muted);
+    overflow-x: auto;
+    line-height: 1.6;
+  }
+  pre.code .tag { color: #fb923c; }
+  pre.code .attr { color: #93c5fd; }
+  pre.code .str { color: #c4b5fd; }
+
+  /* roles */
+  .roles {
+    display: grid; gap: 14px;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 720px) { .roles { grid-template-columns: repeat(3, 1fr); } }
+  .role {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 22px;
+  }
+  .role-name { font-weight: 500; color: var(--brand-bright); margin-bottom: 6px; font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase; }
+  .role h4 { margin: 0 0 10px; font-size: 18px; font-weight: 500; }
+  .role ul { margin: 0; padding-left: 18px; color: var(--text-muted); font-size: 14px; line-height: 1.7; }
+
+  /* QR phone mockup */
+  .qr-row {
+    display: grid; gap: 32px;
+    grid-template-columns: 1fr;
+    align-items: center;
+  }
+  @media (min-width: 880px) { .qr-row { grid-template-columns: 1.05fr 1fr; } }
+  .phone {
+    width: 280px; height: 560px;
+    margin: 0 auto;
+    background: #0a0a0a;
+    border: 8px solid #1a1a1c;
+    border-radius: 36px;
+    box-shadow: 0 30px 60px -20px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.05);
+    overflow: hidden;
+    position: relative;
+  }
+  .phone::before {
+    content: ""; position: absolute; top: 6px; left: 50%; transform: translateX(-50%);
+    width: 90px; height: 18px; border-radius: 12px; background: #000; z-index: 2;
+  }
+  .phone-inner {
+    position: absolute; inset: 0;
+    background: var(--bg);
+    padding: 36px 14px 14px;
+    overflow: hidden;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .phone-line { font-size: 11px; color: var(--text-muted); }
+  .phone-title { font-size: 16px; font-weight: 500; }
+  .phone-cats { display: flex; gap: 6px; overflow-x: auto; }
+  .phone-cat {
+    flex-shrink: 0; padding: 4px 10px; border-radius: 999px;
+    background: var(--surface); border: 1px solid var(--border);
+    font-size: 11px; color: var(--text);
+  }
+  .phone-cat.active { background: var(--brand); border-color: var(--brand); color: #fff; }
+  .phone-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .phone-item { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 8px; }
+  .phone-item .it { font-weight: 500; font-size: 11px; line-height: 1.3; }
+  .phone-item .pr { color: var(--brand-bright); font-size: 11px; margin-top: 4px; }
+  .phone-cart {
+    margin-top: auto;
+    background: var(--brand); color: #fff;
+    border-radius: 10px; padding: 8px 12px;
+    font-size: 11px; font-weight: 500;
+    display: flex; justify-content: space-between;
+    box-shadow: var(--shadow-glow);
+  }
+
+  /* CTA band */
+  .final-cta {
+    text-align: center;
+    padding: 80px 24px;
+    background:
+      radial-gradient(800px 400px at 50% 50%, rgba(234, 88, 12, 0.16), transparent 60%),
+      var(--bg);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .final-cta h2 { font-size: clamp(28px, 4vw, 38px); margin: 0 0 16px; font-weight: 500; }
+  .final-cta p { color: var(--text-muted); margin: 0 0 28px; }
+
+  /* footer */
+  footer {
+    padding: 32px 24px;
+    color: var(--text-dim);
+    font-size: 13px;
+    text-align: center;
+  }
+  footer a:hover { color: var(--text); }
+  footer .row { display: flex; gap: 24px; justify-content: center; margin-bottom: 8px; flex-wrap: wrap; }
+
+  /* Reveal-on-scroll — IntersectionObserver flips this. */
+  .reveal {
+    opacity: 0; transform: translateY(16px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+
+  /* Mini "live demo" floor plan SVG */
+  .floorplan-svg { width: 100%; height: auto; display: block; border-radius: 14px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; transition: none; }
+  }
+</style>
+</head>
+<body>
+  <!-- ─────────── Top nav ─────────── -->
+  <header class="nav">
+    <div class="nav-inner">
+      <a class="brand" href="#top">
+        <!-- Floor-plan dot grid logo, scaled down. -->
+        <svg class="brand-mark" width="22" viewBox="0 0 52 66">
+          <g fill="currentColor">
+            <rect x="0" y="0" width="10" height="10" rx="2"/><rect x="14" y="0" width="10" height="10" rx="2"/><rect x="28" y="0" width="10" height="10" rx="2"/>
+            <rect x="0" y="14" width="10" height="10" rx="2"/><rect x="42" y="14" width="10" height="10" rx="2"/>
+            <rect x="0" y="28" width="10" height="10" rx="2"/><rect x="14" y="28" width="10" height="10" rx="2"/><rect x="28" y="28" width="10" height="10" rx="2"/>
+            <rect x="0" y="42" width="10" height="10" rx="2"/>
+            <rect x="0" y="56" width="10" height="10" rx="2"/>
+          </g>
+          <g fill="currentColor" opacity="0.22">
+            <rect x="42" y="0" width="10" height="10" rx="2"/>
+            <rect x="14" y="14" width="10" height="10" rx="2"/><rect x="28" y="14" width="10" height="10" rx="2"/>
+            <rect x="42" y="28" width="10" height="10" rx="2"/>
+            <rect x="14" y="42" width="10" height="10" rx="2"/><rect x="28" y="42" width="10" height="10" rx="2"/><rect x="42" y="42" width="10" height="10" rx="2"/>
+            <rect x="14" y="56" width="10" height="10" rx="2"/><rect x="28" y="56" width="10" height="10" rx="2"/><rect x="42" y="56" width="10" height="10" rx="2"/>
+          </g>
+        </svg>
+        <span class="brand-name">Patron</span>
+      </a>
+      <nav class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#flow">How it works</a>
+        <a href="#patronize">Patronize widget</a>
+        <a href="#belgian">Belgian-ready</a>
+        <a href="#roles">Roles</a>
+      </nav>
+      <a class="btn btn-primary" href="/">Open the app →</a>
+    </div>
+  </header>
+
+  <!-- ─────────── Hero ─────────── -->
+  <section class="hero" id="top">
+    <div class="hero-inner">
+      <div class="reveal">
+        <div class="eyebrow"><span class="dot"></span> Run your restaurant end-to-end</div>
+        <h1>From floor plan to <span class="accent">bookkeeping.</span></h1>
+        <p class="hero-sub">
+          Patron is one calm dark-themed app for the front of house, the kitchen,
+          the back office, and your customers. Reservations, POS, stock, payroll,
+          VAT, and a beautiful embeddable booking widget — all in one place.
+        </p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="/">Try the demo →</a>
+          <a class="btn btn-ghost" href="/patronize.html?open=1" target="_blank" rel="noreferrer">See the widget ↗</a>
+        </div>
+        <div class="meta-row">
+          <span><strong>Real-time</strong> · push updates over SSE</span>
+          <span><strong>Belgian-ready</strong> · contracts, RSZ, VAT</span>
+          <span><strong>Four roles</strong> · manager, waiter, kitchen, bar</span>
+        </div>
+      </div>
+
+      <!-- Hero artwork: a stylised floor plan card -->
+      <div class="reveal hero-art" aria-hidden="true">
+        <div class="hero-art-head">
+          <span>Floor plan · Saturday evening</span>
+          <span class="pill"><span style="width:6px;height:6px;border-radius:999px;background:#22c55e;box-shadow:0 0 8px #22c55e"></span> live</span>
+        </div>
+        <svg class="floorplan-svg" viewBox="0 0 480 280">
+          <!-- Room band -->
+          <rect x="14" y="14" width="300" height="170" rx="12" fill="#94a3b8" fill-opacity="0.05" stroke="#94a3b8" stroke-opacity="0.22" stroke-width="1.2"/>
+          <text x="26" y="32" fill="#a3a3a3" font-size="10" font-family="Inter, sans-serif" font-weight="600">Main</text>
+
+          <!-- Tables -->
+          <ellipse cx="74"  cy="74" rx="28" ry="28" fill="#2c2c2e" stroke="#4d4d51" stroke-width="2"/>
+          <text x="74" y="72" text-anchor="middle" font-size="13" font-weight="700" fill="#e5e5e5" font-family="Inter, sans-serif">T1</text>
+          <text x="74" y="86" text-anchor="middle" font-size="9" fill="#d4d4d4" opacity="0.7" font-family="Inter, sans-serif">2 seats</text>
+
+          <ellipse cx="166" cy="74" rx="28" ry="28" fill="#3a2208" stroke="#f59e0b" stroke-width="2"/>
+          <text x="166" y="68" text-anchor="middle" font-size="13" font-weight="700" fill="#fde68a" font-family="Inter, sans-serif">T2</text>
+          <text x="166" y="80" text-anchor="middle" font-size="9" fill="#fde68a" opacity="0.85" font-family="Inter, sans-serif">2 seats</text>
+          <text x="166" y="92" text-anchor="middle" font-size="9" font-weight="600" fill="#fde68a" font-family="Inter, sans-serif">€18.50</text>
+
+          <rect x="220" y="44" width="80" height="60" rx="10" fill="#5a2208" stroke="#fb923c" stroke-width="2"/>
+          <text x="260" y="68" text-anchor="middle" font-size="13" font-weight="700" fill="#ffedd5" font-family="Inter, sans-serif">T3</text>
+          <text x="260" y="82" text-anchor="middle" font-size="9" fill="#ffedd5" opacity="0.85" font-family="Inter, sans-serif">4 seats</text>
+          <text x="260" y="94" text-anchor="middle" font-size="9" font-weight="600" fill="#fde68a" font-family="Inter, sans-serif">€42.00</text>
+
+          <rect x="42" y="118" width="120" height="48" rx="10" fill="#2c2c2e" stroke="#4d4d51" stroke-width="2"/>
+          <text x="102" y="140" text-anchor="middle" font-size="13" font-weight="700" fill="#e5e5e5" font-family="Inter, sans-serif">T5</text>
+          <text x="102" y="154" text-anchor="middle" font-size="9" fill="#d4d4d4" opacity="0.7" font-family="Inter, sans-serif">6 seats</text>
+
+          <ellipse cx="208" cy="142" rx="22" ry="22" fill="#2c2c2e" stroke="#4d4d51" stroke-width="2"/>
+          <text x="208" y="140" text-anchor="middle" font-size="11" font-weight="700" fill="#e5e5e5" font-family="Inter, sans-serif">T6</text>
+
+          <ellipse cx="270" cy="142" rx="22" ry="22" fill="#3a2208" stroke="#f59e0b" stroke-width="2"/>
+          <text x="270" y="140" text-anchor="middle" font-size="11" font-weight="700" fill="#fde68a" font-family="Inter, sans-serif">T7</text>
+
+          <!-- Bar -->
+          <rect x="328" y="44" width="138" height="140" rx="12" fill="#94a3b8" fill-opacity="0.05" stroke="#94a3b8" stroke-opacity="0.22" stroke-width="1.2"/>
+          <text x="340" y="62" fill="#a3a3a3" font-size="10" font-family="Inter, sans-serif" font-weight="600">Bar</text>
+          <ellipse cx="364" cy="100" rx="18" ry="18" fill="#2c2c2e" stroke="#4d4d51" stroke-width="2"/>
+          <text x="364" y="100" text-anchor="middle" font-size="10" font-weight="700" fill="#e5e5e5" font-family="Inter, sans-serif">B1</text>
+          <ellipse cx="408" cy="100" rx="18" ry="18" fill="#3a2208" stroke="#f59e0b" stroke-width="2"/>
+          <text x="408" y="100" text-anchor="middle" font-size="10" font-weight="700" fill="#fde68a" font-family="Inter, sans-serif">B2</text>
+          <ellipse cx="364" cy="148" rx="18" ry="18" fill="#2c2c2e" stroke="#4d4d51" stroke-width="2"/>
+          <text x="364" y="148" text-anchor="middle" font-size="10" font-weight="700" fill="#e5e5e5" font-family="Inter, sans-serif">B3</text>
+          <ellipse cx="408" cy="148" rx="18" ry="18" fill="#2c2c2e" stroke="#4d4d51" stroke-width="2"/>
+          <text x="408" y="148" text-anchor="middle" font-size="10" font-weight="700" fill="#e5e5e5" font-family="Inter, sans-serif">B4</text>
+        </svg>
+
+        <!-- Mini summary cards -->
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px">
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px;text-align:center">
+            <div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em">Free</div>
+            <div style="font-weight:600;font-size:18px">8</div>
+          </div>
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px;text-align:center">
+            <div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em">Active</div>
+            <div style="font-weight:600;font-size:18px">3</div>
+          </div>
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px;text-align:center">
+            <div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em">Open €</div>
+            <div style="font-weight:600;font-size:18px">€66</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────── Features ─────────── -->
+  <section id="features">
+    <div class="container">
+      <div class="reveal">
+        <div class="section-eyebrow">What's inside</div>
+        <h2 class="section-title">Everything you need, nothing you don't.</h2>
+        <p class="section-sub">Restaurant-grade features stitched together so the front of house, the kitchen, the bar, the back office, and your customers all read from the same picture.</p>
+      </div>
+
+      <div class="features">
+        <article class="feature reveal">
+          <div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="3.5"/><rect x="3" y="14" width="7" height="7" rx="3.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></div>
+          <h3>Visual floor plan</h3>
+          <p>Drag-and-drop tables across indoor and outdoor zones. Tap any table to open its order — colour-coded by status.</p>
+        </article>
+
+        <article class="feature reveal">
+          <div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg></div>
+          <h3>Slide-over POS</h3>
+          <p>Tap an item to add it; configured sizes prompt for a pick. Mains and desserts open the modifier sheet for allergies and notes.</p>
+        </article>
+
+        <article class="feature reveal">
+          <div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v3M16 3v3"/></svg></div>
+          <h3>Reservations + Patronize</h3>
+          <p>Manage bookings in-app and let visitors reserve via the embeddable widget. Per-weekday opening hours and exceptional closure periods (holidays, private events) flow straight to the customer-facing slot grid.</p>
+        </article>
+
+        <article class="feature reveal">
+          <div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="3" width="12" height="18" rx="2"/><circle cx="12" cy="18" r="0.5" fill="currentColor"/></svg></div>
+          <h3>QR table-side ordering</h3>
+          <p>Generate a QR per table. Guests scan, browse, and send pending lines straight to the kitchen — the waiter still pays out.</p>
+        </article>
+
+        <article class="feature reveal">
+          <div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3v8a4 4 0 0 0 8 0V3M9 3v6M17 3l3 5v3a3 3 0 1 1-6 0V8z"/></svg></div>
+          <h3>Premium KDS tickets</h3>
+          <p>Push-based via SSE — no polling. Each table is a dark ticket card with a glowing urgency bar (fresh / aging / late), course-grouped lines, allergy pills, and per-line ✓ buttons.</p>
+        </article>
+
+        <article class="feature reveal">
+          <div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4h18l-7 9v6"/><path d="M14 19h-4"/><path d="M10 19v-6L3 4"/></svg></div>
+          <h3>Bar runs alongside</h3>
+          <p>Drink lines route to a dedicated Bar view while the kitchen sees only food. Bartender role gets the same ticket UI plus an 86 list scoped to drink-category items.</p>
+        </article>
+
+        <article class="feature reveal">
+          <div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/></svg></div>
+          <h3>Stock that closes the loop</h3>
+          <p>Recipes auto-decrement on payment. A shopping-list view groups everything below threshold by supplier, with one-click email orders.</p>
+        </article>
+
+        <article class="feature reveal">
+          <div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></div>
+          <h3>Staff, shifts &amp; schedules</h3>
+          <p>Clock-in / clock-out plus a published schedule that toggles between week and month views. Planned hours and forecasted payroll cost roll up at the top.</p>
+        </article>
+
+        <article class="feature reveal">
+          <div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V6z"/><path d="M9 12l2 2 4-4"/></svg></div>
+          <h3>Belgian contracts &amp; RSZ</h3>
+          <p>Generate signed PDFs for vast, flexi, student, extra, interim, and stage contracts. Submit Dimona-in/out and quarterly DmfA hours batches, with a full audit trail of every declaration.</p>
+        </article>
+
+        <article class="feature reveal">
+          <div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 15l4-6 4 4 5-7"/></svg></div>
+          <h3>VAT, Z-reports, exports</h3>
+          <p>Per-category tax rates, per-rate VAT breakdowns, end-of-day Z-reports, and CSV exports your accountant will actually like.</p>
+        </article>
+
+        <article class="feature reveal">
+          <div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a4 4 0 0 1-4 4H7l-4 4V5a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/></svg></div>
+          <h3>Customer loyalty</h3>
+          <p>Reservations and paid orders quietly build a customer record. Mark VIPs, capture allergy notes, see lifetime spend.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────── How it works ─────────── -->
+  <section id="flow" style="background: var(--surface);">
+    <div class="container">
+      <div class="reveal">
+        <div class="section-eyebrow">How it works</div>
+        <h2 class="section-title">From a chair to a closed book.</h2>
+        <p class="section-sub">One thread runs through the whole night, linking the customer, the kitchen, and the back office.</p>
+      </div>
+
+      <div class="flow">
+        <div class="flow-step reveal">
+          <span class="num">1</span>
+          <h4>Guest scans the QR</h4>
+          <p>They land on a clean dark menu, build a cart with size and notes, and send pending lines to the kitchen.</p>
+          <div class="preview">phone scan → menu → cart → send</div>
+        </div>
+        <div class="flow-step reveal">
+          <span class="num">2</span>
+          <h4>Kitchen sees it instantly</h4>
+          <p>SSE pushes the new lines straight to the kitchen view, grouped by course. Mark ready and the waiter is notified.</p>
+          <div class="preview">SSE push · grouped by course</div>
+        </div>
+        <div class="flow-step reveal">
+          <span class="num">3</span>
+          <h4>Waiter closes out, books update</h4>
+          <p>POS captures tip, splits VAT per category, decrements stock, and updates the customer's lifetime spend.</p>
+          <div class="preview">tip + VAT + COGS + customer link</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────── Patronize embed ─────────── -->
+  <section id="patronize">
+    <div class="container">
+      <div class="reveal">
+        <div class="section-eyebrow">Patronize widget</div>
+        <h2 class="section-title">A reservation pill on every page of your website.</h2>
+        <p class="section-sub">Drop one script tag into your HTML. A "Make a reservation" pill pins to the bottom-right; tapping it opens the full booking flow inside an iframe.</p>
+      </div>
+
+      <div class="embed-row">
+        <!-- Live preview iframe — same widget customers see. -->
+        <div class="embed-art reveal">
+          <iframe src="/patronize.html?open=1" title="Patronize live preview"></iframe>
+        </div>
+
+        <!-- Snippet + selling points -->
+        <div class="reveal">
+          <ul class="embed-list">
+            <li><span class="check">✓</span> One <code>&lt;script&gt;</code> tag — no CSS, no setup, no JS API to call.</li>
+            <li><span class="check">✓</span> Bookings land in your Reservations list with a "via widget" tag.</li>
+            <li><span class="check">✓</span> Auto-assigns the smallest fitting table, prevents double-booking.</li>
+            <li><span class="check">✓</span> Honors <code>prefers-color-scheme</code> — looks native on light or dark sites.</li>
+            <li><span class="check">✓</span> Cross-origin friendly via <code>data-api</code> override.</li>
+          </ul>
+
+          <pre class="code"><span style="color:var(--text-dim)">&lt;!-- Drop this just before &lt;/body&gt; --&gt;</span>
+<span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="str">"https://your-domain/patronize.js"</span> <span class="attr">defer</span><span class="tag">&gt;&lt;/script&gt;</span></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────── QR table ordering ─────────── -->
+  <section id="qr" style="background: var(--surface);">
+    <div class="container">
+      <div class="qr-row">
+        <div class="reveal" style="text-align:center">
+          <!-- Phone mockup illustrating the customer ordering page -->
+          <div class="phone">
+            <div class="phone-inner">
+              <div class="phone-line">Bistro Lumière</div>
+              <div class="phone-title">Table 12</div>
+              <div class="phone-cats">
+                <span class="phone-cat active">All</span>
+                <span class="phone-cat">Drinks</span>
+                <span class="phone-cat">Mains</span>
+                <span class="phone-cat">Desserts</span>
+              </div>
+              <div class="phone-grid">
+                <div class="phone-item"><div class="it">Steak frites</div><div class="pr">€24.00</div></div>
+                <div class="phone-item"><div class="it">House red, glass</div><div class="pr">€7.50</div></div>
+                <div class="phone-item"><div class="it">Ratatouille</div><div class="pr">€18.00</div></div>
+                <div class="phone-item"><div class="it">Tarte tatin</div><div class="pr">€8.50</div></div>
+                <div class="phone-item"><div class="it">Espresso</div><div class="pr">€2.80</div></div>
+                <div class="phone-item"><div class="it">San Pellegrino</div><div class="pr">€4.00</div></div>
+              </div>
+              <div class="phone-cart"><span>3 in cart</span><span>€39.30</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="reveal">
+          <div class="section-eyebrow">Table-side ordering</div>
+          <h2 class="section-title">A QR per table. The whole menu in their pocket.</h2>
+          <p class="section-sub" style="margin-bottom: 18px">
+            Edit a table in the floor plan, click the QR button, print the SVG. Pin it to the table. That's it.
+          </p>
+          <ul class="embed-list">
+            <li><span class="check">✓</span> Generates PNG and SVG QR codes per table, downloadable and printable.</li>
+            <li><span class="check">✓</span> "Print all QR codes" lays out the whole restaurant on one printable sheet.</li>
+            <li><span class="check">✓</span> Customers see the same dark-themed menu, send lines straight to the kitchen.</li>
+            <li><span class="check">✓</span> Waiter still finalises payment — guests don't see the till.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────── Belgian-ready ─────────── -->
+  <section id="belgian" style="background: var(--surface);">
+    <div class="container">
+      <div class="reveal">
+        <div class="section-eyebrow">Belgian-ready</div>
+        <h2 class="section-title">Built for the Belgian horeca rulebook.</h2>
+        <p class="section-sub">VAT, contracts, and social-security declarations baked in, so a manager isn't living half in this app and half in spreadsheets.</p>
+      </div>
+
+      <div class="features" style="grid-template-columns: 1fr 1fr;">
+        <article class="feature reveal">
+          <div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6"/><path d="M9 17h6"/></svg></div>
+          <h3>Official contracts, signed and printed</h3>
+          <p>Pick a statute (vast, bepaalde duur, flexi-job, student, extra, interim, stage) and generate a print-ready Dutch contract with the right legal clauses, INSZ, IBAN, address, PC 302 references — straight to "Save as PDF" from the browser.</p>
+        </article>
+
+        <article class="feature reveal">
+          <div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V6z"/><path d="M9 12l2 2 4-4"/></svg></div>
+          <h3>Dimona + DmfA submission</h3>
+          <p>Submit Dimona-in / Dimona-out for any contract; aggregate clocked shift hours per worker for the quarterly DmfA. Every payload stored as an audit-trail record. Plug your own RSZ web-service credentials when you're ready to go live.</p>
+        </article>
+
+        <article class="feature reveal">
+          <div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 15l4-6 4 4 5-7"/></svg></div>
+          <h3>VAT split per category</h3>
+          <p>Set 6% / 12% / 21% per category and Patron tags every line at create time. Z-report breaks the day's totals down by rate, ready for your accountant.</p>
+        </article>
+
+        <article class="feature reveal">
+          <div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v3M16 3v3"/></svg></div>
+          <h3>Closures + per-day hours</h3>
+          <p>Set the regular weekly opening hours per day, plus exceptional closure periods for holidays and private events. The booking widget stops offering slots on those dates and tells the customer why.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────── Roles ─────────── -->
+  <section id="roles">
+    <div class="container">
+      <div class="reveal">
+        <div class="section-eyebrow">Roles</div>
+        <h2 class="section-title">One app, four jobs done well.</h2>
+        <p class="section-sub">Switch role at the top of the app and the surface area shrinks to exactly what that person needs.</p>
+      </div>
+
+      <div class="roles" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
+        <article class="role reveal">
+          <div class="role-name">Manager</div>
+          <h4>Runs the whole house</h4>
+          <ul>
+            <li>Floor plan + edit layout</li>
+            <li>Menu, stock, suppliers</li>
+            <li>Staff, schedules, payroll</li>
+            <li>Contracts + RSZ submission</li>
+            <li>Reservations + customers</li>
+            <li>Reports, Z-reports, exports</li>
+            <li>Settings + tax rates</li>
+          </ul>
+        </article>
+
+        <article class="role reveal">
+          <div class="role-name">Waiter</div>
+          <h4>Floor + POS, nothing else</h4>
+          <ul>
+            <li>Floor plan with live status</li>
+            <li>Slide-over POS panel</li>
+            <li>Course-paced order taking</li>
+            <li>Reservations list for the day</li>
+          </ul>
+        </article>
+
+        <article class="role reveal">
+          <div class="role-name">Kitchen</div>
+          <h4>Food tickets only</h4>
+          <ul>
+            <li>Live ticket feed via SSE</li>
+            <li>Grouped by table and course</li>
+            <li>Urgency-tinted KDS cards</li>
+            <li>Mark-ready in one tap</li>
+            <li>86-list scoped to food</li>
+          </ul>
+        </article>
+
+        <article class="role reveal">
+          <div class="role-name">Bar</div>
+          <h4>Drinks only</h4>
+          <ul>
+            <li>Same ticket UI as the kitchen</li>
+            <li>Drinks-only queue</li>
+            <li>86-list scoped to drink categories</li>
+            <li>Coffees and cocktails in one place</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────── Final CTA ─────────── -->
+  <section class="final-cta">
+    <div class="container">
+      <div class="reveal">
+        <h2>Ready to take a look?</h2>
+        <p>Open the demo to play with the floor plan, or pop the booking widget to see what a guest experiences.</p>
+        <div class="cta-row" style="justify-content: center">
+          <a class="btn btn-primary" href="/">Open the app →</a>
+          <a class="btn btn-ghost" href="/patronize.html?open=1" target="_blank" rel="noreferrer">Open Patronize ↗</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="row">
+      <a href="#features">Features</a>
+      <a href="#flow">How it works</a>
+      <a href="#patronize">Patronize widget</a>
+      <a href="#qr">QR ordering</a>
+      <a href="/">Open the app</a>
+    </div>
+    <div>© <span id="year"></span> Patron · Built with React, Express, and MongoDB.</div>
+  </footer>
+
+  <script>
+    // Live year stamp.
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Reveal-on-scroll: watch every .reveal element and add .in once it
+    // crosses into view. Cheap, no library.
+    var io = ('IntersectionObserver' in window) ? new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          e.target.classList.add('in');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }) : null;
+
+    if (io) {
+      document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+    } else {
+      // No IntersectionObserver? Fail open — show everything.
+      document.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('in'); });
+    }
+  </script>
+</body>
+</html>

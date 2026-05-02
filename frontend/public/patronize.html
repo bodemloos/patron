@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Patronize — Reserve a table</title>
+    <style>
+      /*
+    Patronize — embeddable reservation widget.
+
+    Two visual states drive everything:
+      - data-state="closed" → only the launcher pill is rendered.
+      - data-state="open"   → launcher + booking panel.
+
+    Both states post a `{source:'patronize', type:'state', state}` message
+    to the parent so the loader script can resize the iframe accordingly.
+    Inline iframe embeds work too: if the iframe is sized to fit both,
+    clicking the launcher just expands the panel within it.
+
+    A `?open=1` query param starts the widget already open — useful for
+    in-app previews that want to demo the form right away.
+  */
+      :root {
+        --bg: #141414;
+        --surface: #1c1c1d;
+        --surface-2: #232325;
+        --surface-3: #2c2c2e;
+        --border: rgba(255, 255, 255, 0.06);
+        --text: #f5f5f5;
+        --text-muted: #a3a3a3;
+        --text-dim: #737373;
+        --brand: #ea580c;
+        --brand-bright: #fb923c;
+        --danger: #f87171;
+        --ok: #34d399;
+        --shadow-panel: 0 12px 40px -12px rgba(0, 0, 0, 0.55),
+          inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        --shadow-launcher: 0 8px 24px -8px rgba(234, 88, 12, 0.6),
+          0 0 14px -4px rgba(249, 115, 22, 0.32);
+      }
+      @media (prefers-color-scheme: light) {
+        :root {
+          --bg: #ffffff;
+          --surface: #ffffff;
+          --surface-2: #f1f5f9;
+          --surface-3: #e2e8f0;
+          --border: #e2e8f0;
+          --text: #0f172a;
+          --text-muted: #475569;
+          --text-dim: #94a3b8;
+          --shadow-panel: 0 12px 32px -12px rgba(15, 23, 42, 0.18);
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background: transparent;
+        color: var(--text);
+        font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+        font-size: 14px;
+        line-height: 1.5;
+        overflow: hidden;
+        height: 100%;
+      }
+
+      /* The launcher pill — always anchored at the bottom of the iframe. */
+      .launcher {
+        position: absolute;
+        left: 8px;
+        right: 8px;
+        bottom: 8px;
+        height: 48px;
+        border: 0;
+        border-radius: 999px;
+        background: var(--brand);
+        color: #fff;
+        font: inherit;
+        font-weight: 500;
+        font-size: 14px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        box-shadow: var(--shadow-launcher);
+        transition: filter 0.15s, transform 0.1s;
+      }
+      .launcher:hover {
+        filter: brightness(1.08);
+      }
+      .launcher:active {
+        transform: translateY(1px);
+      }
+      .launcher .chevron {
+        display: inline-block;
+        transition: transform 0.2s ease;
+      }
+      body[data-state="open"] .launcher .chevron {
+        transform: rotate(180deg);
+      }
+      .launcher svg {
+        display: block;
+      }
+
+      /* The expanded panel — sits above the launcher when state is open. */
+      .panel {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        right: 8px;
+        bottom: 64px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 18px 18px 16px;
+        box-shadow: var(--shadow-panel);
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        overflow-x: hidden;
+        /* Smooth in/out transition. CSS only — no JS animation needed. */
+        opacity: 0;
+        transform: translateY(8px);
+        pointer-events: none;
+        transition: opacity 0.18s ease, transform 0.18s ease;
+      }
+      body[data-state="open"] .panel {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+      }
+
+      .panel-close {
+        position: absolute;
+        top: 8px;
+        right: 10px;
+        width: 30px;
+        height: 30px;
+        border: 0;
+        border-radius: 8px;
+        background: transparent;
+        color: var(--text-muted);
+        font-size: 20px;
+        line-height: 1;
+        cursor: pointer;
+      }
+      .panel-close:hover {
+        background: var(--surface-2);
+        color: var(--text);
+      }
+
+      h1 {
+        font-size: 18px;
+        font-weight: 500;
+        margin: 0 0 4px 0;
+        color: var(--text);
+      }
+      .subtitle {
+        font-size: 13px;
+        color: var(--text-muted);
+        margin: 0 0 14px 0;
+      }
+      .step-label {
+        font-size: 11px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--text-muted);
+        margin: 12px 0 6px;
+      }
+      .stepper {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 4px;
+      }
+      .stepper button {
+        width: 32px;
+        height: 32px;
+        border-radius: 9px;
+        border: 1px solid var(--border);
+        background: var(--surface-2);
+        color: var(--text);
+        font-size: 15px;
+        cursor: pointer;
+      }
+      .stepper button:hover {
+        background: var(--surface-3);
+      }
+      .stepper .count {
+        font-size: 15px;
+        font-weight: 500;
+        min-width: 28px;
+        text-align: center;
+      }
+      input[type="date"],
+      input[type="text"],
+      input[type="email"],
+      input[type="tel"],
+      textarea {
+        width: 100%;
+        padding: 9px 11px;
+        border-radius: 9px;
+        border: 1px solid var(--border);
+        background: var(--surface-2);
+        color: var(--text);
+        font: inherit;
+        font-size: 13px;
+      }
+      input:focus,
+      textarea:focus {
+        outline: 2px solid var(--brand);
+        outline-offset: -2px;
+      }
+      textarea {
+        resize: vertical;
+        min-height: 56px;
+      }
+      .slots {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+        gap: 6px;
+      }
+      .slot {
+        padding: 8px 4px;
+        border-radius: 9px;
+        border: 1px solid var(--border);
+        background: var(--surface-2);
+        color: var(--text);
+        text-align: center;
+        cursor: pointer;
+        font-size: 12px;
+        font-variant-numeric: tabular-nums;
+        transition: background 0.15s, border-color 0.15s;
+      }
+      .slot:hover {
+        border-color: var(--brand);
+      }
+      .slot.active {
+        background: var(--brand);
+        border-color: var(--brand);
+        color: #fff;
+      }
+      .slot[disabled] {
+        opacity: 0.35;
+        cursor: not-allowed;
+      }
+      .slot[disabled]:hover {
+        border-color: var(--border);
+      }
+      .empty {
+        grid-column: 1/-1;
+        text-align: center;
+        color: var(--text-dim);
+        padding: 18px 8px;
+        font-size: 12px;
+      }
+      .row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+      }
+      .row > * {
+        min-width: 0;
+      }
+      label.field {
+        display: block;
+        margin-bottom: 6px;
+      }
+      label.field > .field-label {
+        display: block;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-muted);
+        margin-bottom: 4px;
+      }
+      .submit {
+        width: 100%;
+        padding: 11px 16px;
+        border-radius: 11px;
+        border: 0;
+        background: var(--brand);
+        color: #fff;
+        font: inherit;
+        font-weight: 500;
+        cursor: pointer;
+        margin-top: 12px;
+        box-shadow: var(--shadow-launcher);
+      }
+      .submit:hover {
+        filter: brightness(1.08);
+      }
+      .submit:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .feedback {
+        margin-top: 8px;
+        padding: 9px 11px;
+        border-radius: 9px;
+        font-size: 12px;
+      }
+      .feedback.error {
+        background: rgba(248, 113, 113, 0.12);
+        color: var(--danger);
+      }
+      .feedback.ok {
+        background: rgba(52, 211, 153, 0.12);
+        color: var(--ok);
+      }
+      .summary {
+        color: var(--text-muted);
+        font-size: 12px;
+      }
+      .footer-note {
+        margin-top: 12px;
+        font-size: 10px;
+        color: var(--text-dim);
+        text-align: center;
+      }
+      .hidden {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body data-state="closed">
+    <!-- Booking panel (rendered above launcher when state=open). -->
+    <div class="panel" id="panel" aria-hidden="true">
+      <button class="panel-close" id="panel-close" aria-label="Close">×</button>
+
+      <div id="step-form">
+        <h1>Reserve a table</h1>
+        <p class="subtitle">
+          Pick a date, party size, and time. We'll hold a table for you.
+        </p>
+
+        <div class="step-label">Party size</div>
+        <div class="stepper">
+          <button type="button" id="party-minus" aria-label="Decrease">
+            −
+          </button>
+          <span class="count" id="party-count">2</span>
+          <button type="button" id="party-plus" aria-label="Increase">+</button>
+          <span class="summary"><span id="party-word">guests</span></span>
+        </div>
+
+        <div class="step-label">Date</div>
+        <input type="date" id="date" />
+
+        <div class="step-label">Time</div>
+        <div class="slots" id="slots">
+          <div class="empty">Pick a date to see available times.</div>
+        </div>
+
+        <div class="step-label">Your details</div>
+        <label class="field">
+          <span class="field-label">Name</span>
+          <input type="text" id="name" autocomplete="name" required />
+        </label>
+        <div class="row">
+          <label class="field">
+            <span class="field-label">Email</span>
+            <input type="email" id="email" autocomplete="email" />
+          </label>
+          <label class="field">
+            <span class="field-label">Phone</span>
+            <input type="tel" id="phone" autocomplete="tel" />
+          </label>
+        </div>
+        <label class="field">
+          <span class="field-label">Notes / allergies (optional)</span>
+          <textarea
+            id="notes"
+            placeholder="Anything we should know?"
+          ></textarea>
+        </label>
+
+        <button class="submit" id="submit" type="button">Reserve</button>
+        <div id="feedback"></div>
+      </div>
+
+      <div id="step-success" class="hidden">
+        <h1>Reservation confirmed</h1>
+        <div class="feedback ok" id="success-msg" style="margin-top: 8px"></div>
+        <button class="submit" id="another" type="button">
+          Make another reservation
+        </button>
+      </div>
+
+      <div class="footer-note">Powered by Patron</div>
+    </div>
+
+    <!-- Launcher — visible in both states; opens/closes the panel. -->
+    <button
+      class="launcher"
+      id="launcher"
+      type="button"
+      aria-label="Make a reservation"
+      aria-expanded="false"
+    >
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <rect x="3" y="4.5" width="18" height="16" rx="2" />
+        <path d="M3 9h18" />
+        <path d="M8 3v3" />
+        <path d="M16 3v3" />
+      </svg>
+      <span>Make a reservation</span>
+      <span class="chevron" aria-hidden="true">▴</span>
+    </button>
+
+    <script>
+      (function () {
+        var qs = new URLSearchParams(location.search);
+        var API = qs.get("api") || "";
+        var initOpen = qs.has("open");
+        function url(path) {
+          return API.replace(/\/$/, "") + path;
+        }
+
+        // ----- State -----
+        var state = {
+          partySize: 2,
+          date: "",
+          slot: null,
+          submitting: false,
+        };
+
+        // ----- Elements -----
+        var elBody = document.body;
+        var elLauncher = document.getElementById("launcher");
+        var elPanelClose = document.getElementById("panel-close");
+        var elPanel = document.getElementById("panel");
+        var elDate = document.getElementById("date");
+        var elPartyCount = document.getElementById("party-count");
+        var elPartyWord = document.getElementById("party-word");
+        var elPartyMinus = document.getElementById("party-minus");
+        var elPartyPlus = document.getElementById("party-plus");
+        var elSlots = document.getElementById("slots");
+        var elSubmit = document.getElementById("submit");
+        var elFeedback = document.getElementById("feedback");
+        var elName = document.getElementById("name");
+        var elEmail = document.getElementById("email");
+        var elPhone = document.getElementById("phone");
+        var elNotes = document.getElementById("notes");
+        var elStepForm = document.getElementById("step-form");
+        var elStepSuccess = document.getElementById("step-success");
+        var elSuccessMsg = document.getElementById("success-msg");
+        var elAnother = document.getElementById("another");
+
+        // ----- Open/close state -----
+        function postState(s) {
+          try {
+            parent.postMessage(
+              { source: "patronize", type: "state", state: s },
+              "*"
+            );
+          } catch (e) {
+            /* same-origin or sandbox edge cases — ignore */
+          }
+        }
+        function setOpenState(s) {
+          elBody.dataset.state = s;
+          elLauncher.setAttribute("aria-expanded", String(s === "open"));
+          elPanel.setAttribute("aria-hidden", String(s !== "open"));
+          postState(s);
+        }
+        setOpenState(initOpen ? "open" : "closed");
+
+        elLauncher.addEventListener("click", function () {
+          setOpenState(elBody.dataset.state === "open" ? "closed" : "open");
+        });
+        elPanelClose.addEventListener("click", function () {
+          setOpenState("closed");
+        });
+
+        // ----- Helpers -----
+        function isoToday() {
+          var d = new Date();
+          var y = d.getFullYear();
+          var m = String(d.getMonth() + 1).padStart(2, "0");
+          var day = String(d.getDate()).padStart(2, "0");
+          return y + "-" + m + "-" + day;
+        }
+        function setFeedback(kind, msg) {
+          if (!msg) {
+            elFeedback.innerHTML = "";
+            return;
+          }
+          elFeedback.innerHTML =
+            '<div class="feedback ' + kind + '">' + msg + "</div>";
+        }
+        function renderParty() {
+          elPartyCount.textContent = state.partySize;
+          elPartyWord.textContent = state.partySize === 1 ? "guest" : "guests";
+        }
+        function renderSlots(slots, closed, closureReason) {
+          if (closed || !slots || !slots.length) {
+            // Escape any reason text the manager typed in Settings.
+            var safeReason = (closureReason || "")
+              .replace(/&/g, "&amp;")
+              .replace(/</g, "&lt;")
+              .replace(/>/g, "&gt;");
+            elSlots.innerHTML =
+              '<div class="empty">' +
+              (safeReason
+                ? "Closed — " + safeReason + "."
+                : "Closed on this date.") +
+              "</div>";
+            return;
+          }
+          elSlots.innerHTML = "";
+          slots.forEach(function (s) {
+            var btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "slot";
+            btn.textContent = s.time;
+            if (!s.available) btn.disabled = true;
+            if (state.slot && state.slot.startsAt === s.startsAt)
+              btn.classList.add("active");
+            btn.addEventListener("click", function () {
+              if (!s.available) return;
+              state.slot = s;
+              renderSlots(slots);
+            });
+            elSlots.appendChild(btn);
+          });
+          if (
+            state.slot &&
+            !slots.find(function (s) {
+              return s.startsAt === state.slot.startsAt;
+            })
+          ) {
+            state.slot = null;
+          }
+          if (
+            !slots.some(function (s) {
+              return s.available;
+            })
+          ) {
+            var empty = document.createElement("div");
+            empty.className = "empty";
+            empty.textContent =
+              "No tables free for " +
+              state.partySize +
+              " on this day. Try another date.";
+            elSlots.appendChild(empty);
+          }
+        }
+
+        var loadSeq = 0;
+        function loadAvailability() {
+          if (!state.date) return;
+          var seq = ++loadSeq;
+          elSlots.innerHTML = '<div class="empty">Loading…</div>';
+          fetch(
+            url(
+              "/api/public/reservations/availability?date=" +
+                state.date +
+                "&partySize=" +
+                state.partySize
+            )
+          )
+            .then(function (r) {
+              if (!r.ok) throw new Error("Network error");
+              return r.json();
+            })
+            .then(function (j) {
+              if (seq !== loadSeq) return;
+              renderSlots(j.slots, j.closed, j.closureReason);
+            })
+            .catch(function () {
+              if (seq !== loadSeq) return;
+              elSlots.innerHTML =
+                '<div class="empty">Couldn\u2019t load times. Please retry.</div>';
+            });
+        }
+
+        // ----- Form wiring -----
+        elDate.value = isoToday();
+        state.date = elDate.value;
+        elDate.addEventListener("change", function () {
+          state.date = elDate.value;
+          state.slot = null;
+          loadAvailability();
+        });
+        function bumpParty(delta) {
+          state.partySize = Math.max(1, Math.min(20, state.partySize + delta));
+          renderParty();
+          state.slot = null;
+          loadAvailability();
+        }
+        elPartyMinus.addEventListener("click", function () {
+          bumpParty(-1);
+        });
+        elPartyPlus.addEventListener("click", function () {
+          bumpParty(1);
+        });
+
+        elSubmit.addEventListener("click", function () {
+          if (state.submitting) return;
+          setFeedback();
+          var name = (elName.value || "").trim();
+          var email = (elEmail.value || "").trim();
+          var phone = (elPhone.value || "").trim();
+          var notes = (elNotes.value || "").trim();
+          if (!name) return setFeedback("error", "Please enter your name.");
+          if (!state.slot) return setFeedback("error", "Please pick a time.");
+          if (!email && !phone)
+            return setFeedback(
+              "error",
+              "Please add an email or phone number so we can reach you."
+            );
+
+          state.submitting = true;
+          elSubmit.disabled = true;
+          elSubmit.textContent = "Reserving…";
+
+          fetch(url("/api/public/reservations"), {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name: name,
+              email: email,
+              phone: phone,
+              partySize: state.partySize,
+              startsAt: state.slot.startsAt,
+              notes: notes,
+            }),
+          })
+            .then(function (r) {
+              return r.json().then(function (j) {
+                if (!r.ok)
+                  throw new Error(
+                    j && j.error ? j.error : "Could not save reservation"
+                  );
+                return j;
+              });
+            })
+            .then(function (j) {
+              var when = new Date(j.reservation.startsAt).toLocaleString([], {
+                weekday: "long",
+                month: "short",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+              });
+              elSuccessMsg.textContent =
+                "You\u2019re booked, " +
+                name +
+                ". We\u2019ll see you on " +
+                when +
+                " for " +
+                state.partySize +
+                " " +
+                (state.partySize === 1 ? "guest" : "guests") +
+                ".";
+              elStepForm.classList.add("hidden");
+              elStepSuccess.classList.remove("hidden");
+            })
+            .catch(function (e) {
+              setFeedback(
+                "error",
+                e.message || "Something went wrong. Please try again."
+              );
+            })
+            .finally(function () {
+              state.submitting = false;
+              elSubmit.disabled = false;
+              elSubmit.textContent = "Reserve";
+            });
+        });
+
+        elAnother.addEventListener("click", function () {
+          elStepSuccess.classList.add("hidden");
+          elStepForm.classList.remove("hidden");
+          elName.value = "";
+          elEmail.value = "";
+          elPhone.value = "";
+          elNotes.value = "";
+          state.slot = null;
+          loadAvailability();
+        });
+
+        renderParty();
+        loadAvailability();
+      })();
+    </script>
+  </body>
+</html>

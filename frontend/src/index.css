@@ -1,0 +1,341 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+/* Calm flat dark background — depth comes from card shadows, not body bloom. */
+.dark body {
+  background-color: theme("colors.surface.950");
+}
+
+/* Kitchen / bar tickets — premium dark KDS card. The whole ticket is
+   one rounded surface with a thin top accent bar that picks up urgency
+   colour. Designed to read at a glance on a busy line. */
+
+.ticket {
+  position: relative;
+  width: 100%;
+  max-width: 320px;
+  /* Flex column so .ticket-body can stretch via flex:1 and push the
+     .ticket-foot to the bottom edge of the card. Combined with the
+     parent flex-wrap row's default align-items:stretch, every ticket in
+     a row ends up the same height with its footer pinned to the
+     bottom. */
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.03),
+      transparent 80px
+    ),
+    #1c1c1d;
+  color: #f5f5f5;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 18px 32px -16px rgba(0, 0, 0, 0.7),
+    0 4px 12px -6px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.ticket:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 24px 40px -16px rgba(0, 0, 0, 0.75),
+    0 6px 16px -6px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* The 3px coloured bar at the top — the only thing that flips per
+   urgency, plus a subtle outline ring on late tickets. */
+.ticket-accent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: #34d399;
+  box-shadow: 0 0 16px rgba(52, 211, 153, 0.5);
+}
+.ticket-aging .ticket-accent {
+  background: #f59e0b;
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.55);
+}
+.ticket-late .ticket-accent {
+  background: #ef4444;
+  box-shadow: 0 0 18px rgba(239, 68, 68, 0.6);
+}
+.ticket-late {
+  border-color: rgba(239, 68, 68, 0.45);
+}
+
+/* Header — table chip on the left, time + age on the right. */
+.ticket-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 18px 12px;
+}
+.ticket-eyebrow {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #737373;
+}
+.ticket-table {
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  margin-top: 2px;
+  color: #f5f5f5;
+}
+.ticket-time-block {
+  text-align: right;
+}
+.ticket-time {
+  font-size: 22px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+  color: #e5e5e5;
+  line-height: 1;
+}
+.ticket-age {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgba(52, 211, 153, 0.12);
+  color: #34d399;
+}
+.ticket-age-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: currentColor;
+  box-shadow: 0 0 8px currentColor;
+}
+.ticket-age-aging {
+  background: rgba(245, 158, 11, 0.14);
+  color: #fbbf24;
+}
+.ticket-age-late {
+  background: rgba(239, 68, 68, 0.14);
+  color: #f87171;
+}
+
+/* Body */
+/* Body — grows to absorb extra height so the footer pins to the bottom. */
+.ticket-body {
+  padding: 20px 18px;
+  flex: 1;
+}
+.ticket-course {
+  padding: 12px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+.ticket-course:first-child {
+  border-top: 0;
+  padding-top: 4px;
+}
+
+.ticket-course-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #fb923c;
+  margin-bottom: 10px;
+}
+.ticket-course-count {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  background: rgba(251, 146, 60, 0.12);
+  padding: 1px 7px;
+  border-radius: 999px;
+  letter-spacing: 0;
+  color: #fb923c;
+}
+
+.ticket-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ticket-line {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+.ticket-line-qty {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: rgba(234, 88, 12, 0.16);
+  color: #fb923c;
+  display: grid;
+  place-items: center;
+  font-weight: 600;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  margin-top: 1px;
+}
+.ticket-line-text {
+  flex: 1;
+  min-width: 0;
+}
+.ticket-line-name {
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 1.35;
+  color: #f5f5f5;
+  letter-spacing: -0.005em;
+}
+.ticket-line-mods {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 5px;
+}
+.ticket-mod-chip {
+  font-size: 11px;
+  color: #a3a3a3;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 2px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+.ticket-line-note {
+  margin-top: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #fcd34d;
+  background: rgba(250, 204, 21, 0.1);
+  border: 1px solid rgba(250, 204, 21, 0.18);
+  padding: 3px 9px;
+  border-radius: 6px;
+}
+.ticket-line-ready {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  color: #a3a3a3;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: all 0.12s;
+}
+.ticket-line-ready:hover {
+  background: rgba(52, 211, 153, 0.12);
+  color: #34d399;
+  border-color: rgba(52, 211, 153, 0.35);
+}
+.ticket-line-ready:active {
+  background: #34d399;
+  color: #064e3b;
+  transform: scale(0.94);
+}
+
+/* Footer — summary chip on the left, full-width primary CTA on the right. */
+.ticket-foot {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.18);
+}
+.ticket-summary {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1;
+}
+.ticket-summary-num {
+  font-size: 22px;
+  font-weight: 600;
+  color: #f5f5f5;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+.ticket-summary-label {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #737373;
+  margin-top: 4px;
+}
+.ticket-fire {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 11px;
+  background: #ea580c;
+  color: #fff;
+  font: inherit;
+  font-weight: 500;
+  font-size: 13px;
+  cursor: pointer;
+  box-shadow: 0 8px 20px -8px rgba(234, 88, 12, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  transition: filter 0.12s, transform 0.05s;
+}
+.ticket-fire:hover {
+  filter: brightness(1.08);
+}
+.ticket-fire:active {
+  transform: translateY(1px);
+}
+.ticket-late .ticket-fire {
+  background: #ef4444;
+  box-shadow: 0 8px 20px -8px rgba(239, 68, 68, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center gap-2 px-3 py-2 rounded-xl font-medium text-sm transition;
+  }
+  .btn-primary {
+    @apply btn bg-brand-600 text-white hover:bg-brand-700 dark:shadow-brand-glow;
+  }
+  .btn-ghost {
+    @apply btn bg-white dark:bg-surface-850 border border-slate-200 dark:border-white/5 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-surface-800 dark:shadow-edge;
+  }
+  .btn-danger {
+    @apply btn bg-red-600 text-white hover:bg-red-700;
+  }
+  .input {
+    @apply w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-white/5 bg-white dark:bg-surface-850
+           focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm dark:shadow-edge;
+  }
+  .card {
+    @apply bg-white dark:bg-surface-900 rounded-2xl border border-slate-200 dark:border-white/5 shadow-sm dark:shadow-glow;
+  }
+  .badge {
+    @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium;
+  }
+}
