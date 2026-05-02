@@ -47,6 +47,14 @@ export default function FloorPlan() {
   });
   const containerRef = useRef(null);
 
+  // Floor-plan view transform (zoom + pan). Wraps every renderable inside
+  // the SVG. Pinch / wheel / +/- buttons all converge on this state.
+  const [view, setView] = useState({ x: 0, y: 0, scale: 1 });
+  const pointersRef = useRef(new Map());        // pointerId → {x, y} client coords
+  const pinchRef = useRef(null);                // pinch session start metrics
+
+  function clamp(n, lo, hi) { return Math.max(lo, Math.min(hi, n)); }
+
   // Persist the active zone across reloads.
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -133,13 +141,89 @@ export default function FloorPlan() {
     }
   }
 
+  // Client coords → coords inside the transformed group (where tables
+  // live). Inverts the active view transform so drag interactions still
+  // hit the right spot at any zoom/pan.
   function svgPoint(e) {
     const svg = containerRef.current;
     if (!svg) return { x: 0, y: 0 };
     const rect = svg.getBoundingClientRect();
-    const sx = (e.clientX - rect.left) * (CANVAS_W / rect.width);
-    const sy = (e.clientY - rect.top) * (CANVAS_H / rect.height);
-    return { x: sx, y: sy };
+    const vbX = (e.clientX - rect.left) * (CANVAS_W / rect.width);
+    const vbY = (e.clientY - rect.top) * (CANVAS_H / rect.height);
+    return { x: (vbX - view.x) / view.scale, y: (vbY - view.y) / view.scale };
+  }
+
+  // Convert client coords into the SVG viewBox coordinate space (no
+  // inverse transform applied). Used for zoom anchoring math, where we
+  // want a stable point in the iframe-of-the-canvas.
+  function clientToViewBox(clientX, clientY) {
+    const svg = containerRef.current;
+    if (!svg) return { x: 0, y: 0 };
+    const rect = svg.getBoundingClientRect();
+    return {
+      x: (clientX - rect.left) * (CANVAS_W / rect.width),
+      y: (clientY - rect.top) * (CANVAS_H / rect.height),
+    };
+  }
+
+  // Zoom keeping `anchor` (in viewBox coords) under the cursor / pinch
+  // midpoint, by adjusting both scale and translate.
+  function zoomTo(newScale, anchor) {
+    const s = clamp(newScale, 0.5, 4);
+    setView((v) => ({
+      scale: s,
+      x: anchor.x - (anchor.x - v.x) * (s / v.scale),
+      y: anchor.y - (anchor.y - v.y) * (s / v.scale),
+    }));
+  }
+  function zoomBy(factor) {
+    zoomTo(view.scale * factor, { x: CANVAS_W / 2, y: CANVAS_H / 2 });
+  }
+  function resetView() { setView({ x: 0, y: 0, scale: 1 }); }
+
+  // ---- Multi-touch pinch + wheel zoom on the SVG container -----------
+  function onSvgPointerDown(e) {
+    pointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pointersRef.current.size === 2) {
+      const [a, b] = [...pointersRef.current.values()];
+      pinchRef.current = {
+        distance: Math.hypot(b.x - a.x, b.y - a.y),
+        midClient: { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 },
+        startView: view,
+      };
+    }
+  }
+  function onSvgPointerMoveZoom(e) {
+    if (pointersRef.current.has(e.pointerId)) {
+      pointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    }
+    if (pointersRef.current.size === 2 && pinchRef.current) {
+      const [a, b] = [...pointersRef.current.values()];
+      const newDist = Math.hypot(b.x - a.x, b.y - a.y);
+      const newMidClient = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+      const ratio = newDist / pinchRef.current.distance;
+      const newScale = clamp(pinchRef.current.startView.scale * ratio, 0.5, 4);
+      const startMidVb = clientToViewBox(pinchRef.current.midClient.x, pinchRef.current.midClient.y);
+      const newMidVb = clientToViewBox(newMidClient.x, newMidClient.y);
+      const sv = pinchRef.current.startView;
+      setView({
+        scale: newScale,
+        x: newMidVb.x - (startMidVb.x - sv.x) * (newScale / sv.scale),
+        y: newMidVb.y - (startMidVb.y - sv.y) * (newScale / sv.scale),
+      });
+    }
+  }
+  function onSvgPointerUpZoom(e) {
+    pointersRef.current.delete(e.pointerId);
+    if (pointersRef.current.size < 2) pinchRef.current = null;
+  }
+  function onWheel(e) {
+    if (!e.deltaY) return;
+    e.preventDefault?.();
+    const anchor = clientToViewBox(e.clientX, e.clientY);
+    // 1 deltaY tick (~100) ≈ ±10% zoom — feels right on mac trackpads.
+    const factor = Math.exp(-e.deltaY * 0.001);
+    zoomTo(view.scale * factor, anchor);
   }
 
   function onTablePointerDown(e, t) {
@@ -323,16 +407,19 @@ export default function FloorPlan() {
       </div>
 
       <div className="grid grid-cols-12 gap-4">
-        <div className="col-span-12 lg:col-span-9 card overflow-hidden">
+        <div className="col-span-12 lg:col-span-9 card overflow-hidden relative">
           <svg
             ref={containerRef}
             viewBox={`0 0 ${CANVAS_W} ${CANVAS_H}`}
             className="w-full h-[55vh] sm:h-[65vh] lg:h-[70vh] block bg-slate-50 dark:bg-surface-950 touch-none select-none"
-            onPointerMove={onPointerMove}
-            onPointerUp={onPointerUp}
-            onPointerCancel={onPointerUp}
-            onPointerLeave={onPointerUp}
+            onPointerDown={onSvgPointerDown}
+            onPointerMove={(e) => { onSvgPointerMoveZoom(e); onPointerMove(e); }}
+            onPointerUp={(e) => { onSvgPointerUpZoom(e); onPointerUp(e); }}
+            onPointerCancel={(e) => { onSvgPointerUpZoom(e); onPointerUp(e); }}
+            onPointerLeave={(e) => { onSvgPointerUpZoom(e); onPointerUp(e); }}
+            onWheel={onWheel}
           >
+          <g transform={`translate(${view.x} ${view.y}) scale(${view.scale})`}>
             {/* Rooms backgrounds — only span tables in the active zone */}
             {renderRoomBands(visibleTables, roomColorByName)}
 
@@ -435,7 +522,31 @@ export default function FloorPlan() {
                 </g>
               );
             })}
+          </g>
           </svg>
+
+          {/* Zoom controls — overlay top-right of the canvas. Mobile
+              users can also pinch; desktop users can use the wheel. */}
+          <div className="absolute top-3 right-3 flex flex-col gap-1.5">
+            <button
+              onClick={() => zoomBy(1.25)}
+              className="w-9 h-9 rounded-lg bg-white/90 dark:bg-surface-900/90 backdrop-blur border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-200 text-lg font-medium leading-none shadow-sm hover:bg-white dark:hover:bg-surface-800"
+              title="Zoom in"
+              aria-label="Zoom in"
+            >+</button>
+            <button
+              onClick={() => zoomBy(0.8)}
+              className="w-9 h-9 rounded-lg bg-white/90 dark:bg-surface-900/90 backdrop-blur border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-200 text-lg font-medium leading-none shadow-sm hover:bg-white dark:hover:bg-surface-800"
+              title="Zoom out"
+              aria-label="Zoom out"
+            >−</button>
+            <button
+              onClick={resetView}
+              className="w-9 h-9 rounded-lg bg-white/90 dark:bg-surface-900/90 backdrop-blur border border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-400 text-xs font-medium tabular-nums leading-none shadow-sm hover:text-slate-900 dark:hover:text-slate-100"
+              title="Reset zoom"
+              aria-label="Reset zoom"
+            >{Math.round(view.scale * 100)}%</button>
+          </div>
         </div>
 
         {/* Side panel */}
