@@ -1,7 +1,19 @@
-// Thin fetch wrapper. Vite proxies /api to http://localhost:4000.
+// Thin fetch wrapper.
+//
+//   Dev:    Vite proxies /api → http://localhost:4000 (no env var needed).
+//   Prod:   set VITE_API_BASE in the Vercel project to your Render URL
+//           (e.g. https://patron-abc123.onrender.com) to call the backend
+//           directly. Leave it unset and use the vercel.json /api rewrite
+//           instead — fine for normal requests but the SSE stream in
+//           lib/events.js works better with a direct connection.
+const API_BASE = (import.meta.env?.VITE_API_BASE || '').replace(/\/$/, '');
+
+function url(path) {
+  return path.startsWith('http') ? path : API_BASE + path;
+}
 
 async function request(path, options = {}) {
-  const res = await fetch(path, {
+  const res = await fetch(url(path), {
     headers: { 'Content-Type': 'application/json' },
     ...options,
     body: options.body ? JSON.stringify(options.body) : undefined,
@@ -107,8 +119,8 @@ export const api = {
   shoppingList: () => request('/api/stock/shopping-list'),
 
   zReport: (date) => request(`/api/reports/z-report${date ? `?date=${date}` : ''}`),
-  exportOrdersCsvUrl: (from, to) => `/api/exports/orders.csv?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`,
-  exportShiftsCsvUrl: (from, to) => `/api/exports/shifts.csv?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`,
+  exportOrdersCsvUrl: (from, to) => url(`/api/exports/orders.csv?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`),
+  exportShiftsCsvUrl: (from, to) => url(`/api/exports/shifts.csv?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`),
 
   contracts: (q = '') => request('/api/contracts' + (q ? `?${q}` : '')),
   contract: (id) => request(`/api/contracts/${id}`),
@@ -117,7 +129,7 @@ export const api = {
     : request('/api/contracts', { method: 'POST', body: c })),
   deleteContract: (id) => request(`/api/contracts/${id}`, { method: 'DELETE' }),
   signContract: (id, body) => request(`/api/contracts/${id}/sign`, { method: 'POST', body }),
-  contractDocumentUrl: (id) => `/api/contracts/${id}/document.html`,
+  contractDocumentUrl: (id) => url(`/api/contracts/${id}/document.html`),
   submitDimona: (id, direction) => request(`/api/contracts/${id}/dimona`, { method: 'POST', body: { direction } }),
 
   rszDeclarations: (q = '') => request('/api/rsz/declarations' + (q ? `?${q}` : '')),

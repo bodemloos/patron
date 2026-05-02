@@ -1,0 +1,24 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+
+  "//": [
+    "Replace the host below with your Render service URL — Vercel.json doesn't",
+    "expand env vars in the destination, so it has to be a literal hostname.",
+    "Example: https://patron-abc123.onrender.com",
+    "",
+    "If you'd rather skip the proxy entirely (recommended for SSE), delete the",
+    "first rewrite and set VITE_API_BASE in Vercel project settings — api.js",
+    "and lib/events.js will pick it up at build time."
+  ],
+
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://YOUR-RENDER-HOST.onrender.com/api/:path*"
+    },
+    {
+      "source": "/((?!.*\\.).*)",
+      "destination": "/index.html"
+    }
+  ]
+}
