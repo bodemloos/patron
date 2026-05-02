@@ -1,6 +1,11 @@
-import { NavLink } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { NavLink, useLocation } from "react-router-dom";
 import { useStore } from "../store.js";
 import Logo from "./Logo.jsx";
+
+// Mobile bottom-bar shows these links flat; everything else is hidden
+// behind a "More" hamburger that opens a slide-up sheet.
+const MOBILE_PRIMARY = new Set(["/floor", "/kitchen", "/bar"]);
 
 const ALL_LINKS = [
   {
@@ -36,6 +41,17 @@ const ALL_LINKS = [
 export default function Nav() {
   const role = useStore((s) => s.role);
   const links = ALL_LINKS.filter((l) => l.roles.includes(role));
+  const primaryLinks = links.filter((l) => MOBILE_PRIMARY.has(l.to));
+  const secondaryLinks = links.filter((l) => !MOBILE_PRIMARY.has(l.to));
+  const showHamburger = secondaryLinks.length > 0;
+
+  const [moreOpen, setMoreOpen] = useState(false);
+  const location = useLocation();
+  // Close the sheet whenever the route changes, so tapping a link inside
+  // it dismisses cleanly without each NavLink needing its own handler.
+  useEffect(() => {
+    setMoreOpen(false);
+  }, [location.pathname]);
 
   return (
     <>
@@ -89,12 +105,14 @@ export default function Nav() {
         </div>
       </aside>
 
-      {/* Bottom tab bar — visible below md only */}
+      {/* Bottom tab bar — visible below md only.
+          Primary slots: Floor / Kitchen / Bar (only those the role has).
+          The rest goes behind a "More" hamburger sheet. */}
       <nav
         className="md:hidden fixed bottom-0 inset-x-0 z-30 bg-white dark:bg-surface-900 border-t border-slate-200 dark:border-white/5 flex items-stretch"
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
-        {links.map((l) => {
+        {primaryLinks.map((l) => {
           const Icon = l.icon;
           return (
             <NavLink
@@ -114,7 +132,100 @@ export default function Nav() {
             </NavLink>
           );
         })}
+        {showHamburger && (
+          <button
+            type="button"
+            onClick={() => setMoreOpen(true)}
+            aria-label="More"
+            className={[
+              "flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 py-2 text-[10px] font-medium",
+              moreOpen
+                ? "text-brand-700 dark:text-brand-400"
+                : "text-slate-500 dark:text-slate-400",
+            ].join(" ")}
+          >
+            <IconHamburger className="w-5 h-5" />
+            <span>More</span>
+          </button>
+        )}
       </nav>
+
+      {/* Slide-up sheet with the secondary links — mobile only. */}
+      {showHamburger && (
+        <>
+          <div
+            className={[
+              "md:hidden fixed inset-0 z-40 bg-black/45 transition-opacity",
+              moreOpen ? "opacity-100" : "pointer-events-none opacity-0",
+            ].join(" ")}
+            onClick={() => setMoreOpen(false)}
+          />
+          <div
+            className={[
+              "md:hidden fixed bottom-0 inset-x-0 z-50",
+              "bg-white dark:bg-surface-900 border-t border-slate-200 dark:border-white/5",
+              "rounded-t-2xl shadow-2xl",
+              "transition-transform duration-200 ease-out",
+              moreOpen ? "translate-y-0" : "translate-y-full",
+            ].join(" ")}
+            style={{
+              paddingBottom: "calc(env(safe-area-inset-bottom) + 12px)",
+            }}
+            role="dialog"
+            aria-modal="true"
+            aria-label="More menu"
+          >
+            <div className="flex justify-center pt-2">
+              <span className="w-10 h-1 rounded-full bg-slate-200 dark:bg-white/10" />
+            </div>
+            <div className="px-4 pt-3 pb-2 flex items-center justify-between">
+              <span className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                More
+              </span>
+              <button
+                onClick={() => setMoreOpen(false)}
+                className="text-slate-500 dark:text-slate-400 text-sm hover:text-slate-900 dark:hover:text-slate-100"
+                aria-label="Close"
+              >
+                Done
+              </button>
+            </div>
+            <div className="px-3 pb-3 grid grid-cols-3 gap-2">
+              {secondaryLinks.map((l) => {
+                const Icon = l.icon;
+                return (
+                  <NavLink
+                    key={l.to}
+                    to={l.to}
+                    className={({ isActive }) =>
+                      [
+                        "flex flex-col items-center justify-center gap-1 py-3 rounded-xl text-xs font-medium",
+                        isActive
+                          ? "bg-brand-50 dark:bg-brand-500/15 text-brand-700 dark:text-brand-400"
+                          : "bg-slate-50 dark:bg-surface-850 text-slate-700 dark:text-slate-200",
+                      ].join(" ")
+                    }
+                  >
+                    <Icon className="w-5 h-5" />
+                    <span className="truncate max-w-full px-2">{l.label}</span>
+                  </NavLink>
+                );
+              })}
+            </div>
+          </div>
+        </>
+      )}
+    </>
+  );
+}
+
+function IconHamburger(p) {
+  return svg(
+    p,
+    <>
+      <path d="M4 7h16" />
+      <path d="M4 12h16" />
+      <path d="M4 17h16" />
     </>
   );
 }
