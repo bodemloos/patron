@@ -35,11 +35,15 @@ async function run() {
   ]);
 
   console.log('[seed] categories...');
-  const [drinks, coffee, mains, desserts] = await Category.create([
+  const [drinks, beersTap, beersBottle, beersTemp, softDrinks, coffee, mains, desserts] = await Category.create([
     { name: 'Drinks', color: '#0ea5e9', sortOrder: 1 },
-    { name: 'Coffee & Tea', color: '#a16207', sortOrder: 2 },
-    { name: 'Mains', color: '#dc2626', sortOrder: 3 },
-    { name: 'Desserts', color: '#db2777', sortOrder: 4 },
+    { name: 'Beers (tap)', color: '#f59e0b', sortOrder: 2 },
+    { name: 'Beers (bottle)', color: '#b45309', sortOrder: 3 },
+    { name: 'Temporary beers', color: '#7c3aed', sortOrder: 4 },
+    { name: 'Soft drinks', color: '#22c55e', sortOrder: 5 },
+    { name: 'Coffee & Tea', color: '#a16207', sortOrder: 6 },
+    { name: 'Mains', color: '#dc2626', sortOrder: 7 },
+    { name: 'Desserts', color: '#db2777', sortOrder: 8 },
   ]);
 
   console.log('[seed] stock...');
@@ -47,7 +51,12 @@ async function run() {
     { name: 'Coffee beans', unit: 'g', quantity: 5000, minQuantity: 1000, costPerUnit: 0.025 },
     { name: 'Milk', unit: 'ml', quantity: 12000, minQuantity: 4000, costPerUnit: 0.0012 },
     { name: 'Cola can', unit: 'pcs', quantity: 60, minQuantity: 24, costPerUnit: 0.6 },
+    { name: 'Lemonade bottle', unit: 'pcs', quantity: 40, minQuantity: 12, costPerUnit: 0.7 },
+    { name: 'Pils keg', unit: 'ml', quantity: 30000, minQuantity: 5000, costPerUnit: 0.003 },
+    { name: 'IPA keg', unit: 'ml', quantity: 20000, minQuantity: 4000, costPerUnit: 0.0042 },
     { name: 'Beer bottle', unit: 'pcs', quantity: 80, minQuantity: 24, costPerUnit: 0.9 },
+    { name: 'Trappist bottle', unit: 'pcs', quantity: 36, minQuantity: 12, costPerUnit: 1.6 },
+    { name: 'Seasonal saison bottle', unit: 'pcs', quantity: 24, minQuantity: 6, costPerUnit: 1.8 },
     { name: 'House wine', unit: 'ml', quantity: 9000, minQuantity: 1500, costPerUnit: 0.004 },
     { name: 'Burger bun', unit: 'pcs', quantity: 50, minQuantity: 10, costPerUnit: 0.4 },
     { name: 'Beef patty', unit: 'pcs', quantity: 40, minQuantity: 10, costPerUnit: 1.8 },
@@ -91,16 +100,51 @@ async function run() {
     {
       name: 'Cola',
       price: 2.8,
-      category: drinks._id,
+      category: softDrinks._id,
       recipe: [{ stockItem: byName['Cola can']._id, qty: 1 }],
       sortOrder: 1,
     },
     {
-      name: 'Beer',
-      price: 3.5,
-      category: drinks._id,
-      recipe: [{ stockItem: byName['Beer bottle']._id, qty: 1 }],
+      name: 'Lemonade',
+      price: 2.8,
+      category: softDrinks._id,
+      recipe: [{ stockItem: byName['Lemonade bottle']._id, qty: 1 }],
       sortOrder: 2,
+    },
+    {
+      name: 'Pils (25cl)',
+      price: 2.8,
+      category: beersTap._id,
+      recipe: [{ stockItem: byName['Pils keg']._id, qty: 250 }],
+      sortOrder: 1,
+    },
+    {
+      name: 'IPA (25cl)',
+      price: 3.6,
+      category: beersTap._id,
+      recipe: [{ stockItem: byName['IPA keg']._id, qty: 250 }],
+      sortOrder: 2,
+    },
+    {
+      name: 'Lager bottle',
+      price: 3.5,
+      category: beersBottle._id,
+      recipe: [{ stockItem: byName['Beer bottle']._id, qty: 1 }],
+      sortOrder: 1,
+    },
+    {
+      name: 'Trappist',
+      price: 4.8,
+      category: beersBottle._id,
+      recipe: [{ stockItem: byName['Trappist bottle']._id, qty: 1 }],
+      sortOrder: 2,
+    },
+    {
+      name: 'Seasonal saison',
+      price: 5.2,
+      category: beersTemp._id,
+      recipe: [{ stockItem: byName['Seasonal saison bottle']._id, qty: 1 }],
+      sortOrder: 1,
     },
     {
       name: 'House wine (glass)',
