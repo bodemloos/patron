@@ -28,7 +28,15 @@ function courseForCategory(name) {
   if (n.includes('starter') || n.includes('appetizer')) return 'starter';
   if (n.includes('main')) return 'main';
   if (n.includes('dessert') || n.includes('desert')) return 'dessert';
-  if (n.includes('drink') || n.includes('coffee') || n.includes('tea') || n.includes('bar')) return 'drink';
+  if (
+    n.includes('drink') ||
+    n.includes('coffee') ||
+    n.includes('tea') ||
+    n.includes('bar') ||
+    n.includes('beer') ||
+    n.includes('wine') ||
+    n.includes('cocktail')
+  ) return 'drink';
   return 'other';
 }
 
