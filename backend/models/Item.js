@@ -30,6 +30,16 @@ const ItemSchema = new mongoose.Schema(
     sizes: { type: [SizeSchema], default: [] },
     available: { type: Boolean, default: true },
     sortOrder: { type: Number, default: 0 },
+    // Optional product photo, surfaced on the customer-facing QR menu
+    // (order.html). Free-form URL so the manager can paste anything
+    // — Cloudinary, Imgur, the restaurant's CDN, a data URI, etc.
+    imageUrl: { type: String, default: '' },
+    // Optional "more info" link (Untappd page for a beer, the
+    // winery's tasting notes for a wine, a Wikipedia article for a
+    // dish, …). order.html opens it inside an in-app iframe sheet
+    // when present and falls back to a "open externally" button when
+    // the destination refuses to be framed.
+    infoUrl: { type: String, default: '' },
   },
   { timestamps: true }
 );

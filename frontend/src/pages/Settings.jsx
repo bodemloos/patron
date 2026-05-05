@@ -166,9 +166,10 @@ const MENU_THEMES = [
 ];
 
 const MENU_LAYOUTS = [
-  { id: 'grid',    name: 'Grid',    desc: '2-3 column cards' },
-  { id: 'list',    name: 'List',    desc: 'Single column, full-width' },
-  { id: 'compact', name: 'Compact', desc: 'Dense printed-menu rows' },
+  { id: 'magazine', name: 'Magazine', desc: 'Rows with product photos' },
+  { id: 'grid',     name: 'Grid',     desc: '2-3 column cards' },
+  { id: 'list',     name: 'List',     desc: 'Single column, no imagery' },
+  { id: 'compact',  name: 'Compact',  desc: 'Dense printed-menu rows' },
 ];
 
 function CustomerMenuSection({ value, onChange }) {
@@ -179,7 +180,7 @@ function CustomerMenuSection({ value, onChange }) {
     tagline: '',
     coverImageUrl: '',
     headingFont: '',
-    layout: 'grid',
+    layout: 'magazine',
     theme: 'patron',
     ...value,
   };
@@ -401,6 +402,20 @@ function CustomerMenuSection({ value, onChange }) {
 // suggestive of the structure (cards vs rows vs dense rows).
 function LayoutGlyph({ layout }) {
   const fill = 'currentColor';
+  if (layout === 'magazine') {
+    // Two stacked rows, each with a square thumb on the right hinting
+    // at the product photo + a small + dot in its corner.
+    return (
+      <svg width="36" height="20" viewBox="0 0 36 20" className="text-slate-400 dark:text-slate-500">
+        <rect x="0" y="0" width="22" height="9" rx="2" fill={fill} opacity="0.45" />
+        <rect x="24" y="0" width="9" height="9" rx="2" fill={fill} opacity="0.7" />
+        <circle cx="33" cy="9" r="1.6" fill={fill} opacity="0.95" />
+        <rect x="0" y="11" width="22" height="9" rx="2" fill={fill} opacity="0.45" />
+        <rect x="24" y="11" width="9" height="9" rx="2" fill={fill} opacity="0.7" />
+        <circle cx="33" cy="20" r="1.6" fill={fill} opacity="0.95" />
+      </svg>
+    );
+  }
   if (layout === 'grid') {
     return (
       <svg width="36" height="20" viewBox="0 0 36 20" className="text-slate-400 dark:text-slate-500">

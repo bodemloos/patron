@@ -40,7 +40,9 @@
           --text: #0f172a;
           --text-muted: #475569;
           --text-dim: #94a3b8;
-          --shadow: 0 8px 24px -12px rgba(15, 23, 42, 0.18);
+          /* Light cards look cleaner flat — the lifted-card look only
+             reads well on the dark palette. */
+          --shadow: none;
         }
       }
       * {
@@ -156,6 +158,370 @@
       }
       body[data-layout="list"] .item { padding: 14px 16px; }
       body[data-layout="list"] .item .item-price { font-size: 16px; }
+
+      /* ── Layout: magazine ───────────────────────────────────────
+         Default look. Two-column card grid on phones (single column
+         on the smallest screens). Each card has the product photo on
+         the left, copy on the right (name, description, price), a
+         circular + button overlapping the photo's bottom-right and
+         an optional info disc top-right that opens a webpage inside
+         the in-app iframe sheet. Inspired by the reference mock-ups
+         for "Popular Wine" cards. */
+      body[data-layout="magazine"] .grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      @media (max-width: 379px) {
+        body[data-layout="magazine"] .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (min-width: 720px) {
+        body[data-layout="magazine"] .grid {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+      body[data-layout="magazine"] .item {
+        position: relative;
+        display: grid;
+        grid-template-columns: 96px 1fr;
+        gap: 10px;
+        align-items: stretch;
+        padding: 12px 14px 12px 10px;
+        background: var(--surface-2);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        box-shadow: none;
+        cursor: default;
+        overflow: visible;
+      }
+      body[data-layout="magazine"] .item:hover { filter: none; background: var(--surface-2); }
+      body[data-layout="magazine"] .item:active { transform: none; }
+      body[data-layout="magazine"] .cat-tag { display: none; }
+      body[data-layout="magazine"] .item-body {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 2px;
+        min-width: 0;
+        padding-right: 2px;
+      }
+      body[data-layout="magazine"] .item-name {
+        font-size: 15px;
+        font-weight: 600;
+        line-height: 1.25;
+        margin: 0;
+        color: var(--text);
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      body[data-layout="magazine"] .item-desc {
+        font-size: 12px;
+        color: var(--text-muted);
+        margin: 2px 0 0;
+        line-height: 1.35;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      body[data-layout="magazine"] .item-price {
+        margin-top: 6px;
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--brand);
+      }
+      /* Photo well — sits flush left, slightly inset top/bottom so the
+         + and info buttons can extend past it without clipping. */
+      body[data-layout="magazine"] .item-photo {
+        position: relative;
+        width: 96px;
+        height: 110px;
+        flex-shrink: 0;
+        align-self: stretch;
+      }
+      body[data-layout="magazine"] .item-photo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 12px;
+        background: var(--surface);
+      }
+      /* Placeholder disc when the manager hasn't uploaded a photo
+         yet — kept tasteful so empty rows still feel intentional. */
+      body[data-layout="magazine"] .item-photo .ph {
+        width: 100%;
+        height: 100%;
+        border-radius: 12px;
+        background:
+          radial-gradient(circle at 30% 25%, rgba(255,255,255,0.07), transparent 65%),
+          linear-gradient(135deg, var(--surface), var(--surface-3));
+        display: grid;
+        place-items: center;
+        color: var(--text-dim);
+      }
+      body[data-layout="magazine"] .add-btn {
+        position: absolute;
+        right: -8px;
+        bottom: -8px;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        color: var(--text);
+        font-size: 18px;
+        line-height: 1;
+        display: grid;
+        place-items: center;
+        cursor: pointer;
+        box-shadow: 0 6px 16px -6px rgba(0, 0, 0, 0.35);
+        transition: transform 0.05s ease, background 0.15s ease;
+        z-index: 2;
+      }
+      body[data-layout="magazine"] .add-btn:active { transform: scale(0.92); }
+      body[data-layout="magazine"] .add-btn:hover {
+        background: var(--brand);
+        color: #fff;
+        border-color: var(--brand);
+      }
+      /* Info disc — small "i" in the card's top-right when the item
+         has an infoUrl. Opens the in-app iframe sheet. */
+      body[data-layout="magazine"] .info-btn {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        color: var(--text-muted);
+        display: grid;
+        place-items: center;
+        cursor: pointer;
+        z-index: 2;
+        transition: color 0.15s ease, background 0.15s ease;
+      }
+      body[data-layout="magazine"] .info-btn:hover {
+        color: var(--brand);
+        background: var(--surface);
+      }
+      body[data-layout="magazine"] .info-btn svg { width: 14px; height: 14px; }
+
+      /* ── In-app iframe sheet ───────────────────────────────────
+         Tapping the info disc on a card opens this full-height sheet.
+         Matches the cart sheet visually so the embed feels native. */
+      .info-sheet {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.55);
+        display: flex;
+        align-items: stretch;
+        justify-content: center;
+        z-index: 60;
+      }
+      .info-sheet[hidden] { display: none; }
+      .info-sheet-card {
+        width: 100%;
+        max-width: 720px;
+        background: var(--bg);
+        border-top-left-radius: 18px;
+        border-top-right-radius: 18px;
+        margin-top: 24px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+      .info-sheet-head {
+        flex-shrink: 0;
+        padding: 12px 14px env(safe-area-inset-top);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-bottom: 1px solid var(--border);
+        background: var(--surface);
+      }
+      .info-sheet-head .back {
+        width: 36px;
+        height: 36px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: var(--surface-2);
+        color: var(--text);
+        display: grid;
+        place-items: center;
+        cursor: pointer;
+      }
+      .info-sheet-head .meta {
+        flex: 1;
+        min-width: 0;
+      }
+      .info-sheet-head .title {
+        font-weight: 600;
+        font-size: 15px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+      .info-sheet-head .host {
+        font-size: 11px;
+        color: var(--text-muted);
+        text-transform: lowercase;
+        letter-spacing: 0.04em;
+        margin-top: 2px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+      .info-sheet-head .ext {
+        flex-shrink: 0;
+        text-decoration: none;
+        color: var(--text-muted);
+        padding: 8px 10px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: var(--surface-2);
+        font-size: 12px;
+        font-weight: 500;
+      }
+      .info-sheet-body {
+        flex: 1;
+        position: relative;
+        overflow-y: auto;
+        background: var(--bg);
+      }
+      .info-card {
+        padding: 0 0 28px;
+      }
+      .info-hero {
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        background: var(--surface-2);
+        object-fit: cover;
+        display: block;
+      }
+      .info-hero.placeholder {
+        display: grid;
+        place-items: center;
+        color: var(--text-dim);
+      }
+      .info-meta {
+        padding: 18px 18px 0;
+      }
+      .info-card .heading {
+        font-size: 20px;
+        font-weight: 600;
+        line-height: 1.25;
+        margin: 0 0 6px;
+        color: var(--text);
+      }
+      .info-card .site {
+        font-size: 12px;
+        text-transform: lowercase;
+        letter-spacing: 0.04em;
+        color: var(--text-muted);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .info-card .rating {
+        margin-top: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--text);
+        font-size: 13px;
+      }
+      .info-card .rating .stars {
+        color: #f5b301;
+        letter-spacing: 1px;
+        font-size: 15px;
+      }
+      .info-card .description {
+        margin: 14px 0 0;
+        color: var(--text-muted);
+        font-size: 14px;
+        line-height: 1.55;
+        white-space: pre-wrap;
+      }
+      .info-card .open-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin: 20px 18px 0;
+        padding: 11px 18px;
+        border-radius: 12px;
+        background: var(--brand);
+        color: #fff;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 14px;
+      }
+      .info-state {
+        padding: 40px 24px;
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 14px;
+      }
+      .info-state.error strong { color: var(--text); display: block; margin-bottom: 6px; }
+      .info-state a.cta {
+        display: inline-block;
+        margin-top: 14px;
+        padding: 10px 16px;
+        border-radius: 12px;
+        background: var(--brand);
+        color: #fff;
+        text-decoration: none;
+        font-weight: 500;
+      }
+      .info-skeleton {
+        padding: 0 0 28px;
+      }
+      .info-skeleton .bar {
+        background: linear-gradient(90deg, var(--surface-2) 0%, var(--surface-3) 50%, var(--surface-2) 100%);
+        background-size: 200% 100%;
+        border-radius: 6px;
+        animation: shimmer 1.4s infinite;
+      }
+      .info-skeleton .hero { aspect-ratio: 16 / 9; border-radius: 0; }
+      .info-skeleton .lines { padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+      .info-skeleton .lines .bar.h { height: 16px; }
+      .info-skeleton .lines .bar.l { height: 11px; width: 80%; }
+      .info-skeleton .lines .bar.m { height: 11px; width: 60%; }
+      @keyframes shimmer {
+        0%   { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+      }
+
+      /* Search bar — always visible, sits above the item rows. */
+      .search-wrap {
+        position: relative;
+        margin: 0 0 14px;
+      }
+      .search-wrap input.search {
+        width: 100%;
+        padding: 11px 14px 11px 38px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: var(--surface-2);
+        color: var(--text);
+        font: inherit;
+        font-size: 14px;
+      }
+      .search-wrap input.search::placeholder {
+        color: var(--text-dim);
+      }
+      .search-wrap .search-icon {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-dim);
+        pointer-events: none;
+      }
 
       /* ── Layout: compact ────────────────────────────────────────
          Edge-to-edge dense rows with hairline dividers — printed-
@@ -395,6 +761,13 @@
       <div id="content" hidden>
         <div class="cats parents" id="cats"></div>
         <div class="cats subs" id="subcats" hidden></div>
+        <div class="search-wrap">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="7" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+          <input id="search" class="search" type="search" placeholder="Search the menu" autocomplete="off" />
+        </div>
         <div class="grid" id="grid"></div>
       </div>
     </div>
@@ -405,6 +778,29 @@
         <div class="cart-total" id="cart-total">€0.00</div>
       </div>
       <button class="cart-btn" id="cart-review">Review &amp; send</button>
+    </div>
+
+    <!-- In-app webpage sheet — opens when the customer taps the info
+         disc on an item card. Header tracks the destination, the
+         iframe loads the page, and a fallback reveals an external
+         link if the destination refuses to be framed. -->
+    <div class="info-sheet" id="info-sheet" hidden>
+      <div class="info-sheet-card" onclick="event.stopPropagation()">
+        <div class="info-sheet-head">
+          <button class="back" id="info-back" aria-label="Close">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="19" y1="12" x2="5" y2="12" />
+              <polyline points="12 19 5 12 12 5" />
+            </svg>
+          </button>
+          <div class="meta">
+            <div class="title" id="info-title">Loading…</div>
+            <div class="host" id="info-host"></div>
+          </div>
+          <a class="ext" id="info-ext" target="_blank" rel="noopener noreferrer">Open ↗</a>
+        </div>
+        <div class="info-sheet-body" id="info-body"></div>
+      </div>
     </div>
 
     <!-- Item modifier sheet -->
@@ -509,6 +905,7 @@
           // everything in that section before drilling further.
           activeParent: "all",
           activeSub: "all",
+          searchQ: "",
           cart: [], // [{ itemId, name, price, qty, sizeLabel, note }]
           currency: "EUR",
           sheetItem: null,
@@ -524,6 +921,150 @@
         var elCats = document.getElementById("cats");
         var elSubCats = document.getElementById("subcats");
         var elGrid = document.getElementById("grid");
+        var elSearch = document.getElementById("search");
+        elSearch.addEventListener("input", function () {
+          state.searchQ = elSearch.value;
+          renderGrid();
+        });
+
+        // Info-sheet refs + handlers — opens when the customer taps
+        // the "i" disc on a card. We call the backend /unfurl
+        // endpoint to fetch OpenGraph / Twitter / JSON-LD metadata
+        // for the destination URL and render it natively. This
+        // sidesteps X-Frame-Options / CSP frame-ancestors entirely
+        // and keeps the look consistent with the rest of the menu.
+        var elInfoSheet = document.getElementById("info-sheet");
+        var elInfoBody = document.getElementById("info-body");
+        var elInfoTitle = document.getElementById("info-title");
+        var elInfoHost = document.getElementById("info-host");
+        var elInfoExt = document.getElementById("info-ext");
+        var elInfoBack = document.getElementById("info-back");
+        var infoReqToken = 0;
+
+        function closeInfoSheet() {
+          elInfoSheet.hidden = true;
+          elInfoBody.innerHTML = "";
+          infoReqToken += 1; // invalidate any in-flight fetch
+        }
+
+        function escapeHTML(s) {
+          return String(s == null ? "" : s)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;");
+        }
+
+        function renderStars(value, best) {
+          var max = Number(best) || 5;
+          var v = Math.max(0, Math.min(max, Number(value) || 0));
+          // Convert to a 5-star scale for display, regardless of the
+          // source's `bestRating` (Untappd uses 5; some sites use 10).
+          var ratio = v / max;
+          var full = Math.floor(ratio * 5);
+          var half = ratio * 5 - full >= 0.5 ? 1 : 0;
+          var empty = 5 - full - half;
+          return (
+            "★".repeat(full) +
+            (half ? "☆" : "") +
+            "☆".repeat(Math.max(0, empty - (half ? 0 : 0)))
+          );
+        }
+
+        function infoSkeleton() {
+          return (
+            '<div class="info-skeleton">' +
+            '  <div class="bar hero"></div>' +
+            '  <div class="lines">' +
+            '    <div class="bar h"></div>' +
+            '    <div class="bar l"></div>' +
+            '    <div class="bar m"></div>' +
+            '  </div>' +
+            "</div>"
+          );
+        }
+
+        function infoErrorState(url) {
+          return (
+            '<div class="info-state error">' +
+            '  <strong>We couldn\u2019t load a preview.</strong>' +
+            '  The site might be down or blocking previews. You can still open it directly.' +
+            '  <br/><a class="cta" href="' + escapeHTML(url) + '" target="_blank" rel="noopener noreferrer">Open in a new tab</a>' +
+            "</div>"
+          );
+        }
+
+        function renderInfoCard(data, fallbackTitle, fallbackUrl) {
+          var title = data.title || fallbackTitle || "";
+          var image = data.image || "";
+          var desc = data.description || "";
+          var site = data.siteName || data.host || "";
+          var openUrl = data.url || fallbackUrl;
+          var ratingHtml = "";
+          if (data.rating) {
+            var stars = renderStars(data.rating, data.ratingBest || 5);
+            ratingHtml =
+              '<div class="rating">' +
+              '<span class="stars">' + escapeHTML(stars) + "</span>" +
+              "<span>" + escapeHTML(String(data.rating)) +
+              (data.ratingBest ? " / " + escapeHTML(String(data.ratingBest)) : "") +
+              (data.ratingCount ? " · " + escapeHTML(String(data.ratingCount)) + " ratings" : "") +
+              "</span>" +
+              "</div>";
+          }
+          var heroHtml = image
+            ? '<img class="info-hero" src="' + escapeHTML(image) + '" alt="" referrerpolicy="no-referrer" onerror="this.replaceWith(Object.assign(document.createElement(\'div\'),{className:\'info-hero placeholder\',textContent:\'No preview image\'}))" />'
+            : '<div class="info-hero placeholder">No preview image</div>';
+
+          return (
+            '<div class="info-card">' +
+            heroHtml +
+            '<div class="info-meta">' +
+            '<h2 class="heading">' + escapeHTML(title) + "</h2>" +
+            (site ? '<div class="site">' + escapeHTML(site) + "</div>" : "") +
+            ratingHtml +
+            (desc ? '<p class="description">' + escapeHTML(desc) + "</p>" : "") +
+            "</div>" +
+            '<a class="open-cta" href="' + escapeHTML(openUrl) + '" target="_blank" rel="noopener noreferrer">Read more on ' + escapeHTML(data.host || site || "the source") + " \u2197</a>" +
+            "</div>"
+          );
+        }
+
+        function openInfoSheet(item) {
+          if (!item || !item.infoUrl) return;
+          var url = item.infoUrl;
+          var host = "";
+          try { host = new URL(url, location.origin).host; } catch (e) { host = ""; }
+          elInfoTitle.textContent = item.name || "More info";
+          elInfoHost.textContent = host;
+          elInfoExt.href = url;
+          elInfoBody.innerHTML = infoSkeleton();
+          elInfoSheet.hidden = false;
+
+          // Issue + track the request so a quick close-then-reopen
+          // doesn't paint stale data.
+          infoReqToken += 1;
+          var token = infoReqToken;
+          fetch("/api/public/unfurl?url=" + encodeURIComponent(url))
+            .then(function (r) {
+              if (!r.ok) throw new Error("HTTP " + r.status);
+              return r.json();
+            })
+            .then(function (data) {
+              if (token !== infoReqToken) return; // user closed/reopened
+              if (!data || data.ok === false) {
+                elInfoBody.innerHTML = infoErrorState(url);
+                return;
+              }
+              elInfoBody.innerHTML = renderInfoCard(data, item.name, url);
+            })
+            .catch(function () {
+              if (token !== infoReqToken) return;
+              elInfoBody.innerHTML = infoErrorState(url);
+            });
+        }
+        elInfoBack.addEventListener("click", closeInfoSheet);
+        elInfoSheet.addEventListener("click", closeInfoSheet);
         var elCart = document.getElementById("cart");
         var elCartCount = document.getElementById("cart-count");
         var elCartTotal = document.getElementById("cart-total");
@@ -594,6 +1135,9 @@
             root.style.setProperty("--text", "#0f172a");
             root.style.setProperty("--text-muted", "#475569");
             root.style.setProperty("--text-dim", "#94a3b8");
+            // Light cards look cleaner flat — keep .item shadows off
+            // when the manager has explicitly picked the light palette.
+            root.style.setProperty("--shadow", "none");
           } else if (style.mode === "dark") {
             root.style.setProperty("--bg", "#141414");
             root.style.setProperty("--surface", "#1c1c1d");
@@ -603,6 +1147,12 @@
             root.style.setProperty("--text", "#f5f5f5");
             root.style.setProperty("--text-muted", "#a3a3a3");
             root.style.setProperty("--text-dim", "#737373");
+            // Restore the lifted-card shadow if a previous style
+            // (e.g. live preview) had switched it off.
+            root.style.setProperty(
+              "--shadow",
+              "0 12px 32px -12px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.05)"
+            );
           }
 
           // Optional Google Font for headings + body copy.
@@ -641,9 +1191,10 @@
 
           // Layout drives the .grid/.item CSS via a body data-attr.
           // CSS rules at the top of this file react accordingly.
-          if (style.layout) {
-            document.body.setAttribute("data-layout", style.layout);
-          }
+          // 'magazine' is the new default — explicit fallback so the
+          // body always carries a layout attribute the renderer can
+          // branch on.
+          document.body.setAttribute("data-layout", style.layout || "magazine");
         }
 
         function load() {
@@ -763,50 +1314,172 @@
 
         function renderGrid() {
           elGrid.innerHTML = "";
+          var q = (state.searchQ || "").trim().toLowerCase();
           var items = state.menu.items.filter(function (i) {
-            if (!i.category) {
-              return state.activeParent === "all";
+            // Category filter — sub is most specific, else parent.
+            if (i.category) {
+              if (state.activeSub !== "all") {
+                if (i.category.id !== state.activeSub) return false;
+              } else if (state.activeParent !== "all") {
+                if (topLevelOf(i.category.id) !== state.activeParent) return false;
+              }
+            } else if (state.activeParent !== "all") {
+              return false;
             }
-            // Sub-filter is most specific — match exactly when set.
-            if (state.activeSub !== "all") {
-              return i.category.id === state.activeSub;
+            // Free-text search — name + description.
+            if (q) {
+              var hay =
+                (i.name || "").toLowerCase() +
+                " " +
+                (i.description || "").toLowerCase();
+              if (hay.indexOf(q) === -1) return false;
             }
-            // Otherwise fall back to the parent: include the item if
-            // its category's top-level parent is the active parent
-            // (covers "child of Food" and "is Food itself" cases).
-            if (state.activeParent === "all") return true;
-            return topLevelOf(i.category.id) === state.activeParent;
+            return true;
           });
           if (!items.length) {
             var empty = document.createElement("div");
             empty.className = "empty";
-            empty.textContent = "Nothing in this category right now.";
+            empty.textContent = q
+              ? "No items match \u201C" + state.searchQ + "\u201D."
+              : "Nothing in this category right now.";
             empty.style.gridColumn = "1/-1";
             elGrid.appendChild(empty);
             return;
           }
-          items.forEach(function (i) {
-            var btn = document.createElement("button");
-            btn.className = "item";
-            btn.innerHTML =
-              '<div class="cat-tag" style="color:' +
-              ((i.category && i.category.color) || "var(--text-muted)") +
-              '">' +
-              (i.category ? i.category.name : "") +
-              "</div>" +
-              '<div class="item-name"></div>' +
-              (i.description ? '<div class="item-desc"></div>' : "") +
-              '<div class="item-price">' +
-              fmtMoney(i.price) +
-              "</div>";
-            btn.querySelector(".item-name").textContent = i.name;
-            if (i.description)
-              btn.querySelector(".item-desc").textContent = i.description;
-            btn.addEventListener("click", function () {
-              openItemSheet(i);
+
+          var layout = document.body.getAttribute("data-layout") || "magazine";
+          if (layout === "magazine") {
+            items.forEach(function (i) {
+              elGrid.appendChild(renderMagazineRow(i));
             });
-            elGrid.appendChild(btn);
+          } else {
+            items.forEach(function (i) {
+              elGrid.appendChild(renderCardItem(i));
+            });
+          }
+        }
+
+        // Magazine row — title + description + price on the left, a
+        // square photo with a circular + button on the right. Tapping
+        // the row title opens the same item sheet as the + button so
+        // notes/sizes are still reachable.
+        function renderMagazineRow(i) {
+          var row = document.createElement("div");
+          row.className = "item";
+
+          var body = document.createElement("div");
+          body.className = "item-body";
+
+          var name = document.createElement("div");
+          name.className = "item-name";
+          name.textContent = i.name;
+          body.appendChild(name);
+
+          if (i.description) {
+            var desc = document.createElement("div");
+            desc.className = "item-desc";
+            desc.textContent = i.description;
+            body.appendChild(desc);
+          }
+
+          var price = document.createElement("div");
+          price.className = "item-price";
+          price.textContent = fmtMoney(i.price);
+          body.appendChild(price);
+
+          row.appendChild(body);
+
+          var photo = document.createElement("div");
+          photo.className = "item-photo";
+          if (i.imageUrl) {
+            var img = document.createElement("img");
+            img.src = i.imageUrl;
+            img.alt = "";
+            img.loading = "lazy";
+            img.addEventListener("error", function () {
+              // Fall back to the placeholder disc if the URL 404s.
+              img.replaceWith(buildPhotoPlaceholder());
+            });
+            photo.appendChild(img);
+          } else {
+            photo.appendChild(buildPhotoPlaceholder());
+          }
+
+          var add = document.createElement("button");
+          add.className = "add-btn";
+          add.type = "button";
+          add.setAttribute("aria-label", "Add " + i.name);
+          add.textContent = "+";
+          add.addEventListener("click", function (e) {
+            e.stopPropagation();
+            openItemSheet(i);
           });
+          photo.appendChild(add);
+          row.appendChild(photo);
+
+          // Optional info disc — top-right of the card, only when an
+          // info URL is set. Opens the in-app webpage sheet so the
+          // customer can read the Untappd page / tasting notes /
+          // recipe without leaving the menu.
+          if (i.infoUrl) {
+            var info = document.createElement("button");
+            info.className = "info-btn";
+            info.type = "button";
+            info.setAttribute("aria-label", "More info about " + i.name);
+            info.innerHTML =
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+              '<circle cx="12" cy="12" r="9" />' +
+              '<line x1="12" y1="11" x2="12" y2="16" />' +
+              '<circle cx="12" cy="8" r="0.6" fill="currentColor" />' +
+              "</svg>";
+            info.addEventListener("click", function (e) {
+              e.stopPropagation();
+              openInfoSheet(i);
+            });
+            row.appendChild(info);
+          }
+
+          // Tapping the title area opens the order sheet — convenience.
+          body.addEventListener("click", function () { openItemSheet(i); });
+          body.style.cursor = "pointer";
+          return row;
+        }
+
+        function buildPhotoPlaceholder() {
+          var ph = document.createElement("div");
+          ph.className = "ph";
+          // Lightweight cutlery glyph so the placeholder reads as
+          // "food/drink" rather than a missing-image icon.
+          ph.innerHTML =
+            '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+            '<path d="M5 3v18M3 3h4v8H3z" />' +
+            '<path d="M19 3l-3 6v3h3v9" />' +
+            "</svg>";
+          return ph;
+        }
+
+        // Legacy card item — used by the grid / list / compact layouts.
+        function renderCardItem(i) {
+          var btn = document.createElement("button");
+          btn.className = "item";
+          btn.innerHTML =
+            '<div class="cat-tag" style="color:' +
+            ((i.category && i.category.color) || "var(--text-muted)") +
+            '">' +
+            (i.category ? i.category.name : "") +
+            "</div>" +
+            '<div class="item-name"></div>' +
+            (i.description ? '<div class="item-desc"></div>' : "") +
+            '<div class="item-price">' +
+            fmtMoney(i.price) +
+            "</div>";
+          btn.querySelector(".item-name").textContent = i.name;
+          if (i.description)
+            btn.querySelector(".item-desc").textContent = i.description;
+          btn.addEventListener("click", function () {
+            openItemSheet(i);
+          });
+          return btn;
         }
 
         function openItemSheet(item) {

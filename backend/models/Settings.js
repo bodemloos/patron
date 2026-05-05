@@ -72,10 +72,12 @@ const SettingsSchema = new mongoose.Schema(
         tagline:       { type: String, default: '' },        // one-liner under restaurant name
         coverImageUrl: { type: String, default: '' },        // optional banner at the top
         headingFont:   { type: String, default: '' },        // Google Font family — blank = Inter
-        // Layout drives item-card structure on /order.html — 'grid' is
-        // the current 2/3-column cards; 'list' is single-column with
-        // side-by-side rows; 'compact' is a dense printed-menu look.
-        layout:        { type: String, enum: ['grid', 'list', 'compact'], default: 'grid' },
+        // Layout drives item-card structure on /order.html. 'magazine'
+        // is the default row-with-product-photo design; 'grid' is the
+        // older 2/3-column cards; 'list' is a single-column rows-only
+        // layout without imagery; 'compact' is a dense printed-menu
+        // look with hairline dividers.
+        layout:        { type: String, enum: ['magazine', 'grid', 'list', 'compact'], default: 'magazine' },
         // Stamp identifying which preset was last picked in the editor.
         // Purely informational — the actual values live in the fields
         // above so manual edits never get clobbered.

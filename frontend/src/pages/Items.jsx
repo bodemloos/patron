@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { api, fmtEur } from '../api.js';
 import Modal from '../components/Modal.jsx';
 
-const empty = { name: '', price: 0, category: '', description: '', available: true, recipe: [], sizes: [] };
+const empty = { name: '', price: 0, category: '', description: '', imageUrl: '', infoUrl: '', available: true, recipe: [], sizes: [] };
 
 export default function Items() {
   const [items, setItems] = useState([]);
@@ -22,6 +22,8 @@ export default function Items() {
       ...editing,
       price: Number(editing.price) || 0,
       category: editing.category || null,
+      imageUrl: (editing.imageUrl || '').trim(),
+      infoUrl: (editing.infoUrl || '').trim(),
       recipe: editing.recipe.map((r) => ({
         stockItem: r.stockItem,
         qty: Number(r.qty) || 0,
@@ -176,7 +178,7 @@ export default function Items() {
                   </span>
                 </td>
                 <td className="px-4 py-2 text-right space-x-2">
-                  <button className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100" onClick={() => setEditing({ ...i, category: i.category?._id || '', recipe: (i.recipe||[]).map(r => ({ stockItem: r.stockItem?._id || r.stockItem, qty: r.qty })), sizes: (i.sizes || []).map(s => ({ label: s.label, priceDelta: s.priceDelta })) })}>edit</button>
+                  <button className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100" onClick={() => setEditing({ ...i, category: i.category?._id || '', imageUrl: i.imageUrl || '', infoUrl: i.infoUrl || '', recipe: (i.recipe||[]).map(r => ({ stockItem: r.stockItem?._id || r.stockItem, qty: r.qty })), sizes: (i.sizes || []).map(s => ({ label: s.label, priceDelta: s.priceDelta })) })}>edit</button>
                   <button className="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300" onClick={() => remove(i._id)}>delete</button>
                 </td>
               </tr>
@@ -249,6 +251,46 @@ export default function Items() {
               <span className="text-slate-600 dark:text-slate-300">Description</span>
               <textarea className="input mt-1" rows="2" value={editing.description}
                 onChange={(e) => setEditing({ ...editing, description: e.target.value })} />
+            </label>
+            <label className="col-span-2 text-sm">
+              <span className="text-slate-600 dark:text-slate-300">Image URL</span>
+              <div className="flex gap-2 mt-1 items-start">
+                <input
+                  className="input flex-1"
+                  type="url"
+                  placeholder="https://…"
+                  value={editing.imageUrl || ''}
+                  onChange={(e) => setEditing({ ...editing, imageUrl: e.target.value })}
+                />
+                {editing.imageUrl ? (
+                  <img
+                    src={editing.imageUrl}
+                    alt=""
+                    className="w-14 h-14 rounded-lg object-cover border border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-surface-850"
+                    onError={(e) => { e.currentTarget.style.opacity = '0.3'; }}
+                  />
+                ) : (
+                  <div className="w-14 h-14 rounded-lg border border-dashed border-slate-200 dark:border-white/10 grid place-items-center text-[10px] text-slate-400 dark:text-slate-500">
+                    no img
+                  </div>
+                )}
+              </div>
+              <span className="text-xs text-slate-500 dark:text-slate-400">
+                Shown on the customer QR menu. Square crops look best (e.g. 600×600 PNG/JPG).
+              </span>
+            </label>
+            <label className="col-span-2 text-sm">
+              <span className="text-slate-600 dark:text-slate-300">Info URL</span>
+              <input
+                className="input mt-1"
+                type="url"
+                placeholder="https://untappd.com/b/..."
+                value={editing.infoUrl || ''}
+                onChange={(e) => setEditing({ ...editing, infoUrl: e.target.value })}
+              />
+              <span className="text-xs text-slate-500 dark:text-slate-400">
+                Optional. Adds an <em>info</em> icon to the customer menu — beers can link to Untappd, wines to the producer, dishes to a recipe page. Opens inside an in-app sheet.
+              </span>
             </label>
             <label className="col-span-2 inline-flex items-center gap-2 text-sm">
               <input type="checkbox" checked={editing.available !== false}
