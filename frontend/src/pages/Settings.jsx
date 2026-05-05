@@ -116,6 +116,11 @@ export default function Settings() {
         onChange={(closures) => patch({ closures })}
       />
 
+      <CustomerMenuSection
+        value={s.customerMenu || {}}
+        onChange={(customerMenu) => patch({ customerMenu })}
+      />
+
       <section className="card p-5 space-y-3">
         <h2 className="font-semibold">Reservation reminders</h2>
         <div className="grid grid-cols-2 gap-3 text-sm">
@@ -141,6 +146,288 @@ export default function Settings() {
 // reservation widget refuses to offer slots whose date falls inside
 // any of these periods.
 // ----------------------------------------------------------------------
+// ----------------------------------------------------------------------
+// Customer menu styling — controls the look of /order.html. The fields
+// land on Settings.customerMenu and the public menu endpoint forwards
+// them to the customer's browser, where order.html applies CSS-var
+// overrides + an optional Google Font + cover/tagline.
+// ----------------------------------------------------------------------
+// Pre-tuned bundles a manager can pick in one click. Each one snap-fills
+// the individual fields below so manual tweaks afterwards aren't blocked.
+const MENU_THEMES = [
+  { id: 'patron',    name: 'Patron',    desc: 'Brand orange, dark.',     brandColor: '#ea580c', accentColor: '#fb923c', mode: 'dark',  headingFont: '' },
+  { id: 'bistro',    name: 'Bistro',    desc: 'Warm browns, light.',     brandColor: '#92400e', accentColor: '#d97706', mode: 'light', headingFont: 'Playfair Display' },
+  { id: 'minimal',   name: 'Minimal',   desc: 'Pure black, light.',      brandColor: '#0f172a', accentColor: '#475569', mode: 'light', headingFont: '' },
+  { id: 'coastal',   name: 'Coastal',   desc: 'Soft blue, light.',       brandColor: '#0ea5e9', accentColor: '#38bdf8', mode: 'light', headingFont: 'Lora' },
+  { id: 'brasserie', name: 'Brasserie', desc: 'Deep red, dark.',         brandColor: '#9f1239', accentColor: '#e11d48', mode: 'dark',  headingFont: 'Cormorant Garamond' },
+  { id: 'forest',    name: 'Forest',    desc: 'Deep green, dark.',       brandColor: '#15803d', accentColor: '#22c55e', mode: 'dark',  headingFont: 'EB Garamond' },
+  { id: 'midnight',  name: 'Midnight',  desc: 'Cool indigo, dark.',      brandColor: '#6366f1', accentColor: '#a5b4fc', mode: 'dark',  headingFont: 'Manrope' },
+  { id: 'sand',      name: 'Sand',      desc: 'Warm cream, light.',      brandColor: '#a16207', accentColor: '#eab308', mode: 'light', headingFont: 'DM Serif Display' },
+];
+
+const MENU_LAYOUTS = [
+  { id: 'grid',    name: 'Grid',    desc: '2-3 column cards' },
+  { id: 'list',    name: 'List',    desc: 'Single column, full-width' },
+  { id: 'compact', name: 'Compact', desc: 'Dense printed-menu rows' },
+];
+
+function CustomerMenuSection({ value, onChange }) {
+  const cm = {
+    brandColor: '#ea580c',
+    accentColor: '',
+    mode: 'auto',
+    tagline: '',
+    coverImageUrl: '',
+    headingFont: '',
+    layout: 'grid',
+    theme: 'patron',
+    ...value,
+  };
+  function patch(p) { onChange({ ...cm, ...p }); }
+
+  // Grab the first available table id so the Preview link can land on
+  // a real menu (the public endpoint expects an ObjectId, not a slug).
+  const [previewTableId, setPreviewTableId] = useState(null);
+  useEffect(() => {
+    let cancelled = false;
+    api.tables()
+      .then((tables) => {
+        if (cancelled) return;
+        const t = (tables || []).find((x) => x && x._id);
+        if (t) setPreviewTableId(t._id);
+      })
+      .catch(() => { /* silently leave preview disabled */ });
+    return () => { cancelled = true; };
+  }, []);
+  function applyTheme(t) {
+    patch({
+      theme: t.id,
+      brandColor: t.brandColor,
+      accentColor: t.accentColor,
+      mode: t.mode,
+      headingFont: t.headingFont,
+    });
+  }
+
+  // Some popular Google Fonts well-suited to restaurant menus.
+  const FONT_SUGGESTIONS = ['', 'Inter', 'Playfair Display', 'Lora', 'Crimson Text', 'Cormorant Garamond', 'EB Garamond', 'DM Serif Display', 'Bebas Neue', 'Manrope', 'Outfit'];
+
+  return (
+    <section className="card p-5 space-y-3">
+      <div className="flex items-start justify-between flex-wrap gap-3">
+        <div>
+          <h2 className="font-semibold">Customer menu styling</h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-prose">
+            Controls the look of the page guests land on after scanning a QR
+            code (<code>/order.html</code>). Colours, theme mode, optional
+            cover image and tagline, and an optional Google Font for headings.
+          </p>
+        </div>
+        {previewTableId ? (
+          <a
+            // The hash carries the in-progress style so the preview
+            // reflects unsaved edits. Named target reuses one tab so
+            // repeated clicks just refresh the preview window.
+            href={`/order.html?table=${previewTableId}#preview=${encodeURIComponent(JSON.stringify(cm))}`}
+            target="patron-preview"
+            rel="noreferrer"
+            className="btn-ghost text-xs"
+            title="Open the customer menu in a new tab — uses your current unsaved settings"
+          >Preview ↗</a>
+        ) : (
+          <span
+            className="btn-ghost text-xs opacity-50 cursor-not-allowed"
+            title="Add a table on the floor plan first — the preview needs a real table ID."
+          >Preview ↗</span>
+        )}
+      </div>
+
+      {/* Theme presets — clicking one snap-fills the fields below. */}
+      <div>
+        <div className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-2">Theme</div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          {MENU_THEMES.map((t) => {
+            const active = cm.theme === t.id;
+            return (
+              <button
+                key={t.id}
+                onClick={() => applyTheme(t)}
+                className={[
+                  'text-left p-3 rounded-xl border transition',
+                  active
+                    ? 'border-brand-500 dark:border-brand-400 bg-brand-50 dark:bg-brand-500/10'
+                    : 'border-slate-200 dark:border-white/5 hover:border-slate-300 dark:hover:border-white/10',
+                ].join(' ')}
+              >
+                <div className="flex items-center gap-1.5 mb-2">
+                  <span className="w-5 h-5 rounded-md border border-slate-200 dark:border-white/10" style={{ background: t.brandColor }} />
+                  <span className="w-5 h-5 rounded-md border border-slate-200 dark:border-white/10" style={{ background: t.accentColor }} />
+                  <span className={`w-5 h-5 rounded-md border border-slate-200 dark:border-white/10 ${t.mode === 'light' ? 'bg-white' : 'bg-black'}`} />
+                </div>
+                <div className="text-sm font-medium">{t.name}</div>
+                <div className="text-[11px] text-slate-500 dark:text-slate-400">{t.desc}</div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Layout — controls the structural shape of /order.html. */}
+      <div>
+        <div className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-2">Layout</div>
+        <div className="grid grid-cols-3 gap-2">
+          {MENU_LAYOUTS.map((l) => {
+            const active = cm.layout === l.id;
+            return (
+              <button
+                key={l.id}
+                onClick={() => patch({ layout: l.id })}
+                className={[
+                  'text-left p-3 rounded-xl border transition',
+                  active
+                    ? 'border-brand-500 dark:border-brand-400 bg-brand-50 dark:bg-brand-500/10'
+                    : 'border-slate-200 dark:border-white/5 hover:border-slate-300 dark:hover:border-white/10',
+                ].join(' ')}
+              >
+                <div className="flex items-end gap-1 mb-2 h-6">
+                  <LayoutGlyph layout={l.id} />
+                </div>
+                <div className="text-sm font-medium">{l.name}</div>
+                <div className="text-[11px] text-slate-500 dark:text-slate-400">{l.desc}</div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400 pt-2">Customise</div>
+      <div className="grid grid-cols-2 gap-3 text-sm">
+        <label>
+          <span className="text-slate-600 dark:text-slate-300">Brand colour</span>
+          <div className="mt-1 flex items-center gap-2">
+            <input
+              type="color"
+              className="h-10 w-14 rounded-lg border border-slate-200 dark:border-white/5 bg-transparent cursor-pointer"
+              value={cm.brandColor}
+              onChange={(e) => patch({ brandColor: e.target.value })}
+            />
+            <input
+              className="input flex-1 tabular-nums"
+              value={cm.brandColor}
+              onChange={(e) => patch({ brandColor: e.target.value })}
+            />
+          </div>
+        </label>
+        <label>
+          <span className="text-slate-600 dark:text-slate-300">Accent colour <span className="text-slate-400 dark:text-slate-500">(item prices)</span></span>
+          <div className="mt-1 flex items-center gap-2">
+            <input
+              type="color"
+              className="h-10 w-14 rounded-lg border border-slate-200 dark:border-white/5 bg-transparent cursor-pointer"
+              value={cm.accentColor || '#fb923c'}
+              onChange={(e) => patch({ accentColor: e.target.value })}
+            />
+            <input
+              className="input flex-1 tabular-nums"
+              placeholder="auto"
+              value={cm.accentColor}
+              onChange={(e) => patch({ accentColor: e.target.value })}
+            />
+          </div>
+        </label>
+
+        <label>
+          <span className="text-slate-600 dark:text-slate-300">Theme mode</span>
+          <select
+            className="input mt-1"
+            value={cm.mode}
+            onChange={(e) => patch({ mode: e.target.value })}
+          >
+            <option value="auto">Auto (follow customer's device)</option>
+            <option value="dark">Always dark</option>
+            <option value="light">Always light</option>
+          </select>
+        </label>
+
+        <label>
+          <span className="text-slate-600 dark:text-slate-300">Heading font (Google Font)</span>
+          <input
+            className="input mt-1"
+            list="patron-font-suggestions"
+            placeholder="Inter (default)"
+            value={cm.headingFont}
+            onChange={(e) => patch({ headingFont: e.target.value })}
+          />
+          <datalist id="patron-font-suggestions">
+            {FONT_SUGGESTIONS.filter(Boolean).map((f) => <option key={f} value={f} />)}
+          </datalist>
+          <span className="text-xs text-slate-500 dark:text-slate-400">Loaded from fonts.googleapis.com on the customer's device.</span>
+        </label>
+
+        <label className="col-span-2">
+          <span className="text-slate-600 dark:text-slate-300">Tagline</span>
+          <input
+            className="input mt-1"
+            placeholder="e.g. Brussels' best Belgian beers since 2017"
+            value={cm.tagline}
+            onChange={(e) => patch({ tagline: e.target.value })}
+          />
+        </label>
+
+        <label className="col-span-2">
+          <span className="text-slate-600 dark:text-slate-300">Cover image URL</span>
+          <input
+            className="input mt-1"
+            placeholder="https://your-domain/cover.jpg"
+            value={cm.coverImageUrl}
+            onChange={(e) => patch({ coverImageUrl: e.target.value })}
+          />
+          {cm.coverImageUrl && (
+            <img
+              src={cm.coverImageUrl}
+              alt=""
+              className="mt-2 rounded-lg border border-slate-200 dark:border-white/5 max-h-32 w-full object-cover"
+              onError={(e) => { e.currentTarget.style.display = 'none'; }}
+            />
+          )}
+        </label>
+      </div>
+    </section>
+  );
+}
+
+// Tiny SVG glyphs hinting at each layout option. Sized to fit the
+// preset cards above. They aren't pixel-faithful previews, just
+// suggestive of the structure (cards vs rows vs dense rows).
+function LayoutGlyph({ layout }) {
+  const fill = 'currentColor';
+  if (layout === 'grid') {
+    return (
+      <svg width="36" height="20" viewBox="0 0 36 20" className="text-slate-400 dark:text-slate-500">
+        <rect x="0" y="0" width="11" height="20" rx="2" fill={fill} opacity="0.6"/>
+        <rect x="13" y="0" width="11" height="20" rx="2" fill={fill} opacity="0.6"/>
+        <rect x="25" y="0" width="11" height="20" rx="2" fill={fill} opacity="0.6"/>
+      </svg>
+    );
+  }
+  if (layout === 'list') {
+    return (
+      <svg width="36" height="20" viewBox="0 0 36 20" className="text-slate-400 dark:text-slate-500">
+        <rect x="0" y="0" width="36" height="9" rx="2" fill={fill} opacity="0.6"/>
+        <rect x="0" y="11" width="36" height="9" rx="2" fill={fill} opacity="0.6"/>
+      </svg>
+    );
+  }
+  // compact
+  return (
+    <svg width="36" height="20" viewBox="0 0 36 20" className="text-slate-400 dark:text-slate-500">
+      <rect x="0" y="0"  width="36" height="4" fill={fill} opacity="0.6"/>
+      <rect x="0" y="6"  width="36" height="4" fill={fill} opacity="0.6"/>
+      <rect x="0" y="12" width="36" height="4" fill={fill} opacity="0.6"/>
+    </svg>
+  );
+}
+
 function ClosuresSection({ closures, onChange }) {
   function isoDate(d) {
     if (!d) return '';

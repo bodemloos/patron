@@ -35,15 +35,25 @@ async function run() {
   ]);
 
   console.log('[seed] categories...');
-  const [drinks, beersTap, beersBottle, beersTemp, softDrinks, coffee, mains, desserts] = await Category.create([
-    { name: 'Drinks', color: '#0ea5e9', sortOrder: 1 },
-    { name: 'Beers (tap)', color: '#f59e0b', sortOrder: 2 },
-    { name: 'Beers (bottle)', color: '#b45309', sortOrder: 3 },
-    { name: 'Temporary beers', color: '#7c3aed', sortOrder: 4 },
-    { name: 'Soft drinks', color: '#22c55e', sortOrder: 5 },
-    { name: 'Coffee & Tea', color: '#a16207', sortOrder: 6 },
-    { name: 'Mains', color: '#dc2626', sortOrder: 7 },
-    { name: 'Desserts', color: '#db2777', sortOrder: 8 },
+  // Two top-level parents: Food + Drinks. Existing categories become
+  // their children, plus a fresh Wine sub-category under Drinks.
+  // The customer menu (order.html) and the POS render this as a
+  // two-tier filter: parent chips on top, sub-category chips below.
+  const [food, drinks] = await Category.create([
+    { name: 'Food',   color: '#dc2626', sortOrder: 1 },
+    { name: 'Drinks', color: '#0ea5e9', sortOrder: 2 },
+  ]);
+  const [mains, desserts, beersTap, beersBottle, beersTemp, softDrinks, coffee, wine] = await Category.create([
+    // Food sub-categories
+    { name: 'Mains',           color: '#dc2626', sortOrder: 1, parent: food._id },
+    { name: 'Desserts',        color: '#db2777', sortOrder: 2, parent: food._id },
+    // Drinks sub-categories
+    { name: 'Beers (tap)',     color: '#f59e0b', sortOrder: 1, parent: drinks._id },
+    { name: 'Beers (bottle)',  color: '#b45309', sortOrder: 2, parent: drinks._id },
+    { name: 'Temporary beers', color: '#7c3aed', sortOrder: 3, parent: drinks._id },
+    { name: 'Soft drinks',     color: '#22c55e', sortOrder: 4, parent: drinks._id },
+    { name: 'Coffee & Tea',    color: '#a16207', sortOrder: 5, parent: drinks._id },
+    { name: 'Wine',            color: '#9f1239', sortOrder: 6, parent: drinks._id },
   ]);
 
   console.log('[seed] stock...');
@@ -149,9 +159,9 @@ async function run() {
     {
       name: 'House wine (glass)',
       price: 4.5,
-      category: drinks._id,
+      category: wine._id,
       recipe: [{ stockItem: byName['House wine']._id, qty: 175 }],
-      sortOrder: 3,
+      sortOrder: 1,
     },
     {
       name: 'Cheeseburger & fries',

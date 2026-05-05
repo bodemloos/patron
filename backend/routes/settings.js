@@ -18,6 +18,7 @@ router.put('/', async (req, res, next) => {
       'reservationSlotMinutes', 'reservationDurationMinutes',
       'defaultTaxRate', 'tipsEnabled', 'tipSuggestions',
       'reservationRemindersEnabled', 'reservationReminderHoursAhead',
+      'customerMenu',
     ];
     for (const k of allowed) {
       if (req.body[k] !== undefined) s[k] = req.body[k];

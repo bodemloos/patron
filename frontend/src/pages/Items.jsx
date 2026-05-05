@@ -65,16 +65,82 @@ export default function Items() {
 
       <section className="card overflow-hidden">
         <div className="px-5 py-3 border-b border-slate-200 dark:border-white/5 font-medium text-sm text-slate-500 dark:text-slate-400">Categories</div>
-        <div className="px-5 py-3 flex flex-wrap gap-2">
-          {cats.map((c) => (
-            <div key={c._id} className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-white/5">
-              <span className="w-3 h-3 rounded-full" style={{ background: c.color }} />
-              <span className="text-sm font-medium">{c.name}</span>
-              <button onClick={() => setEditingCat(c)} className="text-xs text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200">edit</button>
-              <button onClick={() => removeCat(c._id)} className="text-xs text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300">×</button>
-            </div>
-          ))}
-          {!cats.length && <div className="text-slate-400 dark:text-slate-500 text-sm">No categories yet.</div>}
+        <div className="px-5 py-3 space-y-3">
+          {(() => {
+            // Group children under their parents; categories without
+            // a parent are top-level. Single-level nesting only.
+            const parents = cats.filter((c) => !c.parent);
+            const orphans = cats.filter(
+              (c) => c.parent && !parents.find((p) => p._id === c.parent)
+            );
+            const childrenOf = (pid) => cats.filter((c) => c.parent === pid);
+            const renderChip = (c) => (
+              <div
+                key={c._id}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-white/5"
+              >
+                <span className="w-3 h-3 rounded-full" style={{ background: c.color }} />
+                <span className="text-sm font-medium">{c.name}</span>
+                <button
+                  onClick={() => setEditingCat(c)}
+                  className="text-xs text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+                >
+                  edit
+                </button>
+                <button
+                  onClick={() => removeCat(c._id)}
+                  className="text-xs text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
+                >
+                  ×
+                </button>
+              </div>
+            );
+            if (!cats.length) {
+              return <div className="text-slate-400 dark:text-slate-500 text-sm">No categories yet.</div>;
+            }
+            return (
+              <>
+                {parents.map((p) => (
+                  <div key={p._id}>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="w-3 h-3 rounded-full" style={{ background: p.color }} />
+                      <span className="text-xs uppercase tracking-wide font-semibold text-slate-700 dark:text-slate-200">
+                        {p.name}
+                      </span>
+                      <button
+                        onClick={() => setEditingCat(p)}
+                        className="text-xs text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+                      >
+                        edit
+                      </button>
+                      <button
+                        onClick={() => removeCat(p._id)}
+                        className="text-xs text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
+                      >
+                        ×
+                      </button>
+                    </div>
+                    <div className="flex flex-wrap gap-2 pl-5">
+                      {childrenOf(p._id).map(renderChip)}
+                      {!childrenOf(p._id).length && (
+                        <div className="text-xs text-slate-400 dark:text-slate-500 italic">
+                          No sub-categories yet.
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+                {orphans.length > 0 && (
+                  <div>
+                    <div className="text-xs uppercase tracking-wide font-semibold text-slate-700 dark:text-slate-200 mb-2">
+                      Other
+                    </div>
+                    <div className="flex flex-wrap gap-2 pl-5">{orphans.map(renderChip)}</div>
+                  </div>
+                )}
+              </>
+            );
+          })()}
         </div>
       </section>
 
@@ -152,7 +218,31 @@ export default function Items() {
               <select className="input mt-1" value={editing.category}
                 onChange={(e) => setEditing({ ...editing, category: e.target.value })}>
                 <option value="">— none —</option>
-                {cats.map((c) => <option key={c._id} value={c._id}>{c.name}</option>)}
+                {(() => {
+                  // Group children under their parents in optgroups so
+                  // the manager picks a leaf category, not a parent
+                  // bucket. Top-level categories without children still
+                  // show up at the bottom under "Top-level".
+                  const parents = cats.filter((c) => !c.parent);
+                  const opts = [];
+                  parents.forEach((p) => {
+                    const children = cats.filter((c) => c.parent === p._id);
+                    if (children.length) {
+                      opts.push(
+                        <optgroup key={p._id} label={p.name}>
+                          {children.map((c) => (
+                            <option key={c._id} value={c._id}>{c.name}</option>
+                          ))}
+                        </optgroup>
+                      );
+                    } else {
+                      opts.push(
+                        <option key={p._id} value={p._id}>{p.name}</option>
+                      );
+                    }
+                  });
+                  return opts;
+                })()}
               </select>
             </label>
             <label className="col-span-2 text-sm">
@@ -283,6 +373,28 @@ export default function Items() {
               <span className="text-slate-600 dark:text-slate-300">Name</span>
               <input className="input mt-1" value={editingCat.name}
                 onChange={(e) => setEditingCat({ ...editingCat, name: e.target.value })} />
+            </label>
+            <label className="text-sm block">
+              <span className="text-slate-600 dark:text-slate-300">Parent category</span>
+              <select
+                className="input mt-1"
+                value={editingCat.parent || ''}
+                onChange={(e) =>
+                  setEditingCat({ ...editingCat, parent: e.target.value || null })
+                }
+              >
+                <option value="">— top-level —</option>
+                {cats
+                  .filter((c) => !c.parent && c._id !== editingCat._id)
+                  .map((c) => (
+                    <option key={c._id} value={c._id}>
+                      {c.name}
+                    </option>
+                  ))}
+              </select>
+              <span className="text-xs text-slate-500 dark:text-slate-400">
+                Top-level categories show as the main filter (e.g. Food, Drinks). Children appear as sub-filters.
+              </span>
             </label>
             <label className="text-sm block">
               <span className="text-slate-600 dark:text-slate-300">Color</span>

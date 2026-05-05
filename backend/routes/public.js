@@ -141,10 +141,29 @@ router.get('/menu/:tableId', async (req, res, next) => {
       Category.find().sort({ sortOrder: 1 }).lean(),
     ]);
 
+    // Strip Mongoose internals from the customerMenu subdoc so it
+    // serialises cleanly through to the customer's browser.
+    const cm = (settings.customerMenu && settings.customerMenu.toObject?.()) || settings.customerMenu || {};
+
     res.json({
       restaurant: { name: settings.restaurantName, currency: settings.currency },
+      style: {
+        brandColor:    cm.brandColor || '',
+        accentColor:   cm.accentColor || '',
+        mode:          cm.mode || 'auto',
+        tagline:       cm.tagline || '',
+        coverImageUrl: cm.coverImageUrl || '',
+        headingFont:   cm.headingFont || '',
+        layout:        cm.layout || 'grid',
+        theme:         cm.theme || '',
+      },
       table: { id: String(table._id), label: table.label, seats: table.seats, room: table.room, zone: table.zone },
-      categories: categories.map((c) => ({ id: String(c._id), name: c.name, color: c.color })),
+      categories: categories.map((c) => ({
+        id: String(c._id),
+        name: c.name,
+        color: c.color,
+        parent: c.parent ? String(c.parent) : null,
+      })),
       items: items.map((i) => ({
         id: String(i._id),
         name: i.name,

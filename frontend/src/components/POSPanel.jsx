@@ -38,7 +38,12 @@ export default function POSPanel({
   const [items, setItems] = useState([]);
   const [categories, setCategories] = useState([]);
   const [tables, setTables] = useState([]);
-  const [activeCat, setActiveCat] = useState("all");
+  // Two-tier filter: parent (e.g. Food / Drinks) on the top row,
+  // sub-categories (e.g. Mains / Wine) on the row below. Picking a
+  // parent always resets the sub-filter to "all" so the waiter sees
+  // everything in that section before drilling further.
+  const [activeParent, setActiveParent] = useState("all");
+  const [activeSub, setActiveSub] = useState("all");
   const [order, setOrder] = useState(null);
   const [busy, setBusy] = useState(false);
   const [modItem, setModItem] = useState(null); // item being modified before adding
@@ -77,12 +82,38 @@ export default function POSPanel({
     };
   }, [tableId]);
 
+  // Walk an item's category up to its top-level parent so the parent
+  // filter matches items whose direct category is a child.
+  const topLevelOf = (catId) => {
+    if (!catId) return null;
+    const c = categories.find((x) => x._id === catId);
+    if (!c) return null;
+    if (!c.parent) return c._id;
+    // parent might be an ObjectId, normalise to string for compare.
+    const parentId = String(c.parent);
+    const parentExists = categories.some((x) => x._id === parentId);
+    return parentExists ? parentId : c._id;
+  };
+
+  const parents = useMemo(
+    () => categories.filter((c) => !c.parent),
+    [categories]
+  );
+  const subs = useMemo(() => {
+    if (activeParent === "all") return [];
+    return categories.filter((c) => String(c.parent) === activeParent);
+  }, [categories, activeParent]);
+
   const filteredItems = useMemo(() => {
-    if (activeCat === "all") return items.filter((i) => i.available !== false);
-    return items.filter(
-      (i) => i.available !== false && i.category && i.category._id === activeCat
-    );
-  }, [items, activeCat]);
+    return items.filter((i) => {
+      if (i.available === false) return false;
+      if (!i.category) return activeParent === "all";
+      if (activeSub !== "all") return i.category._id === activeSub;
+      if (activeParent === "all") return true;
+      return topLevelOf(i.category._id) === activeParent;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [items, activeParent, activeSub, categories]);
 
   const currentTable = tables.find((t) => t._id === tableId);
   const cartCount = (order?.lines || []).reduce((s, l) => s + l.qty, 0);
@@ -242,33 +273,71 @@ export default function POSPanel({
         )}
       </div>
 
-      <div className="px-4 sm:px-5 py-2.5 border-b border-slate-200 dark:border-white/5 bg-white dark:bg-surface-900 flex gap-2 overflow-x-auto">
-        <button
-          onClick={() => setActiveCat("all")}
-          className={`btn shrink-0 ${
-            activeCat === "all"
-              ? "bg-slate-900 dark:bg-slate-100 text-black"
-              : "bg-white dark:bg-surface-900 border border-slate-200 dark:border-white/5 text-slate-600 dark:text-slate-300"
-          }`}
-        >
-          All
-        </button>
-        {categories.map((c) => (
+      <div className="border-b border-slate-200 dark:border-white/5 bg-white dark:bg-surface-900">
+        <div className="px-4 sm:px-5 py-2.5 flex gap-2 overflow-x-auto">
           <button
-            key={c._id}
-            onClick={() => setActiveCat(c._id)}
+            onClick={() => {
+              setActiveParent("all");
+              setActiveSub("all");
+            }}
             className={`btn shrink-0 ${
-              activeCat === c._id
-                ? "text-white"
-                : "bg-white dark:bg-surface-900 border border-slate-200 dark:border-white/5 text-slate-700 dark:text-slate-200"
+              activeParent === "all"
+                ? "bg-slate-900 dark:bg-slate-100 text-black"
+                : "bg-white dark:bg-surface-900 border border-slate-200 dark:border-white/5 text-slate-600 dark:text-slate-300"
             }`}
-            style={
-              activeCat === c._id ? { backgroundColor: c.color } : undefined
-            }
           >
-            {c.name}
+            All
           </button>
-        ))}
+          {parents.map((c) => (
+            <button
+              key={c._id}
+              onClick={() => {
+                setActiveParent(c._id);
+                setActiveSub("all");
+              }}
+              className={`btn shrink-0 ${
+                activeParent === c._id
+                  ? "text-white"
+                  : "bg-white dark:bg-surface-900 border border-slate-200 dark:border-white/5 text-slate-700 dark:text-slate-200"
+              }`}
+              style={
+                activeParent === c._id ? { backgroundColor: c.color } : undefined
+              }
+            >
+              {c.name}
+            </button>
+          ))}
+        </div>
+        {subs.length > 0 && (
+          <div className="px-4 sm:px-5 pb-2.5 flex gap-2 overflow-x-auto">
+            <button
+              onClick={() => setActiveSub("all")}
+              className={`btn shrink-0 text-xs ${
+                activeSub === "all"
+                  ? "bg-slate-700 dark:bg-slate-300 text-white dark:text-black"
+                  : "bg-slate-50 dark:bg-surface-850 border border-slate-200 dark:border-white/5 text-slate-600 dark:text-slate-300"
+              }`}
+            >
+              All
+            </button>
+            {subs.map((c) => (
+              <button
+                key={c._id}
+                onClick={() => setActiveSub(c._id)}
+                className={`btn shrink-0 text-xs ${
+                  activeSub === c._id
+                    ? "text-white"
+                    : "bg-slate-50 dark:bg-surface-850 border border-slate-200 dark:border-white/5 text-slate-700 dark:text-slate-200"
+                }`}
+                style={
+                  activeSub === c._id ? { backgroundColor: c.color } : undefined
+                }
+              >
+                {c.name}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="flex-1 overflow-auto p-3 sm:p-4">

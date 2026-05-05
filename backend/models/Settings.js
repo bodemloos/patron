@@ -60,6 +60,29 @@ const SettingsSchema = new mongoose.Schema(
     // Reminders
     reservationRemindersEnabled: { type: Boolean, default: true },
     reservationReminderHoursAhead: { type: Number, default: 24 },
+
+    // Styling for the customer-facing /order.html page (the QR menu).
+    // Pulled by the public menu endpoint and applied as CSS-variable
+    // overrides on the customer's device.
+    customerMenu: {
+      type: {
+        brandColor:    { type: String, default: '#ea580c' }, // primary buttons + active states
+        accentColor:   { type: String, default: '' },        // blank → derives from brand
+        mode:          { type: String, enum: ['auto', 'dark', 'light'], default: 'auto' },
+        tagline:       { type: String, default: '' },        // one-liner under restaurant name
+        coverImageUrl: { type: String, default: '' },        // optional banner at the top
+        headingFont:   { type: String, default: '' },        // Google Font family — blank = Inter
+        // Layout drives item-card structure on /order.html — 'grid' is
+        // the current 2/3-column cards; 'list' is single-column with
+        // side-by-side rows; 'compact' is a dense printed-menu look.
+        layout:        { type: String, enum: ['grid', 'list', 'compact'], default: 'grid' },
+        // Stamp identifying which preset was last picked in the editor.
+        // Purely informational — the actual values live in the fields
+        // above so manual edits never get clobbered.
+        theme:         { type: String, default: 'patron' },
+      },
+      default: () => ({}),
+    },
   },
   { timestamps: true }
 );

@@ -84,11 +84,22 @@
         gap: 6px;
         overflow-x: auto;
         padding: 8px 0;
-        margin: 0 -16px 16px;
+        margin: 0 -16px 0;
         padding-left: 16px;
         padding-right: 16px;
+      }
+      .cats.parents {
         border-bottom: 1px solid var(--border);
       }
+      /* Sub-row sits flush under the parents row, slightly smaller chips
+         so the hierarchy is obvious at a glance. */
+      .cats.subs {
+        margin-bottom: 16px;
+        border-bottom: 1px solid var(--border);
+        padding-top: 4px;
+        padding-bottom: 10px;
+      }
+      .cats.subs[hidden] { display: none; }
       .cat {
         flex-shrink: 0;
         padding: 6px 12px;
@@ -99,6 +110,11 @@
         font-size: 13px;
         font-weight: 500;
         cursor: pointer;
+      }
+      .cats.subs .cat {
+        padding: 5px 10px;
+        font-size: 12px;
+        background: var(--surface-2);
       }
       .cat.active {
         background: var(--brand);
@@ -126,6 +142,46 @@
         box-shadow: var(--shadow);
         transition: filter 0.15s, transform 0.05s;
       }
+
+      /* ── Layout: list ───────────────────────────────────────────
+         Single-column wider cards. More room for descriptions, price
+         a little larger — long-form menu feel. */
+      body[data-layout="list"] .grid {
+        grid-template-columns: 1fr;
+      }
+      @media (min-width: 640px) {
+        body[data-layout="list"] .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      body[data-layout="list"] .item { padding: 14px 16px; }
+      body[data-layout="list"] .item .item-price { font-size: 16px; }
+
+      /* ── Layout: compact ────────────────────────────────────────
+         Edge-to-edge dense rows with hairline dividers — printed-
+         menu feel. Hides the category badge per row, tightens the
+         padding, drops the card chrome entirely. */
+      body[data-layout="compact"] .grid {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+      @media (min-width: 640px) {
+        body[data-layout="compact"] .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      body[data-layout="compact"] .item {
+        border-radius: 0;
+        border: 0;
+        border-bottom: 1px solid var(--border);
+        box-shadow: none;
+        padding: 10px 12px;
+      }
+      body[data-layout="compact"] .item:hover { filter: none; background: var(--surface-2); }
+      body[data-layout="compact"] .cat-tag { display: none; }
+      body[data-layout="compact"] .item-name { font-size: 14px; margin-top: 0; }
+      body[data-layout="compact"] .item-desc { font-size: 11px; margin-top: 2px; }
+      body[data-layout="compact"] .item-price { margin-top: 4px; font-size: 14px; }
       .item:active {
         transform: scale(0.98);
       }
@@ -337,7 +393,8 @@
       <div id="loading" class="empty">Loading menu…</div>
 
       <div id="content" hidden>
-        <div class="cats" id="cats"></div>
+        <div class="cats parents" id="cats"></div>
+        <div class="cats subs" id="subcats" hidden></div>
         <div class="grid" id="grid"></div>
       </div>
     </div>
@@ -446,7 +503,12 @@
 
         var state = {
           menu: null,
-          activeCat: "all",
+          // Two-tier filter state. activeParent is "all" or a parent
+          // category id; activeSub is "all" or a child id. Picking a
+          // parent resets activeSub to "all" so the customer sees
+          // everything in that section before drilling further.
+          activeParent: "all",
+          activeSub: "all",
           cart: [], // [{ itemId, name, price, qty, sizeLabel, note }]
           currency: "EUR",
           sheetItem: null,
@@ -460,6 +522,7 @@
         var elLoading = document.getElementById("loading");
         var elContent = document.getElementById("content");
         var elCats = document.getElementById("cats");
+        var elSubCats = document.getElementById("subcats");
         var elGrid = document.getElementById("grid");
         var elCart = document.getElementById("cart");
         var elCartCount = document.getElementById("cart-count");
@@ -496,6 +559,93 @@
           }
         }
 
+        // ---- Customer-menu styling ----
+        // Settings.customerMenu lands here as `style`. We apply it as
+        // CSS-variable overrides + optional cover image / tagline /
+        // heading font so the manager's chosen look reaches the guest.
+
+        // Pulls an unsaved-style override from `#preview=<json>` —
+        // used by the Settings page to live-preview tweaks before the
+        // manager hits Save. Returns {} on any parse failure or when
+        // the hash isn't present, so the caller can spread safely.
+        function readPreviewOverride() {
+          var m = (location.hash || "").match(/preview=([^&]+)/);
+          if (!m) return {};
+          try {
+            return JSON.parse(decodeURIComponent(m[1])) || {};
+          } catch (e) {
+            return {};
+          }
+        }
+
+        function applyStyle(style) {
+          var root = document.documentElement;
+          if (style.brandColor) root.style.setProperty("--brand", style.brandColor);
+          if (style.accentColor) root.style.setProperty("--brand-bright", style.accentColor);
+
+          // Mode override beats prefers-color-scheme. Sets the matching
+          // palette regardless of the user's OS preference.
+          if (style.mode === "light") {
+            root.style.setProperty("--bg", "#f8fafc");
+            root.style.setProperty("--surface", "#ffffff");
+            root.style.setProperty("--surface-2", "#f1f5f9");
+            root.style.setProperty("--surface-3", "#e2e8f0");
+            root.style.setProperty("--border", "#e2e8f0");
+            root.style.setProperty("--text", "#0f172a");
+            root.style.setProperty("--text-muted", "#475569");
+            root.style.setProperty("--text-dim", "#94a3b8");
+          } else if (style.mode === "dark") {
+            root.style.setProperty("--bg", "#141414");
+            root.style.setProperty("--surface", "#1c1c1d");
+            root.style.setProperty("--surface-2", "#232325");
+            root.style.setProperty("--surface-3", "#2c2c2e");
+            root.style.setProperty("--border", "rgba(255, 255, 255, 0.06)");
+            root.style.setProperty("--text", "#f5f5f5");
+            root.style.setProperty("--text-muted", "#a3a3a3");
+            root.style.setProperty("--text-dim", "#737373");
+          }
+
+          // Optional Google Font for headings + body copy.
+          if (style.headingFont && style.headingFont.trim()) {
+            var fontName = style.headingFont.trim();
+            var link = document.createElement("link");
+            link.rel = "stylesheet";
+            link.href =
+              "https://fonts.googleapis.com/css2?family=" +
+              encodeURIComponent(fontName.replace(/ /g, "+")) +
+              ":wght@400;500;600;700&display=swap";
+            document.head.appendChild(link);
+            document.body.style.fontFamily =
+              '"' + fontName + '", Inter, system-ui, sans-serif';
+          }
+
+          // Cover image — sits above the restaurant name.
+          if (style.coverImageUrl) {
+            var img = document.createElement("img");
+            img.src = style.coverImageUrl;
+            img.alt = "";
+            img.style.cssText =
+              "display:block;width:calc(100% + 32px);max-height:180px;object-fit:cover;margin:-16px -16px 12px;border-radius:0 0 14px 14px";
+            var header = document.querySelector("header");
+            if (header) header.insertBefore(img, header.firstChild);
+          }
+
+          // Tagline — small italic line under the restaurant name.
+          if (style.tagline) {
+            var tag = document.createElement("div");
+            tag.textContent = style.tagline;
+            tag.style.cssText =
+              "font-size:13px;color:var(--text-muted);font-style:italic;margin-top:6px";
+            elTitle.parentNode.insertBefore(tag, elTitle.nextSibling);
+          }
+
+          // Layout drives the .grid/.item CSS via a body data-attr.
+          // CSS rules at the top of this file react accordingly.
+          if (style.layout) {
+            document.body.setAttribute("data-layout", style.layout);
+          }
+        }
+
         function load() {
           fetch("/api/public/menu/" + encodeURIComponent(tableId))
             .then(function (r) {
@@ -505,6 +655,14 @@
             .then(function (j) {
               state.menu = j;
               state.currency = j.restaurant.currency || "EUR";
+              // The Settings page's "Preview" link drops the
+              // in-progress customerMenu into the URL hash so the
+              // manager can see unsaved edits without round-tripping
+              // through Save. We merge it over the server response so
+              // any field they didn't touch still uses the saved value.
+              applyStyle(
+                Object.assign({}, j.style || {}, readPreviewOverride())
+              );
               elRestaurant.textContent = j.restaurant.name;
               elTitle.textContent = "Table " + j.table.label;
               elMeta.textContent =
@@ -521,20 +679,82 @@
         }
         load();
 
-        function renderCats() {
-          elCats.innerHTML = "";
-          var all = mkCat("all", "All");
-          elCats.appendChild(all);
-          state.menu.categories.forEach(function (c) {
-            elCats.appendChild(mkCat(c.id, c.name));
+        // Pull parent and child categories out of the flat list. A
+        // category with no parent is top-level (Food, Drinks); the
+        // rest are children of one of those parents. Categories with
+        // a parent that we don't know about are treated as top-level
+        // — defensive against bad data.
+        function getParents() {
+          if (!state.menu) return [];
+          var byId = {};
+          state.menu.categories.forEach(function (c) { byId[c.id] = c; });
+          return state.menu.categories.filter(function (c) {
+            return !c.parent || !byId[c.parent];
           });
         }
-        function mkCat(id, label) {
+        function getChildrenOf(parentId) {
+          if (!state.menu) return [];
+          return state.menu.categories.filter(function (c) {
+            return c.parent === parentId;
+          });
+        }
+        // Walk an item's category up to its top-level parent so the
+        // parent filter ("Food") matches items whose direct category
+        // is a child ("Mains"). Falls back to the item's own category
+        // when it has no parent.
+        function topLevelOf(catId) {
+          if (!state.menu || !catId) return null;
+          var byId = {};
+          state.menu.categories.forEach(function (c) { byId[c.id] = c; });
+          var c = byId[catId];
+          if (!c) return null;
+          if (!c.parent || !byId[c.parent]) return c.id;
+          return c.parent;
+        }
+
+        function renderCats() {
+          elCats.innerHTML = "";
+          elCats.appendChild(mkParentBtn("all", "All"));
+          getParents().forEach(function (p) {
+            elCats.appendChild(mkParentBtn(p.id, p.name));
+          });
+
+          // Sub-row only appears when a specific parent is active and
+          // it has children to drill into.
+          var subs =
+            state.activeParent === "all"
+              ? []
+              : getChildrenOf(state.activeParent);
+          if (!subs.length) {
+            elSubCats.hidden = true;
+            elSubCats.innerHTML = "";
+            return;
+          }
+          elSubCats.hidden = false;
+          elSubCats.innerHTML = "";
+          elSubCats.appendChild(mkSubBtn("all", "All"));
+          subs.forEach(function (c) {
+            elSubCats.appendChild(mkSubBtn(c.id, c.name));
+          });
+        }
+        function mkParentBtn(id, label) {
           var btn = document.createElement("button");
-          btn.className = "cat" + (state.activeCat === id ? " active" : "");
+          btn.className = "cat" + (state.activeParent === id ? " active" : "");
           btn.textContent = label;
           btn.addEventListener("click", function () {
-            state.activeCat = id;
+            state.activeParent = id;
+            state.activeSub = "all";
+            renderCats();
+            renderGrid();
+          });
+          return btn;
+        }
+        function mkSubBtn(id, label) {
+          var btn = document.createElement("button");
+          btn.className = "cat" + (state.activeSub === id ? " active" : "");
+          btn.textContent = label;
+          btn.addEventListener("click", function () {
+            state.activeSub = id;
             renderCats();
             renderGrid();
           });
@@ -544,10 +764,18 @@
         function renderGrid() {
           elGrid.innerHTML = "";
           var items = state.menu.items.filter(function (i) {
-            return (
-              state.activeCat === "all" ||
-              (i.category && i.category.id === state.activeCat)
-            );
+            if (!i.category) {
+              return state.activeParent === "all";
+            }
+            // Sub-filter is most specific — match exactly when set.
+            if (state.activeSub !== "all") {
+              return i.category.id === state.activeSub;
+            }
+            // Otherwise fall back to the parent: include the item if
+            // its category's top-level parent is the active parent
+            // (covers "child of Food" and "is Food itself" cases).
+            if (state.activeParent === "all") return true;
+            return topLevelOf(i.category.id) === state.activeParent;
           });
           if (!items.length) {
             var empty = document.createElement("div");
