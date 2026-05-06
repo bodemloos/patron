@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Order at your table</title>
+    <title>Bestel aan tafel</title>
     <style>
       /*
     Customer QR ordering — the page a guest lands on after scanning the
@@ -746,17 +746,60 @@
         background: rgba(52, 211, 153, 0.12);
         color: #34d399;
       }
+
+      /* Discreet NL/FR/EN segmented control in the header so a
+         francophone or English-speaking guest can switch without the
+         operator having to do anything. NL is the default. */
+      .lang-switch {
+        display: inline-flex;
+        gap: 2px;
+        background: var(--surface-2);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 2px;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+      }
+      .lang-switch button {
+        background: transparent;
+        border: 0;
+        color: var(--text-muted);
+        padding: 4px 9px;
+        border-radius: 999px;
+        cursor: pointer;
+        font: inherit;
+      }
+      .lang-switch button.active {
+        background: var(--surface);
+        color: var(--text);
+      }
+      .header-row {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 8px;
+      }
     </style>
   </head>
   <body>
     <div class="wrap" id="wrap">
       <header>
-        <div class="restaurant" id="restaurant">…</div>
-        <h1 id="title">Order</h1>
-        <div class="table-meta" id="meta"></div>
+        <div class="header-row">
+          <div style="min-width:0; flex:1">
+            <div class="restaurant" id="restaurant">…</div>
+            <h1 id="title">Bestel</h1>
+            <div class="table-meta" id="meta"></div>
+          </div>
+          <div class="lang-switch" id="lang-switch" role="group" aria-label="Language">
+            <button type="button" data-lang="nl">NL</button>
+            <button type="button" data-lang="fr">FR</button>
+            <button type="button" data-lang="en">EN</button>
+          </div>
+        </div>
       </header>
 
-      <div id="loading" class="empty">Loading menu…</div>
+      <div id="loading" class="empty">Menu laden…</div>
 
       <div id="content" hidden>
         <div class="cats parents" id="cats"></div>
@@ -766,7 +809,7 @@
             <circle cx="11" cy="11" r="7" />
             <line x1="21" y1="21" x2="16.65" y2="16.65" />
           </svg>
-          <input id="search" class="search" type="search" placeholder="Search the menu" autocomplete="off" />
+          <input id="search" class="search" type="search" placeholder="Zoek in het menu" autocomplete="off" />
         </div>
         <div class="grid" id="grid"></div>
       </div>
@@ -774,10 +817,10 @@
 
     <div class="cart" id="cart" hidden>
       <div>
-        <div class="cart-meta"><span id="cart-count">0</span> in cart</div>
+        <div class="cart-meta"><span id="cart-count">0</span> <span id="cart-count-label">in winkelmandje</span></div>
         <div class="cart-total" id="cart-total">€0.00</div>
       </div>
-      <button class="cart-btn" id="cart-review">Review &amp; send</button>
+      <button class="cart-btn" id="cart-review">Bekijk &amp; verstuur</button>
     </div>
 
     <!-- In-app webpage sheet — opens when the customer taps the info
@@ -794,10 +837,10 @@
             </svg>
           </button>
           <div class="meta">
-            <div class="title" id="info-title">Loading…</div>
+            <div class="title" id="info-title" data-i18n="info.loading">Laden…</div>
             <div class="host" id="info-host"></div>
           </div>
-          <a class="ext" id="info-ext" target="_blank" rel="noopener noreferrer">Open ↗</a>
+          <a class="ext" id="info-ext" data-i18n="info.openExt" target="_blank" rel="noopener noreferrer">Open ↗</a>
         </div>
         <div class="info-sheet-body" id="info-body"></div>
       </div>
@@ -806,7 +849,7 @@
     <!-- Item modifier sheet -->
     <div class="sheet" id="item-sheet" hidden>
       <div class="sheet-card" onclick="event.stopPropagation()">
-        <div class="step-label">Item</div>
+        <div class="step-label" data-i18n="order.label.item">Gerecht</div>
         <div id="sheet-name" style="font-weight: 500; font-size: 16px"></div>
         <div
           id="sheet-price"
@@ -814,11 +857,11 @@
         ></div>
 
         <div id="sheet-sizes-wrap" hidden>
-          <div class="step-label">Size</div>
+          <div class="step-label" data-i18n="order.size">Maat</div>
           <div class="size-grid" id="sheet-sizes"></div>
         </div>
 
-        <div class="step-label">Quantity</div>
+        <div class="step-label" data-i18n="order.qty">Aantal</div>
         <div class="stepper">
           <button id="qty-minus">−</button>
           <span
@@ -829,10 +872,11 @@
           <button id="qty-plus">+</button>
         </div>
 
-        <div class="step-label">Notes / allergies (optional)</div>
+        <div class="step-label" data-i18n="order.notes">Opmerkingen / allergieën (optioneel)</div>
         <textarea
           id="sheet-note"
-          placeholder="No onions, gluten-free, …"
+          data-i18n-placeholder="order.notesPlaceholder"
+          placeholder="Geen ui, glutenvrij, …"
         ></textarea>
 
         <div style="display: flex; gap: 8px; margin-top: 14px">
@@ -845,11 +889,12 @@
               box-shadow: none;
             "
             id="sheet-cancel"
+            data-i18n="common.cancel"
           >
-            Cancel
+            Annuleer
           </button>
           <button class="cart-btn" style="flex: 2" id="sheet-add">
-            Add to order — <span id="sheet-add-total">€0.00</span>
+            <span data-i18n="order.add">Toevoegen</span> — <span id="sheet-add-total">€0.00</span>
           </button>
         </div>
       </div>
@@ -858,13 +903,12 @@
     <!-- Cart review sheet -->
     <div class="sheet" id="cart-sheet" hidden>
       <div class="sheet-card" onclick="event.stopPropagation()">
-        <div class="step-label">Your order</div>
+        <div class="step-label" data-i18n="order.yourOrder">Uw bestelling</div>
         <div class="lines" id="cart-lines"></div>
 
-        <div class="step-label">Send to the kitchen?</div>
-        <p style="color: var(--text-muted); font-size: 13px; margin: 0 0 8px">
-          Your waiter still handles payment. Tap below to send what's in the
-          cart so they can start preparing.
+        <div class="step-label" data-i18n="order.sendToKitchenQ">Naar de keuken sturen?</div>
+        <p data-i18n="order.send.helper" style="color: var(--text-muted); font-size: 13px; margin: 0 0 8px">
+          Uw kelner regelt de betaling. Tik hieronder om te versturen wat in het mandje zit, zodat ze kunnen beginnen.
         </p>
         <div id="cart-feedback"></div>
         <div style="display: flex; gap: 8px">
@@ -877,11 +921,12 @@
               box-shadow: none;
             "
             id="cart-back"
+            data-i18n="common.back"
           >
-            Back
+            Terug
           </button>
-          <button class="cart-btn" style="flex: 2" id="cart-send">
-            Send to kitchen
+          <button class="cart-btn" style="flex: 2" id="cart-send" data-i18n="order.send">
+            Naar de keuken
           </button>
         </div>
       </div>
@@ -889,11 +934,211 @@
 
     <script>
       (function () {
+        // ──────────────────────────────────────────────────────────
+        // Inline i18n. Belgium-first: NL is the default. The active
+        // language is picked from ?lang=nl|fr|en first, then
+        // localStorage, then the browser preference (only if NL),
+        // and finally falls back to NL. Customers can also tap the
+        // pill in the header to switch.
+        // ──────────────────────────────────────────────────────────
+        var I18N_KEY = "patron.lang";
+        var SUPPORTED = ["nl", "fr", "en"];
+        var TRANSLATIONS = {
+          nl: {
+            "order.title":             "Bestel aan tafel",
+            "order.titleH":            "Bestel",
+            "order.loading":           "Menu laden…",
+            "order.error":             "We konden het menu niet laden. Vraag uw kelner om hulp.",
+            "order.noTable":           "Geen tafel opgegeven. Scan de QR-code aan uw tafel opnieuw.",
+            "order.searchPlaceholder": "Zoek in het menu",
+            "order.cart.label":        "in winkelmandje",
+            "order.cart.review":       "Bekijk &amp; verstuur",
+            "order.label.item":        "Gerecht",
+            "order.size":              "Maat",
+            "order.qty":               "Aantal",
+            "order.notes":             "Opmerkingen / allergieën (optioneel)",
+            "order.notesPlaceholder":  "Geen ui, glutenvrij, …",
+            "order.add":               "Toevoegen",
+            "order.yourOrder":         "Uw bestelling",
+            "order.sendToKitchenQ":    "Naar de keuken sturen?",
+            "order.send":              "Naar de keuken",
+            "order.send.helper":       "Uw kelner regelt de betaling. Tik hieronder om te versturen wat in het mandje zit, zodat ze kunnen beginnen.",
+            "order.empty.category":    "Niets in deze categorie op dit moment.",
+            "order.empty.search":      "Geen gerechten met \u201C{q}\u201D.",
+            "order.cats.all":          "Alles",
+            "common.cancel":           "Annuleer",
+            "common.back":             "Terug",
+            "info.title.fallback":     "Meer info",
+            "info.loading":            "Laden…",
+            "info.openExt":            "Open \u2197",
+            "info.error.title":        "We konden geen voorbeeld laden.",
+            "info.error.body":         "De site is misschien offline of blokkeert previews. U kunt de site nog steeds rechtstreeks openen.",
+            "info.openTab":            "Open in een nieuw tabblad",
+            "info.noImage":            "Geen voorbeeldafbeelding",
+            "info.ratings":            "beoordelingen",
+            "info.readMore":           "Lees meer op {host} \u2197",
+            "info.readMore.fallback":  "de bron",
+          },
+          fr: {
+            "order.title":             "Commander à table",
+            "order.titleH":            "Commander",
+            "order.loading":           "Chargement du menu…",
+            "order.error":             "Impossible de charger le menu. Demandez de l'aide à votre serveur.",
+            "order.noTable":           "Aucune table indiquée. Veuillez scanner à nouveau le QR à votre table.",
+            "order.searchPlaceholder": "Rechercher dans le menu",
+            "order.cart.label":        "dans le panier",
+            "order.cart.review":       "Vérifier &amp; envoyer",
+            "order.label.item":        "Plat",
+            "order.size":              "Taille",
+            "order.qty":               "Quantité",
+            "order.notes":             "Notes / allergies (optionnel)",
+            "order.notesPlaceholder":  "Sans oignon, sans gluten, …",
+            "order.add":               "Ajouter",
+            "order.yourOrder":         "Votre commande",
+            "order.sendToKitchenQ":    "Envoyer en cuisine ?",
+            "order.send":              "Envoyer en cuisine",
+            "order.send.helper":       "Votre serveur gère le paiement. Touchez ci-dessous pour envoyer ce qui est dans le panier afin qu'ils puissent préparer.",
+            "order.empty.category":    "Rien dans cette catégorie pour le moment.",
+            "order.empty.search":      "Aucun article ne correspond à \u00AB {q} \u00BB.",
+            "order.cats.all":          "Tout",
+            "common.cancel":           "Annuler",
+            "common.back":             "Retour",
+            "info.title.fallback":     "Plus d'infos",
+            "info.loading":            "Chargement…",
+            "info.openExt":            "Ouvrir \u2197",
+            "info.error.title":        "Impossible de charger un aperçu.",
+            "info.error.body":         "Le site est peut-être hors ligne ou bloque les aperçus. Vous pouvez tout de même l'ouvrir directement.",
+            "info.openTab":            "Ouvrir dans un nouvel onglet",
+            "info.noImage":            "Pas d'image d'aperçu",
+            "info.ratings":            "avis",
+            "info.readMore":           "En savoir plus sur {host} \u2197",
+            "info.readMore.fallback":  "la source",
+          },
+          en: {
+            "order.title":             "Order at your table",
+            "order.titleH":            "Order",
+            "order.loading":           "Loading menu…",
+            "order.error":             "Couldn\u2019t load the menu. Please ask your waiter for help.",
+            "order.noTable":           "No table specified. Please scan the QR code at your table again.",
+            "order.searchPlaceholder": "Search the menu",
+            "order.cart.label":        "in cart",
+            "order.cart.review":       "Review &amp; send",
+            "order.label.item":        "Item",
+            "order.size":              "Size",
+            "order.qty":               "Quantity",
+            "order.notes":             "Notes / allergies (optional)",
+            "order.notesPlaceholder":  "No onions, gluten-free, …",
+            "order.add":               "Add",
+            "order.yourOrder":         "Your order",
+            "order.sendToKitchenQ":    "Send to the kitchen?",
+            "order.send":              "Send to kitchen",
+            "order.send.helper":       "Your waiter still handles payment. Tap below to send what\u2019s in the cart so they can start preparing.",
+            "order.empty.category":    "Nothing in this category right now.",
+            "order.empty.search":      "No items match \u201C{q}\u201D.",
+            "order.cats.all":          "All",
+            "common.cancel":           "Cancel",
+            "common.back":             "Back",
+            "info.title.fallback":     "More info",
+            "info.loading":            "Loading…",
+            "info.openExt":            "Open \u2197",
+            "info.error.title":        "We couldn\u2019t load a preview.",
+            "info.error.body":         "The site might be down or blocking previews. You can still open it directly.",
+            "info.openTab":            "Open in a new tab",
+            "info.noImage":            "No preview image",
+            "info.ratings":            "ratings",
+            "info.readMore":           "Read more on {host} \u2197",
+            "info.readMore.fallback":  "the source",
+          },
+        };
         var qs = new URLSearchParams(location.search);
+        var lang = (function detectLang() {
+          var fromUrl = (qs.get("lang") || "").toLowerCase();
+          if (SUPPORTED.indexOf(fromUrl) !== -1) return fromUrl;
+          try {
+            var saved = localStorage.getItem(I18N_KEY);
+            if (saved && SUPPORTED.indexOf(saved) !== -1) return saved;
+          } catch (e) { /* ignore */ }
+          var nav = (navigator.language || "").toLowerCase();
+          if (nav.indexOf("nl") === 0) return "nl";
+          // Belgium-first default — even fr/en browsers land on NL
+          // unless they explicitly switch.
+          return "nl";
+        })();
+        function t(key, vars) {
+          var dict = TRANSLATIONS[lang] || TRANSLATIONS.nl;
+          var s = dict[key];
+          if (s === undefined) s = (TRANSLATIONS.en && TRANSLATIONS.en[key]) || key;
+          if (vars && typeof s === "string") {
+            for (var v in vars) {
+              s = s.replace(new RegExp("\\{" + v + "\\}", "g"), String(vars[v]));
+            }
+          }
+          return s;
+        }
+        function applyStaticI18n() {
+          // Walks data-i18n + data-i18n-placeholder attributes.
+          document.querySelectorAll("[data-i18n]").forEach(function (el) {
+            el.textContent = t(el.getAttribute("data-i18n"));
+          });
+          document.querySelectorAll("[data-i18n-placeholder]").forEach(function (el) {
+            el.placeholder = t(el.getAttribute("data-i18n-placeholder"));
+          });
+          document.documentElement.setAttribute("lang", lang);
+          document.title = t("order.title");
+          // Header / static UI
+          var search = document.getElementById("search");
+          if (search) search.placeholder = t("order.searchPlaceholder");
+          var cartLabel = document.getElementById("cart-count-label");
+          if (cartLabel) cartLabel.textContent = t("order.cart.label");
+          var cartReview = document.getElementById("cart-review");
+          if (cartReview) cartReview.innerHTML = t("order.cart.review");
+          var titleH = document.getElementById("title");
+          // Only seed the header when no real table label has loaded yet.
+          if (titleH && titleH.dataset.tableLabel === undefined) {
+            titleH.textContent = t("order.titleH");
+          }
+        }
+        function setLang(next) {
+          if (SUPPORTED.indexOf(next) === -1) return;
+          lang = next;
+          try { localStorage.setItem(I18N_KEY, next); } catch (e) {}
+          applyStaticI18n();
+          updateLangSwitch();
+          // renderCats/renderGrid are declared later in this same
+          // IIFE; they'll exist by the time the user clicks. Guard
+          // anyway so applyStaticI18n still works on cold load.
+          try {
+            if (state && state.menu) { renderCats(); renderGrid(); }
+          } catch (e) { /* not yet ready */ }
+        }
+        function updateLangSwitch() {
+          var sw = document.getElementById("lang-switch");
+          if (!sw) return;
+          sw.querySelectorAll("button[data-lang]").forEach(function (b) {
+            if (b.getAttribute("data-lang") === lang) b.classList.add("active");
+            else b.classList.remove("active");
+          });
+        }
+        document.addEventListener("DOMContentLoaded", function () {
+          var sw = document.getElementById("lang-switch");
+          if (sw) {
+            sw.addEventListener("click", function (e) {
+              var b = e.target.closest("button[data-lang]");
+              if (!b) return;
+              setLang(b.getAttribute("data-lang"));
+            });
+          }
+          applyStaticI18n();
+          updateLangSwitch();
+        });
+        // Run once before DOMContentLoaded so the loading screen
+        // already shows in the right language for slow networks.
+        applyStaticI18n();
+        updateLangSwitch();
+
         var tableId = qs.get("table") || qs.get("t");
         if (!tableId) {
-          document.getElementById("loading").textContent =
-            "No table specified. Please scan the QR code at your table again.";
+          document.getElementById("loading").textContent = t("order.noTable");
           return;
         }
 
@@ -987,9 +1232,9 @@
         function infoErrorState(url) {
           return (
             '<div class="info-state error">' +
-            '  <strong>We couldn\u2019t load a preview.</strong>' +
-            '  The site might be down or blocking previews. You can still open it directly.' +
-            '  <br/><a class="cta" href="' + escapeHTML(url) + '" target="_blank" rel="noopener noreferrer">Open in a new tab</a>' +
+            '  <strong>' + escapeHTML(t("info.error.title")) + '</strong>' +
+            '  ' + escapeHTML(t("info.error.body")) +
+            '  <br/><a class="cta" href="' + escapeHTML(url) + '" target="_blank" rel="noopener noreferrer">' + escapeHTML(t("info.openTab")) + '</a>' +
             "</div>"
           );
         }
@@ -1008,13 +1253,14 @@
               '<span class="stars">' + escapeHTML(stars) + "</span>" +
               "<span>" + escapeHTML(String(data.rating)) +
               (data.ratingBest ? " / " + escapeHTML(String(data.ratingBest)) : "") +
-              (data.ratingCount ? " · " + escapeHTML(String(data.ratingCount)) + " ratings" : "") +
+              (data.ratingCount ? " · " + escapeHTML(String(data.ratingCount)) + " " + escapeHTML(t("info.ratings")) : "") +
               "</span>" +
               "</div>";
           }
+          var noImg = t("info.noImage");
           var heroHtml = image
-            ? '<img class="info-hero" src="' + escapeHTML(image) + '" alt="" referrerpolicy="no-referrer" onerror="this.replaceWith(Object.assign(document.createElement(\'div\'),{className:\'info-hero placeholder\',textContent:\'No preview image\'}))" />'
-            : '<div class="info-hero placeholder">No preview image</div>';
+            ? '<img class="info-hero" src="' + escapeHTML(image) + '" alt="" referrerpolicy="no-referrer" onerror="this.replaceWith(Object.assign(document.createElement(\'div\'),{className:\'info-hero placeholder\',textContent:' + JSON.stringify(noImg) + '}))" />'
+            : '<div class="info-hero placeholder">' + escapeHTML(noImg) + '</div>';
 
           return (
             '<div class="info-card">' +
@@ -1025,7 +1271,7 @@
             ratingHtml +
             (desc ? '<p class="description">' + escapeHTML(desc) + "</p>" : "") +
             "</div>" +
-            '<a class="open-cta" href="' + escapeHTML(openUrl) + '" target="_blank" rel="noopener noreferrer">Read more on ' + escapeHTML(data.host || site || "the source") + " \u2197</a>" +
+            '<a class="open-cta" href="' + escapeHTML(openUrl) + '" target="_blank" rel="noopener noreferrer">' + escapeHTML(t("info.readMore", { host: data.host || site || t("info.readMore.fallback") })) + '</a>' +
             "</div>"
           );
         }
@@ -1035,7 +1281,7 @@
           var url = item.infoUrl;
           var host = "";
           try { host = new URL(url, location.origin).host; } catch (e) { host = ""; }
-          elInfoTitle.textContent = item.name || "More info";
+          elInfoTitle.textContent = item.name || t("info.title.fallback");
           elInfoHost.textContent = host;
           elInfoExt.href = url;
           elInfoBody.innerHTML = infoSkeleton();
@@ -1224,8 +1470,7 @@
               elContent.hidden = false;
             })
             .catch(function () {
-              elLoading.textContent =
-                "Couldn\u2019t load the menu. Please ask your waiter for help.";
+              elLoading.textContent = t("order.error");
             });
         }
         load();
@@ -1265,7 +1510,7 @@
 
         function renderCats() {
           elCats.innerHTML = "";
-          elCats.appendChild(mkParentBtn("all", "All"));
+          elCats.appendChild(mkParentBtn("all", t("order.cats.all")));
           getParents().forEach(function (p) {
             elCats.appendChild(mkParentBtn(p.id, p.name));
           });
@@ -1283,7 +1528,7 @@
           }
           elSubCats.hidden = false;
           elSubCats.innerHTML = "";
-          elSubCats.appendChild(mkSubBtn("all", "All"));
+          elSubCats.appendChild(mkSubBtn("all", t("order.cats.all")));
           subs.forEach(function (c) {
             elSubCats.appendChild(mkSubBtn(c.id, c.name));
           });
@@ -1340,8 +1585,8 @@
             var empty = document.createElement("div");
             empty.className = "empty";
             empty.textContent = q
-              ? "No items match \u201C" + state.searchQ + "\u201D."
-              : "Nothing in this category right now.";
+              ? t("order.empty.search", { q: state.searchQ })
+              : t("order.empty.category");
             empty.style.gridColumn = "1/-1";
             elGrid.appendChild(empty);
             return;
@@ -1425,7 +1670,7 @@
             var info = document.createElement("button");
             info.className = "info-btn";
             info.type = "button";
-            info.setAttribute("aria-label", "More info about " + i.name);
+            info.setAttribute("aria-label", t("info.title.fallback") + " — " + i.name);
             info.innerHTML =
               '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
               '<circle cx="12" cy="12" r="9" />' +

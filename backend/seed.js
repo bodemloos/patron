@@ -133,96 +133,109 @@ async function run() {
 
   console.log('[seed] items...');
   const stockId = (n) => byName[n]._id;
+  // Helper — every beer gets an infoUrl pointing at Untappd. The
+  // search URL pattern is guaranteed to resolve (Untappd never 404s
+  // a search), so the in-app unfurl card always has something to
+  // show; the manager can swap in the direct beer page URL later.
+  const untappd = (name) =>
+    'https://untappd.com/search?q=' + encodeURIComponent(name);
+  // Generic placeholder image generator — deterministic per item name.
+  // Picsum returns a real photo for every URL; the manager will swap
+  // in real product photos via the Items page. Kept off most items
+  // so the magazine placeholder disc is exercised too.
+  const photo = (slug) =>
+    'https://picsum.photos/seed/patron-' + encodeURIComponent(slug) + '/600/600';
+
   await Item.create([
     // --- Beers (tap) — 25cl unless noted ---
-    { name: 'Jour De Fête',           price: 4.2, category: beersTap._id, sortOrder: 1, recipe: [{ stockItem: stockId('Jour De Fête keg'),     qty: 250 }] },
-    { name: 'Bittere Bloemen',        price: 4.2, category: beersTap._id, sortOrder: 2, recipe: [{ stockItem: stockId('Bittere Bloemen keg'),  qty: 250 }] },
-    { name: 'Zieke Geest',            price: 4.5, category: beersTap._id, sortOrder: 3, recipe: [{ stockItem: stockId('Zieke Geest keg'),      qty: 250 }] },
-    { name: 'Hoogheid',               price: 4.7, category: beersTap._id, sortOrder: 4, recipe: [{ stockItem: stockId('Hoogheid keg'),         qty: 250 }] },
-    { name: 'Black Pudding (20cl)',   price: 4.7, category: beersTap._id, sortOrder: 5, recipe: [{ stockItem: stockId('Black Pudding keg'),    qty: 200 }] },
-    { name: 'Super Bavik Pils',       price: 2.8, category: beersTap._id, sortOrder: 6, recipe: [{ stockItem: stockId('Super Bavik Pils keg'), qty: 250 }] },
+    { name: 'Jour De Fête',           price: 4.2, category: beersTap._id, sortOrder: 1, description: 'Vleesmeester · table beer · 4.5%', infoUrl: untappd('Vleesmeester Jour De Fête'),    recipe: [{ stockItem: stockId('Jour De Fête keg'),     qty: 250 }] },
+    { name: 'Bittere Bloemen',        price: 4.2, category: beersTap._id, sortOrder: 2, description: 'Vleesmeester · pale ale · 5.5%',  infoUrl: untappd('Vleesmeester Bittere Bloemen'),  recipe: [{ stockItem: stockId('Bittere Bloemen keg'),  qty: 250 }] },
+    { name: 'Zieke Geest',            price: 4.5, category: beersTap._id, sortOrder: 3, description: 'Vleesmeester · IPA · 6.5%',       infoUrl: untappd('Vleesmeester Zieke Geest'),      recipe: [{ stockItem: stockId('Zieke Geest keg'),      qty: 250 }] },
+    { name: 'Hoogheid',               price: 4.7, category: beersTap._id, sortOrder: 4, description: 'Vleesmeester · tripel · 8%',      infoUrl: untappd('Vleesmeester Hoogheid'),         recipe: [{ stockItem: stockId('Hoogheid keg'),         qty: 250 }] },
+    { name: 'Black Pudding (20cl)',   price: 4.7, category: beersTap._id, sortOrder: 5, description: 'Vleesmeester · imperial stout · 9%', infoUrl: untappd('Vleesmeester Black Pudding'), recipe: [{ stockItem: stockId('Black Pudding keg'),    qty: 200 }] },
+    { name: 'Super Bavik Pils',       price: 2.8, category: beersTap._id, sortOrder: 6, description: 'Bavik · pils · 5.2%',             infoUrl: untappd('Super Bavik Pils'),              recipe: [{ stockItem: stockId('Super Bavik Pils keg'), qty: 250 }] },
 
     // --- Beers (bottle/can) — 33cl unless noted ---
-    { name: 'Ambtenaar Op Rust',      price: 4.8, category: beersBottle._id, sortOrder: 1,  recipe: [{ stockItem: stockId('Ambtenaar Op Rust bottle'),      qty: 1 }] },
-    { name: 'Bruismelk',              price: 5.5, category: beersBottle._id, sortOrder: 2,  recipe: [{ stockItem: stockId('Bruismelk bottle'),              qty: 1 }] },
-    { name: 'Guldenberg',             price: 4.9, category: beersBottle._id, sortOrder: 3,  recipe: [{ stockItem: stockId('Guldenberg bottle'),             qty: 1 }] },
-    { name: 'Jambe De Bois',          price: 5.1, category: beersBottle._id, sortOrder: 4,  recipe: [{ stockItem: stockId('Jambe De Bois bottle'),          qty: 1 }] },
-    { name: '3 Fonteinen (37,5cl)',   price: 9.0, category: beersBottle._id, sortOrder: 5,  recipe: [{ stockItem: stockId('3 Fonteinen Geuze 37.5cl'),      qty: 1 }] },
-    { name: '3 Fonteinen (75cl)',     price: 18.0,category: beersBottle._id, sortOrder: 6,  recipe: [{ stockItem: stockId('3 Fonteinen Geuze 75cl'),        qty: 1 }] },
-    { name: 'Kriek Boon (25cl)',      price: 4.2, category: beersBottle._id, sortOrder: 7,  recipe: [{ stockItem: stockId('Kriek Boon 25cl'),               qty: 1 }] },
-    { name: 'Oud Bruin',              price: 5.7, category: beersBottle._id, sortOrder: 8,  recipe: [{ stockItem: stockId('Oud Bruin Verzet bottle'),       qty: 1 }] },
-    { name: 'Space Cadet',            price: 4.9, category: beersBottle._id, sortOrder: 9,  recipe: [{ stockItem: stockId('Space Cadet bottle'),            qty: 1 }] },
-    { name: 'Saison Dupont',          price: 4.2, category: beersBottle._id, sortOrder: 10, recipe: [{ stockItem: stockId('Saison Dupont bottle'),          qty: 1 }] },
-    { name: 'Energibajer (alcoholarm)', price: 5.1, category: beersBottle._id, sortOrder: 11, recipe: [{ stockItem: stockId('Energibajer bottle'),          qty: 1 }] },
-    { name: 'Playground (alcoholarm)',  price: 5.1, category: beersBottle._id, sortOrder: 12, recipe: [{ stockItem: stockId('Playground bottle'),           qty: 1 }] },
-    { name: 'Sportzot (alcoholarm)',    price: 5.3, category: beersBottle._id, sortOrder: 13, recipe: [{ stockItem: stockId('Sportzot bottle'),             qty: 1 }] },
-    { name: 'Stouterik',              price: 4.9, category: beersBottle._id, sortOrder: 14, recipe: [{ stockItem: stockId('Stouterik bottle'),              qty: 1 }] },
-    { name: 'Fantasma (glutenarm)',   price: 5.8, category: beersBottle._id, sortOrder: 15, recipe: [{ stockItem: stockId('Fantasma bottle'),               qty: 1 }] },
-    { name: 'Gouden Carolus Classic', price: 4.9, category: beersBottle._id, sortOrder: 16, recipe: [{ stockItem: stockId('Gouden Carolus Classic bottle'), qty: 1 }] },
-    { name: 'Orval',                  price: 4.9, category: beersBottle._id, sortOrder: 17, recipe: [{ stockItem: stockId('Orval bottle'),                  qty: 1 }] },
-    { name: 'Chimay Bleue',           price: 5.2, category: beersBottle._id, sortOrder: 18, recipe: [{ stockItem: stockId('Chimay Bleue bottle'),           qty: 1 }] },
-    { name: 'Chimay Tripel',          price: 4.9, category: beersBottle._id, sortOrder: 19, recipe: [{ stockItem: stockId('Chimay Tripel bottle'),          qty: 1 }] },
-    { name: 'Westmalle Tripel',       price: 4.9, category: beersBottle._id, sortOrder: 20, recipe: [{ stockItem: stockId('Westmalle Tripel bottle'),       qty: 1 }] },
-    { name: 'Duvel',                  price: 4.9, category: beersBottle._id, sortOrder: 21, recipe: [{ stockItem: stockId('Duvel bottle'),                  qty: 1 }] },
+    { name: 'Ambtenaar Op Rust',      price: 4.8, category: beersBottle._id, sortOrder: 1,  description: 'Vleesmeester · barrel-aged sour',     infoUrl: untappd('Vleesmeester Ambtenaar Op Rust'), recipe: [{ stockItem: stockId('Ambtenaar Op Rust bottle'),      qty: 1 }] },
+    { name: 'Bruismelk',              price: 5.5, category: beersBottle._id, sortOrder: 2,  description: 'Wild ale met melkzuur',               infoUrl: untappd('Bruismelk bier'),                 recipe: [{ stockItem: stockId('Bruismelk bottle'),              qty: 1 }] },
+    { name: 'Guldenberg',             price: 4.9, category: beersBottle._id, sortOrder: 3,  description: 'De Ranke · belgian tripel · 8%',      infoUrl: untappd('De Ranke Guldenberg'),            recipe: [{ stockItem: stockId('Guldenberg bottle'),             qty: 1 }] },
+    { name: 'Jambe De Bois',          price: 5.1, category: beersBottle._id, sortOrder: 4,  description: 'Brasserie de la Senne · tripel · 8%', infoUrl: untappd('Jambe De Bois Senne'),            recipe: [{ stockItem: stockId('Jambe De Bois bottle'),          qty: 1 }] },
+    { name: '3 Fonteinen (37,5cl)',   price: 9.0, category: beersBottle._id, sortOrder: 5,  description: '3 Fonteinen · oude geuze · 6%',       infoUrl: untappd('3 Fonteinen Oude Geuze'),         recipe: [{ stockItem: stockId('3 Fonteinen Geuze 37.5cl'),      qty: 1 }] },
+    { name: '3 Fonteinen (75cl)',     price: 18.0,category: beersBottle._id, sortOrder: 6,  description: '3 Fonteinen · oude geuze · te delen', infoUrl: untappd('3 Fonteinen Oude Geuze'),         recipe: [{ stockItem: stockId('3 Fonteinen Geuze 75cl'),        qty: 1 }] },
+    { name: 'Kriek Boon (25cl)',      price: 4.2, category: beersBottle._id, sortOrder: 7,  description: 'Brouwerij Boon · kriek lambic · 4%',  infoUrl: untappd('Boon Kriek'),                     recipe: [{ stockItem: stockId('Kriek Boon 25cl'),               qty: 1 }] },
+    { name: 'Oud Bruin',              price: 5.7, category: beersBottle._id, sortOrder: 8,  description: 'Brouwerij Verzet · oud bruin · 6%',   infoUrl: untappd('Verzet Oud Bruin'),               recipe: [{ stockItem: stockId('Oud Bruin Verzet bottle'),       qty: 1 }] },
+    { name: 'Space Cadet',            price: 4.9, category: beersBottle._id, sortOrder: 9,  description: 'NEIPA · sappig en juicy',             infoUrl: untappd('Space Cadet beer'),               recipe: [{ stockItem: stockId('Space Cadet bottle'),            qty: 1 }] },
+    { name: 'Saison Dupont',          price: 4.2, category: beersBottle._id, sortOrder: 10, description: 'Brasserie Dupont · saison · 6.5%',    infoUrl: untappd('Saison Dupont'),                  recipe: [{ stockItem: stockId('Saison Dupont bottle'),          qty: 1 }] },
+    { name: 'Energibajer (alcoholarm)', price: 5.1, category: beersBottle._id, sortOrder: 11, description: 'Mikkeller · 0.3% · alcoholarm',     infoUrl: untappd('Mikkeller Energibajer'),          recipe: [{ stockItem: stockId('Energibajer bottle'),            qty: 1 }] },
+    { name: 'Playground (alcoholarm)',  price: 5.1, category: beersBottle._id, sortOrder: 12, description: 'NEIPA-stijl · 0.3% · alcoholarm',   infoUrl: untappd('Playground IPA'),                 recipe: [{ stockItem: stockId('Playground bottle'),             qty: 1 }] },
+    { name: 'Sportzot (alcoholarm)',    price: 5.3, category: beersBottle._id, sortOrder: 13, description: 'Brugge · 0.4% · alcoholarm',         infoUrl: untappd('Sportzot bier'),                  recipe: [{ stockItem: stockId('Sportzot bottle'),               qty: 1 }] },
+    { name: 'Stouterik',              price: 4.9, category: beersBottle._id, sortOrder: 14, description: 'Brussels Beer Project · stout · 4.5%',infoUrl: untappd('Stouterik Brussels'),             recipe: [{ stockItem: stockId('Stouterik bottle'),              qty: 1 }] },
+    { name: 'Fantasma (glutenarm)',   price: 5.8, category: beersBottle._id, sortOrder: 15, description: 'IPA · glutenarm · 6.6%',              infoUrl: untappd('Fantasma gluten free IPA'),       recipe: [{ stockItem: stockId('Fantasma bottle'),               qty: 1 }] },
+    { name: 'Gouden Carolus Classic', price: 4.9, category: beersBottle._id, sortOrder: 16, description: 'Het Anker · belgian dark · 8.5%',     infoUrl: untappd('Gouden Carolus Classic'),         recipe: [{ stockItem: stockId('Gouden Carolus Classic bottle'), qty: 1 }] },
+    { name: 'Orval',                  price: 4.9, category: beersBottle._id, sortOrder: 17, description: 'Trappist Orval · trappist ale · 6.2%',imageUrl: photo('orval'),    infoUrl: untappd('Orval Trappist'),    recipe: [{ stockItem: stockId('Orval bottle'),         qty: 1 }] },
+    { name: 'Chimay Bleue',           price: 5.2, category: beersBottle._id, sortOrder: 18, description: 'Trappist Chimay · grande réserve · 9%',imageUrl: photo('chimay-bleue'), infoUrl: untappd('Chimay Bleue'),  recipe: [{ stockItem: stockId('Chimay Bleue bottle'),  qty: 1 }] },
+    { name: 'Chimay Tripel',          price: 4.9, category: beersBottle._id, sortOrder: 19, description: 'Trappist Chimay · cinq cents · 8%',   infoUrl: untappd('Chimay Tripel Cinq Cents'),       recipe: [{ stockItem: stockId('Chimay Tripel bottle'),          qty: 1 }] },
+    { name: 'Westmalle Tripel',       price: 4.9, category: beersBottle._id, sortOrder: 20, description: 'Trappist Westmalle · tripel · 9.5%',  imageUrl: photo('westmalle-tripel'), infoUrl: untappd('Westmalle Tripel'), recipe: [{ stockItem: stockId('Westmalle Tripel bottle'), qty: 1 }] },
+    { name: 'Duvel',                  price: 4.9, category: beersBottle._id, sortOrder: 21, description: 'Duvel Moortgat · golden ale · 8.5%',  imageUrl: photo('duvel'),    infoUrl: untappd('Duvel'),             recipe: [{ stockItem: stockId('Duvel bottle'),         qty: 1 }] },
 
     // --- Soft drinks (Frisdrank) ---
-    { name: 'Fritz Kola/Light',          price: 2.8, category: softDrinks._id, sortOrder: 1,  recipe: [{ stockItem: stockId('Fritz Kola bottle'),          qty: 1 }] },
-    { name: 'Tönissteiner Orange',       price: 2.8, category: softDrinks._id, sortOrder: 2,  recipe: [{ stockItem: stockId('Tönissteiner Orange bottle'), qty: 1 }] },
-    { name: 'Tönissteiner Citron',       price: 2.8, category: softDrinks._id, sortOrder: 3,  recipe: [{ stockItem: stockId('Tönissteiner Citron bottle'), qty: 1 }] },
-    { name: 'Spa Reine / Spa Bruis',     price: 2.5, category: softDrinks._id, sortOrder: 4,  recipe: [{ stockItem: stockId('Spa Reine bottle'),           qty: 1 }] },
-    { name: 'Spa Reine groot (1l)',      price: 8.0, category: softDrinks._id, sortOrder: 5,  recipe: [{ stockItem: stockId('Spa Reine 1L bottle'),        qty: 1 }] },
-    { name: 'Spa Bruis groot (1l)',      price: 8.0, category: softDrinks._id, sortOrder: 6,  recipe: [{ stockItem: stockId('Spa Bruis 1L bottle'),        qty: 1 }] },
-    { name: 'Homemade Ice Tea',          price: 3.9, category: softDrinks._id, sortOrder: 7,  recipe: [{ stockItem: stockId('Homemade ice tea'),           qty: 250 }] },
-    { name: 'Homemade Gemberlimonade',   price: 3.9, category: softDrinks._id, sortOrder: 8,  recipe: [{ stockItem: stockId('Homemade gember limonade'),   qty: 250 }] },
-    { name: 'Appelsap',                  price: 2.7, category: softDrinks._id, sortOrder: 9,  recipe: [{ stockItem: stockId('Appelsap'),                   qty: 200 }] },
-    { name: 'Worldshake',                price: 2.7, category: softDrinks._id, sortOrder: 10, recipe: [{ stockItem: stockId('Worldshake bottle'),          qty: 1 }] },
-    { name: 'Sinaasappelsap',            price: 2.7, category: softDrinks._id, sortOrder: 11, recipe: [{ stockItem: stockId('Sinaasappelsap'),             qty: 200 }] },
+    { name: 'Fritz Kola/Light',          price: 2.8, category: softDrinks._id, sortOrder: 1,  description: 'Fritz Kola · 33cl · gewoon of light',                                                            recipe: [{ stockItem: stockId('Fritz Kola bottle'),          qty: 1 }] },
+    { name: 'Tönissteiner Orange',       price: 2.8, category: softDrinks._id, sortOrder: 2,  description: 'Tönissteiner · sinaas · 25cl',                                                                   recipe: [{ stockItem: stockId('Tönissteiner Orange bottle'), qty: 1 }] },
+    { name: 'Tönissteiner Citron',       price: 2.8, category: softDrinks._id, sortOrder: 3,  description: 'Tönissteiner · citroen · 25cl',                                                                  recipe: [{ stockItem: stockId('Tönissteiner Citron bottle'), qty: 1 }] },
+    { name: 'Spa Reine / Spa Bruis',     price: 2.5, category: softDrinks._id, sortOrder: 4,  description: 'Spa · plat of bruis · 25cl',                                                                     recipe: [{ stockItem: stockId('Spa Reine bottle'),           qty: 1 }] },
+    { name: 'Spa Reine groot (1l)',      price: 8.0, category: softDrinks._id, sortOrder: 5,  description: 'Spa plat · 1L · te delen',                                                                       recipe: [{ stockItem: stockId('Spa Reine 1L bottle'),        qty: 1 }] },
+    { name: 'Spa Bruis groot (1l)',      price: 8.0, category: softDrinks._id, sortOrder: 6,  description: 'Spa bruis · 1L · te delen',                                                                      recipe: [{ stockItem: stockId('Spa Bruis 1L bottle'),        qty: 1 }] },
+    { name: 'Homemade Ice Tea',          price: 3.9, category: softDrinks._id, sortOrder: 7,  description: 'Huisgemaakte ice tea · zwarte thee, citroen, perzik',                                            recipe: [{ stockItem: stockId('Homemade ice tea'),           qty: 250 }] },
+    { name: 'Homemade Gemberlimonade',   price: 3.9, category: softDrinks._id, sortOrder: 8,  description: 'Verse gember, limoen en honing · pittig en frisser dan een gewone limo',                          recipe: [{ stockItem: stockId('Homemade gember limonade'),   qty: 250 }] },
+    { name: 'Appelsap',                  price: 2.7, category: softDrinks._id, sortOrder: 9,  description: 'Belgisch appelsap · troebel, ongezoet',                                                          recipe: [{ stockItem: stockId('Appelsap'),                   qty: 200 }] },
+    { name: 'Worldshake',                price: 2.7, category: softDrinks._id, sortOrder: 10, description: 'Worldshake · vegan smoothie · vraag de smaak van de dag aan uw kelner',                            recipe: [{ stockItem: stockId('Worldshake bottle'),          qty: 1 }] },
+    { name: 'Sinaasappelsap',            price: 2.7, category: softDrinks._id, sortOrder: 11, description: 'Vers geperste sinaasappel',                                                                      recipe: [{ stockItem: stockId('Sinaasappelsap'),             qty: 200 }] },
     // Bar snack — sits with soft drinks since "Drinks" is a parent
     // bucket and we keep items on leaf categories only.
-    { name: 'Chips',                     price: 2.0, category: softDrinks._id, sortOrder: 12, recipe: [{ stockItem: stockId('Chips bag'),                  qty: 1 }] },
+    { name: 'Chips',                     price: 2.0, category: softDrinks._id, sortOrder: 12, description: 'Belgische artisan chips · zout',                                                                 recipe: [{ stockItem: stockId('Chips bag'),                  qty: 1 }] },
 
     // --- Wine & bubbles (Wijn/Bubbels) — pinned to the new Wine sub-category ---
-    { name: 'Wit (glas)',        price: 5.0,  category: wine._id, sortOrder: 1, recipe: [{ stockItem: stockId('White wine'),     qty: 175 }] },
-    { name: 'Wit (fles)',        price: 25.0, category: wine._id, sortOrder: 2, recipe: [{ stockItem: stockId('White wine'),     qty: 750 }] },
-    { name: 'Rosé (glas)',       price: 5.0,  category: wine._id, sortOrder: 3, recipe: [{ stockItem: stockId('Rosé wine'),      qty: 175 }] },
-    { name: 'Rosé (fles)',       price: 25.0, category: wine._id, sortOrder: 4, recipe: [{ stockItem: stockId('Rosé wine'),      qty: 750 }] },
-    { name: 'Rood (glas)',       price: 5.0,  category: wine._id, sortOrder: 5, recipe: [{ stockItem: stockId('Red wine'),       qty: 175 }] },
-    { name: 'Rood (fles)',       price: 25.0, category: wine._id, sortOrder: 6, recipe: [{ stockItem: stockId('Red wine'),       qty: 750 }] },
-    { name: 'Crémant (glas)',    price: 6.0,  category: wine._id, sortOrder: 7, recipe: [{ stockItem: stockId('Crémant bottle'), qty: 0.25 }] },
-    { name: 'Crémant (fles)',    price: 27.5, category: wine._id, sortOrder: 8, recipe: [{ stockItem: stockId('Crémant bottle'), qty: 1 }] },
+    { name: 'Wit (glas)',        price: 5.0,  category: wine._id, sortOrder: 1, description: 'Huiswijn · droog, fris · 17.5cl',                imageUrl: photo('white-wine-glass'), recipe: [{ stockItem: stockId('White wine'),     qty: 175 }] },
+    { name: 'Wit (fles)',        price: 25.0, category: wine._id, sortOrder: 2, description: 'Huiswijn wit · 75cl',                            imageUrl: photo('white-wine-bottle'), recipe: [{ stockItem: stockId('White wine'),     qty: 750 }] },
+    { name: 'Rosé (glas)',       price: 5.0,  category: wine._id, sortOrder: 3, description: 'Huiswijn · droog, zomers · 17.5cl',              imageUrl: photo('rose-wine-glass'),  recipe: [{ stockItem: stockId('Rosé wine'),      qty: 175 }] },
+    { name: 'Rosé (fles)',       price: 25.0, category: wine._id, sortOrder: 4, description: 'Huiswijn rosé · 75cl',                           imageUrl: photo('rose-wine-bottle'), recipe: [{ stockItem: stockId('Rosé wine'),      qty: 750 }] },
+    { name: 'Rood (glas)',       price: 5.0,  category: wine._id, sortOrder: 5, description: 'Huiswijn · medium body · 17.5cl',                imageUrl: photo('red-wine-glass'),   recipe: [{ stockItem: stockId('Red wine'),       qty: 175 }] },
+    { name: 'Rood (fles)',       price: 25.0, category: wine._id, sortOrder: 6, description: 'Huiswijn rood · 75cl',                           imageUrl: photo('red-wine-bottle'),  recipe: [{ stockItem: stockId('Red wine'),       qty: 750 }] },
+    { name: 'Crémant (glas)',    price: 6.0,  category: wine._id, sortOrder: 7, description: 'Crémant · methode champenoise · 12.5cl',         imageUrl: photo('cremant-glass'),    recipe: [{ stockItem: stockId('Crémant bottle'), qty: 0.25 }] },
+    { name: 'Crémant (fles)',    price: 27.5, category: wine._id, sortOrder: 8, description: 'Crémant · 75cl · te delen',                      imageUrl: photo('cremant-bottle'),   recipe: [{ stockItem: stockId('Crémant bottle'), qty: 1 }] },
 
     // --- Coffee, tea & chocolate (Koffie / Thee / Chocomelk) ---
-    { name: 'Espresso',         price: 2.4, category: coffee._id, sortOrder: 1, recipe: [{ stockItem: stockId('Coffee beans'), qty: 8 }] },
-    { name: 'Dubbele Espresso', price: 3.2, category: coffee._id, sortOrder: 2, recipe: [{ stockItem: stockId('Coffee beans'), qty: 16 }] },
-    { name: 'Koffie',           price: 2.6, category: coffee._id, sortOrder: 3, recipe: [{ stockItem: stockId('Coffee beans'), qty: 10 }] },
-    { name: 'Cappuccino',       price: 3.4, category: coffee._id, sortOrder: 4, recipe: [
+    { name: 'Espresso',         price: 2.4, category: coffee._id, sortOrder: 1, description: 'Single origin · korte shot',           imageUrl: photo('espresso'),     recipe: [{ stockItem: stockId('Coffee beans'), qty: 8 }] },
+    { name: 'Dubbele Espresso', price: 3.2, category: coffee._id, sortOrder: 2, description: 'Twee shots · ristretto-stijl',                                          recipe: [{ stockItem: stockId('Coffee beans'), qty: 16 }] },
+    { name: 'Koffie',           price: 2.6, category: coffee._id, sortOrder: 3, description: 'Lungo · klassieke filter',                                              recipe: [{ stockItem: stockId('Coffee beans'), qty: 10 }] },
+    { name: 'Cappuccino',       price: 3.4, category: coffee._id, sortOrder: 4, description: 'Espresso met geschuimde melk',         imageUrl: photo('cappuccino'),   recipe: [
       { stockItem: stockId('Coffee beans'), qty: 8 },
       { stockItem: stockId('Milk'),         qty: 120 },
     ] },
-    { name: 'Latte',            price: 3.6, category: coffee._id, sortOrder: 5, recipe: [
+    { name: 'Latte',            price: 3.6, category: coffee._id, sortOrder: 5, description: 'Espresso met veel warme melk',                                          recipe: [
       { stockItem: stockId('Coffee beans'), qty: 8 },
       { stockItem: stockId('Milk'),         qty: 200 },
     ] },
-    { name: 'Satemwa thee',     price: 3.1, category: coffee._id, sortOrder: 6, recipe: [{ stockItem: stockId('Satemwa tea bag'), qty: 1 }] },
-    { name: 'Verse munt',       price: 3.4, category: coffee._id, sortOrder: 7, recipe: [{ stockItem: stockId('Fresh mint'),     qty: 10 }] },
-    { name: 'Homemade gember',  price: 3.9, category: coffee._id, sortOrder: 8, recipe: [{ stockItem: stockId('Fresh ginger'),   qty: 15 }] },
-    { name: 'Warme Chocomelk',  price: 3.6, category: coffee._id, sortOrder: 9, recipe: [
+    { name: 'Satemwa thee',     price: 3.1, category: coffee._id, sortOrder: 6, description: 'Single estate Malawi-thee · vraag de variant aan uw kelner',            recipe: [{ stockItem: stockId('Satemwa tea bag'), qty: 1 }] },
+    { name: 'Verse munt',       price: 3.4, category: coffee._id, sortOrder: 7, description: 'Verse muntblaadjes · honing op verzoek',                                recipe: [{ stockItem: stockId('Fresh mint'),     qty: 10 }] },
+    { name: 'Homemade gember',  price: 3.9, category: coffee._id, sortOrder: 8, description: 'Verse gember met citroen · pittig',                                     recipe: [{ stockItem: stockId('Fresh ginger'),   qty: 15 }] },
+    { name: 'Warme Chocomelk',  price: 3.6, category: coffee._id, sortOrder: 9, description: 'Pure chocolade · volle melk',                                           recipe: [
       { stockItem: stockId('Drinking chocolate'), qty: 25 },
       { stockItem: stockId('Milk'),               qty: 200 },
     ] },
 
     // --- Kitchen ---
-    { name: 'Cheeseburger & fries', price: 13.5, category: mains._id, sortOrder: 1, recipe: [
+    { name: 'Cheeseburger & fries', price: 13.5, category: mains._id, sortOrder: 1, description: 'Belgisch rundsvlees · cheddar · brioche bun · frieten erbij', imageUrl: photo('cheeseburger'),         recipe: [
       { stockItem: stockId('Burger bun'),     qty: 1 },
       { stockItem: stockId('Beef patty'),     qty: 1 },
       { stockItem: stockId('Fries (frozen)'), qty: 200 },
     ] },
-    { name: 'Spaghetti bolognese',  price: 12.0, category: mains._id, sortOrder: 2, recipe: [
+    { name: 'Spaghetti bolognese',  price: 12.0, category: mains._id, sortOrder: 2, description: 'Lange gestoofde rundsbolognese · gerijpte parmezaan',           imageUrl: photo('spaghetti-bolognese'),  recipe: [
       { stockItem: stockId('Pasta'),        qty: 130 },
       { stockItem: stockId('Tomato sauce'), qty: 100 },
     ] },
-    { name: 'Tiramisu',       price: 5.5, category: desserts._id, sortOrder: 1, recipe: [{ stockItem: stockId('Tiramisu portion'),     qty: 1 }] },
-    { name: 'Chocolate cake', price: 5.0, category: desserts._id, sortOrder: 2, recipe: [{ stockItem: stockId('Chocolate cake slice'), qty: 1 }] },
+    { name: 'Tiramisu',       price: 5.5, category: desserts._id, sortOrder: 1, description: 'Mascarpone, espresso & marsala · klassiek Italiaans',                imageUrl: photo('tiramisu'),       recipe: [{ stockItem: stockId('Tiramisu portion'),     qty: 1 }] },
+    { name: 'Chocolate cake', price: 5.0, category: desserts._id, sortOrder: 2, description: 'Vloeibaar hart · pure chocolade · geserveerd lauwwarm',              imageUrl: photo('chocolate-cake'), recipe: [{ stockItem: stockId('Chocolate cake slice'), qty: 1 }] },
   ]);
 
   console.log('[seed] tables...');

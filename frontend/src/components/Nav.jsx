@@ -1,45 +1,34 @@
 import { useEffect, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useStore } from "../store.js";
+import { useT } from "../i18n/index.jsx";
 import Logo from "./Logo.jsx";
 
 // Mobile bottom-bar shows these links flat; everything else is hidden
 // behind a "More" hamburger that opens a slide-up sheet.
 const MOBILE_PRIMARY = new Set(["/floor", "/kitchen", "/bar"]);
 
+// Each link's `labelKey` is resolved through the i18n hook at render
+// time so the nav switches language without a remount.
 const ALL_LINKS = [
-  {
-    to: "/floor",
-    label: "Floor",
-    icon: IconFloor,
-    roles: ["manager", "waiter"],
-  },
-  {
-    to: "/kitchen",
-    label: "Kitchen",
-    icon: IconKitchen,
-    roles: ["manager", "kitchen"],
-  },
-  { to: "/bar", label: "Bar", icon: IconBar, roles: ["manager", "bar"] },
-  {
-    to: "/reservations",
-    label: "Reservations",
-    icon: IconCalendar,
-    roles: ["manager", "waiter"],
-  },
-  { to: "/customers", label: "Customers", icon: IconUsers, roles: ["manager"] },
-  { to: "/items", label: "Menu", icon: IconMenu, roles: ["manager"] },
-  { to: "/stock", label: "Stock", icon: IconStock, roles: ["manager"] },
-  { to: "/staff", label: "Staff", icon: IconStaff, roles: ["manager"] },
-  { to: "/schedule", label: "Schedule", icon: IconClock, roles: ["manager"] },
-  { to: "/contracts", label: "Contracts", icon: IconDoc, roles: ["manager"] },
-  { to: "/rsz", label: "RSZ / ONSS", icon: IconShield, roles: ["manager"] },
-  { to: "/reports", label: "Reports", icon: IconReports, roles: ["manager"] },
-  { to: "/settings", label: "Settings", icon: IconCog, roles: ["manager"] },
+  { to: "/floor",        labelKey: "nav.floor",        icon: IconFloor,    roles: ["manager", "waiter"] },
+  { to: "/kitchen",      labelKey: "nav.kitchen",      icon: IconKitchen,  roles: ["manager", "kitchen"] },
+  { to: "/bar",          labelKey: "nav.bar",          icon: IconBar,      roles: ["manager", "bar"] },
+  { to: "/reservations", labelKey: "nav.reservations", icon: IconCalendar, roles: ["manager", "waiter"] },
+  { to: "/customers",    labelKey: "nav.customers",    icon: IconUsers,    roles: ["manager"] },
+  { to: "/items",        labelKey: "nav.menu",         icon: IconMenu,     roles: ["manager"] },
+  { to: "/stock",        labelKey: "nav.stock",        icon: IconStock,    roles: ["manager"] },
+  { to: "/staff",        labelKey: "nav.staff",        icon: IconStaff,    roles: ["manager"] },
+  { to: "/schedule",     labelKey: "nav.schedule",     icon: IconClock,    roles: ["manager"] },
+  { to: "/contracts",    labelKey: "nav.contracts",    icon: IconDoc,      roles: ["manager"] },
+  { to: "/rsz",          labelKey: "nav.rsz",          icon: IconShield,   roles: ["manager"] },
+  { to: "/reports",      labelKey: "nav.reports",      icon: IconReports,  roles: ["manager"] },
+  { to: "/settings",     labelKey: "nav.settings",     icon: IconCog,      roles: ["manager"] },
 ];
 
 export default function Nav() {
   const role = useStore((s) => s.role);
+  const { t } = useT();
   const links = ALL_LINKS.filter((l) => l.roles.includes(role));
   const primaryLinks = links.filter((l) => MOBILE_PRIMARY.has(l.to));
   const secondaryLinks = links.filter((l) => !MOBILE_PRIMARY.has(l.to));
@@ -65,7 +54,7 @@ export default function Nav() {
           <div>
             <div className="font-semibold leading-tight">Patron</div>
             <div className="text-xs text-slate-500 dark:text-slate-400">
-              Restaurant manager
+              {t('app.tagline')}
             </div>
           </div>
         </div>
@@ -86,21 +75,21 @@ export default function Nav() {
                 }
               >
                 <Icon className="w-4 h-4" />
-                {l.label}
+                {t(l.labelKey)}
               </NavLink>
             );
           })}
         </nav>
         <div className="px-4 py-3 border-t border-slate-200 dark:border-white/5 text-xs text-slate-400 dark:text-slate-500 flex items-center justify-between">
-          <span>v1.0 — sample data</span>
+          <span>{t('nav.version')}</span>
           <a
             href="/welcome.html"
             target="_blank"
             rel="noreferrer"
             className="text-brand-700 dark:text-brand-400 hover:underline"
-            title="Marketing landing page"
+            title={t('nav.about')}
           >
-            About ↗
+            {t('nav.about')}
           </a>
         </div>
       </aside>
@@ -128,7 +117,7 @@ export default function Nav() {
               }
             >
               <Icon className="w-5 h-5" />
-              <span className="truncate">{l.label}</span>
+              <span className="truncate">{t(l.labelKey)}</span>
             </NavLink>
           );
         })}
@@ -136,7 +125,7 @@ export default function Nav() {
           <button
             type="button"
             onClick={() => setMoreOpen(true)}
-            aria-label="More"
+            aria-label={t('nav.more')}
             className={[
               "flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 py-2 text-[10px] font-medium",
               moreOpen
@@ -145,7 +134,7 @@ export default function Nav() {
             ].join(" ")}
           >
             <IconHamburger className="w-5 h-5" />
-            <span>More</span>
+            <span>{t('nav.more')}</span>
           </button>
         )}
       </nav>
@@ -180,14 +169,14 @@ export default function Nav() {
             </div>
             <div className="px-4 pt-3 pb-2 flex items-center justify-between">
               <span className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                More
+                {t('nav.more')}
               </span>
               <button
                 onClick={() => setMoreOpen(false)}
                 className="text-slate-500 dark:text-slate-400 text-sm hover:text-slate-900 dark:hover:text-slate-100"
-                aria-label="Close"
+                aria-label={t('common.close')}
               >
-                Done
+                {t('nav.done')}
               </button>
             </div>
             <div className="px-3 pb-3 grid grid-cols-3 gap-2">
@@ -207,7 +196,7 @@ export default function Nav() {
                     }
                   >
                     <Icon className="w-5 h-5" />
-                    <span className="truncate max-w-full px-2">{l.label}</span>
+                    <span className="truncate max-w-full px-2">{t(l.labelKey)}</span>
                   </NavLink>
                 );
               })}

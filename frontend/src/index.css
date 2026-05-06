@@ -13,6 +13,24 @@ body,
   background-color: theme("colors.surface.950");
 }
 
+/* ── Capacitor / iOS / Android safe-area handling ───────────────
+   Native shells (Capacitor on iPhone notched devices, Android with
+   gesture-nav) report device-side insets via env(safe-area-inset-*)
+   when the viewport meta has viewport-fit=cover. Padding the body
+   keeps the React tree clear of the status bar at the top and the
+   home-indicator / nav bar at the bottom; horizontal insets are
+   relevant for landscape on full-screen displays. The bottom-tab
+   nav already uses env(safe-area-inset-bottom) directly, so we
+   reset it here to avoid double-counting. */
+body {
+  padding-top: env(safe-area-inset-top);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+/* The bottom-mobile nav handles its own bottom inset, so the body
+   shouldn't add it on top. */
+body { padding-bottom: 0; }
+
 /* Kitchen / bar tickets — premium dark KDS card. The whole ticket is
    one rounded surface with a thin top accent bar that picks up urgency
    colour. Designed to read at a glance on a busy line. */
