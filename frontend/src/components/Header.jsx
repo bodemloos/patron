@@ -1,6 +1,5 @@
 import { useStore, ROLES } from "../store.js";
 import Logo from "./Logo.jsx";
-import LanguageSwitcher from "./LanguageSwitcher.jsx";
 import { useT } from "../i18n/index.jsx";
 
 export default function Header() {
@@ -29,7 +28,6 @@ export default function Header() {
         </div>
       </div>
       <div className="flex items-center gap-2 shrink-0">
-        <LanguageSwitcher />
         <span className="hidden sm:inline text-xs text-slate-500 dark:text-slate-400">
           {t('header.viewAs')}
         </span>

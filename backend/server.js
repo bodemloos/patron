@@ -31,6 +31,7 @@ app.use('/api/schedules', require('./routes/schedules'));
 app.use('/api/exports', require('./routes/exports'));
 app.use('/api/contracts', require('./routes/contracts'));
 app.use('/api/rsz', require('./routes/rsz'));
+app.use('/api/table-requests', require('./routes/tableRequests'));
 app.use('/api/events', require('./routes/events'));
 // Public booking endpoints — used by the embeddable widget on
 // third-party websites and the QR table-side ordering page. CORS is

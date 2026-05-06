@@ -1,13 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
 import { api } from "../api.js";
 import Modal from "../components/Modal.jsx";
+import { useT } from "../i18n/index.jsx";
 
-const STATUS_LABELS = {
-  pending: "Pending",
-  confirmed: "Confirmed",
-  seated: "Seated",
-  cancelled: "Cancelled",
-  no_show: "No-show",
+// Status keys are stable; the human-readable labels come from i18n.
+const STATUS_KEYS = ['pending', 'confirmed', 'seated', 'cancelled', 'no_show'];
+const STATUS_LABEL_KEYS = {
+  pending:   'reservations.status.pending',
+  confirmed: 'reservations.status.confirmed',
+  seated:    'reservations.status.seated',
+  cancelled: 'reservations.status.cancelled',
+  no_show:   'reservations.status.noshow',
 };
 
 const STATUS_TONES = {
@@ -51,6 +54,7 @@ export default function Reservations() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [list, setList] = useState([]);
   const [editing, setEditing] = useState(null);
+  const { t } = useT();
 
   async function load() {
     // Pull a generous window then filter client-side, so the date and
@@ -87,7 +91,7 @@ export default function Reservations() {
     load();
   }
   async function removeReservation(r) {
-    if (!confirm(`Delete reservation for ${r.name}?`)) return;
+    if (!confirm(t('reservations.deleteConfirm', { name: r.name }))) return;
     await api.deleteReservation(r._id);
     load();
   }
@@ -96,10 +100,9 @@ export default function Reservations() {
     <div className="p-3 sm:p-6 space-y-4 sm:space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-xl sm:text-2xl font-semibold">Reservations</h1>
+          <h1 className="text-xl sm:text-2xl font-semibold">{t('reservations.title')}</h1>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
-            Bookings from the public widget plus walk-up reservations taken by
-            staff.
+            {t('reservations.sub')}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -124,14 +127,14 @@ export default function Reservations() {
               })
             }
           >
-            + Add reservation
+            {t('reservations.add')}
           </button>
         </div>
       </div>
 
       {/* Status pill row */}
       <div className="flex flex-wrap gap-2">
-        {[["all", "All"], ...Object.entries(STATUS_LABELS)].map(
+        {[['all', t('common.all')], ...STATUS_KEYS.map((k) => [k, t(STATUS_LABEL_KEYS[k])])].map(
           ([key, label]) => (
             <button
               key={key}
@@ -157,13 +160,13 @@ export default function Reservations() {
           <table className="w-full text-sm min-w-[720px]">
             <thead className="bg-slate-50 dark:bg-surface-950 text-slate-500 dark:text-slate-400 text-left">
               <tr>
-                <th className="px-4 py-2 w-20">Time</th>
-                <th className="px-4 py-2">Guest</th>
-                <th className="px-4 py-2">Party</th>
-                <th className="px-4 py-2">Table</th>
-                <th className="px-4 py-2">Contact</th>
-                <th className="px-4 py-2">Notes</th>
-                <th className="px-4 py-2">Status</th>
+                <th className="px-4 py-2 w-20">{t('reservations.col.time')}</th>
+                <th className="px-4 py-2">{t('reservations.col.guest')}</th>
+                <th className="px-4 py-2">{t('reservations.col.party')}</th>
+                <th className="px-4 py-2">{t('reservations.col.table')}</th>
+                <th className="px-4 py-2">{t('reservations.col.contact')}</th>
+                <th className="px-4 py-2">{t('reservations.col.notes')}</th>
+                <th className="px-4 py-2">{t('reservations.col.status')}</th>
                 <th className="px-4 py-2"></th>
               </tr>
             </thead>
@@ -180,7 +183,7 @@ export default function Reservations() {
                     <div className="font-medium">{r.name}</div>
                     {r.source === "widget" && (
                       <div className="text-[10px] uppercase tracking-wide text-slate-400 dark:text-slate-500">
-                        via widget
+                        {t('reservations.viaWidget')}
                       </div>
                     )}
                   </td>
@@ -195,7 +198,7 @@ export default function Reservations() {
                       </span>
                     ) : (
                       <span className="text-xs text-slate-400 dark:text-slate-500">
-                        unassigned
+                        {t('reservations.unassigned')}
                       </span>
                     )}
                   </td>
@@ -216,7 +219,7 @@ export default function Reservations() {
                   </td>
                   <td className="px-4 py-2">
                     <span className={`badge ${STATUS_TONES[r.status]}`}>
-                      {STATUS_LABELS[r.status] || r.status}
+                      {STATUS_LABEL_KEYS[r.status] ? t(STATUS_LABEL_KEYS[r.status]) : r.status}
                     </span>
                   </td>
                   <td className="px-4 py-2 text-right whitespace-nowrap">
@@ -298,6 +301,7 @@ export default function Reservations() {
 }
 
 function ReservationEditor({ editing, onClose, onSaved }) {
+  const { t } = useT();
   const [draft, setDraft] = useState(editing);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -334,21 +338,21 @@ function ReservationEditor({ editing, onClose, onSaved }) {
     <Modal
       open={!!editing}
       onClose={onClose}
-      title={draft._id ? "Edit reservation" : "New reservation"}
+      title={draft._id ? t('reservations.modal.edit') : t('reservations.modal.new')}
       footer={
         <>
           <button className="btn-ghost" onClick={onClose}>
-            Cancel
+            {t('common.cancel')}
           </button>
           <button className="btn-primary" disabled={saving} onClick={save}>
-            {saving ? "Saving…" : "Save"}
+            {saving ? t('settings.saving') : t('common.save')}
           </button>
         </>
       }
     >
       <div className="grid grid-cols-2 gap-3 text-sm">
         <label className="col-span-2">
-          <span className="text-slate-600 dark:text-slate-300">Guest name</span>
+          <span className="text-slate-600 dark:text-slate-300">{t('reservations.field.name')}</span>
           <input
             className="input mt-1"
             value={draft.name}
@@ -356,7 +360,7 @@ function ReservationEditor({ editing, onClose, onSaved }) {
           />
         </label>
         <label>
-          <span className="text-slate-600 dark:text-slate-300">Email</span>
+          <span className="text-slate-600 dark:text-slate-300">{t('reservations.field.email')}</span>
           <input
             className="input mt-1"
             type="email"
@@ -365,7 +369,7 @@ function ReservationEditor({ editing, onClose, onSaved }) {
           />
         </label>
         <label>
-          <span className="text-slate-600 dark:text-slate-300">Phone</span>
+          <span className="text-slate-600 dark:text-slate-300">{t('reservations.field.phone')}</span>
           <input
             className="input mt-1"
             value={draft.phone || ""}
@@ -373,7 +377,7 @@ function ReservationEditor({ editing, onClose, onSaved }) {
           />
         </label>
         <label>
-          <span className="text-slate-600 dark:text-slate-300">Party size</span>
+          <span className="text-slate-600 dark:text-slate-300">{t('reservations.field.party')}</span>
           <input
             className="input mt-1"
             type="number"
@@ -384,7 +388,7 @@ function ReservationEditor({ editing, onClose, onSaved }) {
         </label>
         <label>
           <span className="text-slate-600 dark:text-slate-300">
-            Duration (min)
+            {t('reservations.field.duration')}
           </span>
           <input
             className="input mt-1"
@@ -399,7 +403,7 @@ function ReservationEditor({ editing, onClose, onSaved }) {
         </label>
         <label className="col-span-2">
           <span className="text-slate-600 dark:text-slate-300">
-            Date & time
+            {t('reservations.field.dateTime')}
           </span>
           <input
             className="input mt-1"
@@ -409,22 +413,22 @@ function ReservationEditor({ editing, onClose, onSaved }) {
           />
         </label>
         <label>
-          <span className="text-slate-600 dark:text-slate-300">Status</span>
+          <span className="text-slate-600 dark:text-slate-300">{t('reservations.col.status')}</span>
           <select
             className="input mt-1"
             value={draft.status}
             onChange={(e) => setDraft({ ...draft, status: e.target.value })}
           >
-            {Object.entries(STATUS_LABELS).map(([k, v]) => (
+            {STATUS_KEYS.map((k) => (
               <option key={k} value={k}>
-                {v}
+                {t(STATUS_LABEL_KEYS[k])}
               </option>
             ))}
           </select>
         </label>
         <label className="col-span-2">
           <span className="text-slate-600 dark:text-slate-300">
-            Notes / allergies
+            {t('reservations.field.notes')}
           </span>
           <textarea
             className="input mt-1"

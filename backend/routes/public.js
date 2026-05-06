@@ -6,6 +6,7 @@ const Category = require('../models/Category');
 const Table = require('../models/Table');
 const Settings = require('../models/Settings');
 const Customer = require('../models/Customer');
+const TableRequest = require('../models/TableRequest');
 const events = require('../lib/events');
 const {
   OPENING_HOURS,
@@ -241,6 +242,47 @@ router.post('/menu/:tableId/order', async (req, res, next) => {
       total: order.total,
       lines: order.lines.length,
     });
+  } catch (e) { next(e); }
+});
+
+// POST /api/public/menu/:tableId/request — body: { kind: 'waiter' | 'bill', note? }
+// Records a service request from the QR menu. Coalesces with any
+// existing pending request of the same kind on the same table so a
+// twitchy guest tapping twice doesn't spam the staff inbox.
+router.post('/menu/:tableId/request', async (req, res, next) => {
+  try {
+    const table = await Table.findById(req.params.tableId);
+    if (!table) return res.status(404).json({ error: 'Table not found' });
+
+    const kind = String(req.body?.kind || '').trim();
+    if (kind !== 'waiter' && kind !== 'bill') {
+      return res.status(400).json({ error: 'kind must be "waiter" or "bill"' });
+    }
+    const note = String(req.body?.note || '').slice(0, 280);
+
+    // Coalesce: reuse the open pending request of the same kind for
+    // this table, otherwise create a new one. updatedAt bumps so the
+    // staff inbox can sort by recency.
+    let request = await TableRequest.findOne({
+      table: table._id, kind, status: 'pending',
+    });
+    if (request) {
+      request.note = note || request.note;
+      await request.save();
+    } else {
+      request = await TableRequest.create({
+        table: table._id, kind, note, status: 'pending',
+      });
+    }
+
+    events.publish('table-request:created', {
+      id: String(request._id),
+      tableId: String(table._id),
+      tableLabel: table.label,
+      kind,
+    });
+
+    res.status(201).json({ ok: true, kind, id: String(request._id) });
   } catch (e) { next(e); }
 });
 

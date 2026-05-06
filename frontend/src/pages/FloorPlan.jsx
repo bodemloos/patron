@@ -5,6 +5,7 @@ import { useStore } from '../store.js';
 import POSPanel from '../components/POSPanel.jsx';
 import TableQRModal from '../components/TableQRModal.jsx';
 import { subscribe } from '../lib/events.js';
+import { useT } from '../i18n/index.jsx';
 
 const CANVAS_W = 1000;
 const CANVAS_H = 700;
@@ -33,6 +34,7 @@ function dimsForSeats(seats) {
 
 export default function FloorPlan() {
   const role = useStore((s) => s.role);
+  const { t } = useT();
   const [tables, setTables] = useState([]);
   const [roomDefs, setRoomDefs] = useState([]); // [{_id, name, color}]
   const [editMode, setEditMode] = useState(false);
@@ -428,13 +430,13 @@ export default function FloorPlan() {
     <div className="p-3 sm:p-6">
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-3 sm:mb-4 gap-2 sm:gap-4">
         <div className="min-w-0">
-          <h1 className="text-xl sm:text-2xl font-semibold">Floor plan</h1>
+          <h1 className="text-xl sm:text-2xl font-semibold">{t('floor.title')}</h1>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
             {role === 'waiter'
-              ? 'Tap a table to open its order.'
+              ? t('floor.sub.waiter')
               : editMode
-                ? 'Drag tables to reposition.'
-                : 'Tap a table to open its order.'}
+                ? t('floor.sub.edit')
+                : t('floor.sub.tap')}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2 justify-between sm:justify-end">
@@ -453,6 +455,8 @@ export default function FloorPlan() {
           )}
         </div>
       </div>
+
+      <ServiceRequestsBanner />
 
       <div className="grid grid-cols-12 gap-4">
         <div className="col-span-12 lg:col-span-9 card overflow-hidden relative">
@@ -968,6 +972,60 @@ function ZoneIcon({ zone, className = '' }) {
       <path d="M3 11l9-7 9 7" />
       <path d="M5 10v10h14V10" />
     </svg>
+  );
+}
+
+/**
+ * ServiceRequestsBanner — small live inbox of pending QR-menu
+ * service requests ("call the waiter", "bring the bill"). Subscribes
+ * to the SSE channel so a guest's tap shows up in real time. Hides
+ * itself when there's nothing pending so it stays out of the way on
+ * a quiet shift.
+ */
+function ServiceRequestsBanner() {
+  const { t } = useT();
+  const [list, setList] = useState([]);
+
+  async function load() {
+    try {
+      setList(await api.tableRequests('pending'));
+    } catch (e) { /* ignore — silently empty */ }
+  }
+  useEffect(() => {
+    load();
+    const off = subscribe(
+      ['table-request:created', 'table-request:updated'],
+      () => load()
+    );
+    return off;
+  }, []);
+
+  async function ack(id) {
+    setList((cur) => cur.filter((r) => r._id !== id));
+    try { await api.ackTableRequest(id); } catch (e) { load(); /* roll back from server */ }
+  }
+
+  if (!list.length) return null;
+  return (
+    <div className="mb-3 sm:mb-4 card p-3 flex flex-wrap items-center gap-2 bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-900">
+      <span className="text-xs font-medium uppercase tracking-wide text-amber-700 dark:text-amber-300 mr-1">
+        {list.length} {t(list.length === 1 ? 'tableReq.one' : 'tableReq.other')}
+      </span>
+      {list.map((r) => (
+        <button
+          key={r._id}
+          onClick={() => ack(r._id)}
+          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-surface-900 border border-amber-200 dark:border-amber-800 text-sm hover:bg-amber-100 dark:hover:bg-amber-950/60"
+          title={t('tableReq.ack')}
+        >
+          <span className="font-semibold">{r.table?.label || '—'}</span>
+          <span className="text-xs text-amber-700 dark:text-amber-300">
+            {r.kind === 'waiter' ? t('tableReq.kind.waiter') : t('tableReq.kind.bill')}
+          </span>
+          <span className="text-amber-600 dark:text-amber-400">✓</span>
+        </button>
+      ))}
+    </div>
   );
 }
 

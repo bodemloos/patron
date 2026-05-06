@@ -2,12 +2,14 @@ import { useEffect, useState } from 'react';
 import { api } from '../api.js';
 import { subscribe } from '../lib/events.js';
 import Ticket from '../components/Ticket.jsx';
+import { useT } from '../i18n/index.jsx';
 
 export default function Kitchen() {
   const [queue, setQueue] = useState([]);
   const [items, setItems] = useState([]);
   const [busy, setBusy] = useState(false);
   const [showEightySix, setShowEightySix] = useState(false);
+  const { t } = useT();
 
   async function load() {
     const [q, it] = await Promise.all([api.kitchenQueue(), api.items()]);
@@ -48,14 +50,16 @@ export default function Kitchen() {
     <div className="p-3 sm:p-6">
       <div className="flex items-center justify-between flex-wrap gap-3 mb-4">
         <div>
-          <h1 className="text-2xl font-semibold">Kitchen queue</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">Live · {queue.length} item{queue.length === 1 ? '' : 's'} in flight</p>
+          <h1 className="text-2xl font-semibold">{t('kitchen.title')}</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            {t(queue.length === 1 ? 'kitchen.live.one' : 'kitchen.live.other', { n: queue.length })}
+          </p>
         </div>
         <button
           className="btn-ghost"
           onClick={() => setShowEightySix(!showEightySix)}
         >
-          {showEightySix ? 'Hide 86 list' : '86 list'}
+          {showEightySix ? t('kitchen.86.hide') : t('kitchen.86.show')}
         </button>
       </div>
 
@@ -63,10 +67,10 @@ export default function Kitchen() {
         <section className="card p-4 mb-4">
           <div className="flex items-center justify-between mb-3">
             <div>
-              <div className="font-semibold text-sm">86 the menu</div>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Toggle items off when you run out — they grey out on the POS instantly.</p>
+              <div className="font-semibold text-sm">{t('kitchen.86.title')}</div>
+              <p className="text-xs text-slate-500 dark:text-slate-400">{t('kitchen.86.sub')}</p>
             </div>
-            <span className="text-xs text-slate-400 dark:text-slate-500">{items.filter((i) => i.available === false).length} currently 86'd</span>
+            <span className="text-xs text-slate-400 dark:text-slate-500">{t('kitchen.86.count', { n: items.filter((i) => i.available === false).length })}</span>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
             {items.map((i) => (
@@ -90,7 +94,7 @@ export default function Kitchen() {
 
       {!queue.length && (
         <div className="card p-10 text-center text-slate-400 dark:text-slate-500">
-          All caught up — no incoming orders.
+          {t('kitchen.empty')}
         </div>
       )}
 

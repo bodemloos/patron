@@ -178,6 +178,10 @@ export const api = {
   contractDocumentUrl: (id) => url(`/api/contracts/${id}/document.html`),
   submitDimona: (id, direction) => request(`/api/contracts/${id}/dimona`, { method: 'POST', body: { direction } }),
 
+  tableRequests: (status = 'pending') => request('/api/table-requests' + (status ? `?status=${status}` : '')),
+  ackTableRequest: (id, by = '') => request(`/api/table-requests/${id}`, { method: 'PATCH', body: { status: 'acknowledged', acknowledgedBy: by } }),
+  deleteTableRequest: (id) => request(`/api/table-requests/${id}`, { method: 'DELETE' }),
+
   rszDeclarations: (q = '') => request('/api/rsz/declarations' + (q ? `?${q}` : '')),
   rszHoursPreview: (from, to) => request(`/api/rsz/hours-preview?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`),
   submitHoursBatch: (from, to, staffIds) => request('/api/rsz/hours-batch', { method: 'POST', body: { from, to, staffIds } }),

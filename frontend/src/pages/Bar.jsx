@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { api } from '../api.js';
 import { subscribe } from '../lib/events.js';
 import Ticket from '../components/Ticket.jsx';
+import { useT } from '../i18n/index.jsx';
 
 // Drink-category heuristic — same wording the backend uses to set
 // `course === 'drink'` on a line. Keeps the 86-list focused on items
@@ -18,6 +19,7 @@ export default function Bar() {
   const [items, setItems] = useState([]);
   const [busy, setBusy] = useState(false);
   const [showEightySix, setShowEightySix] = useState(false);
+  const { t } = useT();
 
   async function load() {
     const [q, it] = await Promise.all([api.barQueue(), api.items()]);
@@ -60,11 +62,13 @@ export default function Bar() {
     <div className="p-3 sm:p-6">
       <div className="flex items-center justify-between flex-wrap gap-3 mb-4">
         <div>
-          <h1 className="text-2xl font-semibold">Bar queue</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">Live · {queue.length} drink{queue.length === 1 ? '' : 's'} in flight</p>
+          <h1 className="text-2xl font-semibold">{t('bar.title')}</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            {t(queue.length === 1 ? 'bar.live.one' : 'bar.live.other', { n: queue.length })}
+          </p>
         </div>
         <button className="btn-ghost" onClick={() => setShowEightySix(!showEightySix)}>
-          {showEightySix ? 'Hide 86 list' : '86 list'}
+          {showEightySix ? t('kitchen.86.hide') : t('kitchen.86.show')}
         </button>
       </div>
 
@@ -72,10 +76,10 @@ export default function Bar() {
         <section className="card p-4 mb-4">
           <div className="flex items-center justify-between mb-3">
             <div>
-              <div className="font-semibold text-sm">86 the bar</div>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Toggle drinks off when you run out — they grey out on the POS instantly.</p>
+              <div className="font-semibold text-sm">{t('bar.86.title')}</div>
+              <p className="text-xs text-slate-500 dark:text-slate-400">{t('bar.86.sub')}</p>
             </div>
-            <span className="text-xs text-slate-400 dark:text-slate-500">{drinkItems.filter((i) => i.available === false).length} currently 86'd</span>
+            <span className="text-xs text-slate-400 dark:text-slate-500">{t('kitchen.86.count', { n: drinkItems.filter((i) => i.available === false).length })}</span>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
             {drinkItems.map((i) => (
@@ -95,7 +99,7 @@ export default function Bar() {
             ))}
             {!drinkItems.length && (
               <div className="col-span-full text-center text-slate-400 dark:text-slate-500 text-sm py-4">
-                No drink-category items yet. Add a category whose name contains "drink", "coffee", "tea", "bar", "wine", "beer" or "cocktail" to populate this list.
+                {t('bar.86.empty')}
               </div>
             )}
           </div>
@@ -104,7 +108,7 @@ export default function Bar() {
 
       {!queue.length && (
         <div className="card p-10 text-center text-slate-400 dark:text-slate-500">
-          All caught up — no drinks waiting.
+          {t('bar.empty')}
         </div>
       )}
 
