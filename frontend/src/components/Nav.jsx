@@ -34,6 +34,7 @@ const ALL_LINKS = [
   { to: "/schedule", label: "Schedule", icon: IconClock, roles: ["manager"] },
   { to: "/contracts", label: "Contracts", icon: IconDoc, roles: ["manager"] },
   { to: "/rsz", label: "RSZ / ONSS", icon: IconShield, roles: ["manager"] },
+  { to: "/haccp", label: "HACCP", icon: IconThermometer, roles: ["manager", "kitchen"] },
   { to: "/reports", label: "Reports", icon: IconReports, roles: ["manager"] },
   { to: "/settings", label: "Settings", icon: IconCog, roles: ["manager"] },
 ];
@@ -373,6 +374,16 @@ function IconShield(p) {
     <>
       <path d="M12 2l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V6z" />
       <path d="M9 12l2 2 4-4" />
+    </>
+  );
+}
+function IconThermometer(p) {
+  return svg(
+    p,
+    <>
+      <path d="M14 4a2 2 0 1 0-4 0v10.5a4 4 0 1 0 4 0z" />
+      <path d="M12 8v8" />
+      <circle cx="12" cy="17" r="1.6" />
     </>
   );
 }

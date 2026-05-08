@@ -16,6 +16,7 @@ import Schedule from './pages/Schedule.jsx';
 import QRSheet from './pages/QRSheet.jsx';
 import Contracts from './pages/Contracts.jsx';
 import RSZ from './pages/RSZ.jsx';
+import Haccp from './pages/Haccp.jsx';
 
 const HOME_BY_ROLE = {
   manager: '/floor',
@@ -77,6 +78,7 @@ export default function App() {
             <Route path="/qr-sheet"     element={<RoleGuard allowed={['manager']}><QRSheet /></RoleGuard>} />
             <Route path="/contracts"    element={<RoleGuard allowed={['manager']}><Contracts /></RoleGuard>} />
             <Route path="/rsz"          element={<RoleGuard allowed={['manager']}><RSZ /></RoleGuard>} />
+            <Route path="/haccp"        element={<RoleGuard allowed={['manager', 'kitchen']}><Haccp /></RoleGuard>} />
             <Route path="*" element={<Navigate to={HOME_BY_ROLE[role]} replace />} />
           </Routes>
         </main>
