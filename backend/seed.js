@@ -10,6 +10,11 @@ const Staff = require("./models/Staff");
 const Shift = require("./models/Shift");
 const Order = require("./models/Order");
 const Reservation = require("./models/Reservation");
+const HaccpEquipment = require("./models/HaccpEquipment");
+const HaccpTemperatureLog = require("./models/HaccpTemperatureLog");
+const HaccpCleaningTask = require("./models/HaccpCleaningTask");
+const HaccpCleaningLog = require("./models/HaccpCleaningLog");
+const HaccpReceivingLog = require("./models/HaccpReceivingLog");
 
 async function run() {
   await connectDB(process.env.MONGO_URI || "mongodb://127.0.0.1:27017/patron");
@@ -25,6 +30,11 @@ async function run() {
     Shift.deleteMany({}),
     Order.deleteMany({}),
     Reservation.deleteMany({}),
+    HaccpEquipment.deleteMany({}),
+    HaccpTemperatureLog.deleteMany({}),
+    HaccpCleaningTask.deleteMany({}),
+    HaccpCleaningLog.deleteMany({}),
+    HaccpReceivingLog.deleteMany({}),
   ]);
 
   console.log("[seed] rooms...");
@@ -1526,6 +1536,94 @@ async function run() {
       source: "manual",
     }))
   );
+
+  console.log("[seed] HACCP equipment + tasks...");
+  const equipment = await HaccpEquipment.create([
+    { name: "Walk-in cooler",  type: "fridge",      location: "Kitchen", minTempC: 0,   maxTempC: 4,   sortOrder: 1 },
+    { name: "Bar fridge",      type: "fridge",      location: "Bar",     minTempC: 1,   maxTempC: 7,   sortOrder: 2 },
+    { name: "Prep fridge",     type: "fridge",      location: "Kitchen", minTempC: 1,   maxTempC: 4,   sortOrder: 3 },
+    { name: "Freezer",         type: "freezer",     location: "Kitchen", minTempC: -25, maxTempC: -18, sortOrder: 4 },
+    { name: "Hot bain-marie",  type: "hot-holding", location: "Pass",    minTempC: 63,  maxTempC: 80,  sortOrder: 5 },
+  ]);
+
+  const cleaningTasks = await HaccpCleaningTask.create([
+    { name: "Mop kitchen floor",          area: "Kitchen", frequency: "daily",   sortOrder: 1 },
+    { name: "Sanitise prep surfaces",     area: "Kitchen", frequency: "daily",   sortOrder: 2 },
+    { name: "Empty + clean grease trap",  area: "Kitchen", frequency: "weekly",  sortOrder: 3 },
+    { name: "Defrost + clean freezer",    area: "Kitchen", frequency: "monthly", sortOrder: 4 },
+    { name: "Clean bar taps + drip tray", area: "Bar",     frequency: "daily",   sortOrder: 5 },
+    { name: "Toilets deep clean",         area: "Toilets", frequency: "daily",   sortOrder: 6 },
+  ]);
+
+  console.log("[seed] HACCP sample logs...");
+  // Two readings per equipment per day for the past 7 days.
+  const tempLogs = [];
+  for (let d = 0; d < 7; d++) {
+    for (const eq of equipment) {
+      for (const hour of [9, 17]) {
+        const target = (eq.minTempC + eq.maxTempC) / 2;
+        const drift = (Math.random() - 0.5) * (eq.maxTempC - eq.minTempC) * 0.6;
+        const tC = Math.round((target + drift) * 10) / 10;
+        const recordedAt = new Date(now - d * day - (24 - hour) * 3600 * 1000);
+        const inRange = tC >= eq.minTempC && tC <= eq.maxTempC;
+        tempLogs.push({
+          equipment: eq._id,
+          recordedAt,
+          recordedBy: staff[3 + (d % 2)]._id, // kitchen rotates
+          temperatureC: tC,
+          inRange,
+          correctiveAction: inRange ? "" : "Adjusted thermostat, monitored 30 min, stable.",
+        });
+      }
+    }
+  }
+  await HaccpTemperatureLog.create(tempLogs);
+
+  // Daily tasks logged most days, weekly tasks once or twice, monthly once.
+  const cleaningLogs = [];
+  for (const t of cleaningTasks) {
+    const span = t.frequency === "daily" ? 7 : t.frequency === "weekly" ? 14 : 30;
+    const stride = t.frequency === "daily" ? 1 : t.frequency === "weekly" ? 7 : 30;
+    for (let d = 0; d < span; d += stride) {
+      if (t.frequency === "daily" && Math.random() < 0.15) continue; // simulate a missed day
+      cleaningLogs.push({
+        task: t._id,
+        completedAt: new Date(now - d * day - (3 + Math.random() * 4) * 3600 * 1000),
+        completedBy: staff[3 + Math.floor(Math.random() * 2)]._id,
+      });
+    }
+  }
+  await HaccpCleaningLog.create(cleaningLogs);
+
+  await HaccpReceivingLog.create([
+    {
+      receivedAt: new Date(now - 1 * day),
+      receivedBy: staff[3]._id,
+      supplier: "Vleesgroothandel Janssens",
+      itemsSummary: "8 kg kalfslever, 5 kg gehakt, 12 kg kippenfilet",
+      temperatureC: 3.4,
+      packagingOk: true,
+      expiryOk: true,
+    },
+    {
+      receivedAt: new Date(now - 2 * day),
+      receivedBy: staff[4]._id,
+      supplier: "Bakker De Smet",
+      itemsSummary: "40× pistolets, 10× tarwebrood",
+      packagingOk: true,
+      expiryOk: true,
+    },
+    {
+      receivedAt: new Date(now - 3 * day),
+      receivedBy: staff[3]._id,
+      supplier: "Vishandel Oostende",
+      itemsSummary: "4 kg zalmfilet, 2 kg kabeljauw",
+      temperatureC: 6.2,
+      packagingOk: true,
+      expiryOk: false,
+      correctiveAction: "Short-dated kabeljauw — used same day, supplier notified.",
+    },
+  ]);
 
   console.log("[seed] done.");
   await mongoose.disconnect();

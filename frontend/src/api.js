@@ -185,6 +185,33 @@ export const api = {
   rszDeclarations: (q = '') => request('/api/rsz/declarations' + (q ? `?${q}` : '')),
   rszHoursPreview: (from, to) => request(`/api/rsz/hours-preview?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`),
   submitHoursBatch: (from, to, staffIds) => request('/api/rsz/hours-batch', { method: 'POST', body: { from, to, staffIds } }),
+
+  // --- HACCP-registratie ---
+  haccpEquipment: (includeInactive = false) =>
+    request('/api/haccp/equipment' + (includeInactive ? '?includeInactive=1' : '')),
+  saveHaccpEquipment: (e) => (e._id
+    ? request(`/api/haccp/equipment/${e._id}`, { method: 'PUT', body: e })
+    : request('/api/haccp/equipment', { method: 'POST', body: e })),
+  deleteHaccpEquipment: (id) => request(`/api/haccp/equipment/${id}`, { method: 'DELETE' }),
+
+  haccpTemperatureLogs: (q = '') => request('/api/haccp/temperature-logs' + (q ? `?${q}` : '')),
+  recordHaccpTemperature: (body) => request('/api/haccp/temperature-logs', { method: 'POST', body }),
+  deleteHaccpTemperatureLog: (id) => request(`/api/haccp/temperature-logs/${id}`, { method: 'DELETE' }),
+
+  haccpCleaningTasks: (includeInactive = false) =>
+    request('/api/haccp/cleaning-tasks' + (includeInactive ? '?includeInactive=1' : '')),
+  saveHaccpCleaningTask: (t) => (t._id
+    ? request(`/api/haccp/cleaning-tasks/${t._id}`, { method: 'PUT', body: t })
+    : request('/api/haccp/cleaning-tasks', { method: 'POST', body: t })),
+  deleteHaccpCleaningTask: (id) => request(`/api/haccp/cleaning-tasks/${id}`, { method: 'DELETE' }),
+
+  haccpCleaningLogs: (q = '') => request('/api/haccp/cleaning-logs' + (q ? `?${q}` : '')),
+  recordHaccpCleaning: (body) => request('/api/haccp/cleaning-logs', { method: 'POST', body }),
+  deleteHaccpCleaningLog: (id) => request(`/api/haccp/cleaning-logs/${id}`, { method: 'DELETE' }),
+
+  haccpReceivingLogs: (q = '') => request('/api/haccp/receiving-logs' + (q ? `?${q}` : '')),
+  recordHaccpReceiving: (body) => request('/api/haccp/receiving-logs', { method: 'POST', body }),
+  deleteHaccpReceivingLog: (id) => request(`/api/haccp/receiving-logs/${id}`, { method: 'DELETE' }),
 };
 
 export const fmtEur = (n) =>

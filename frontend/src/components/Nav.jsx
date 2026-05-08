@@ -11,19 +11,20 @@ const MOBILE_PRIMARY = new Set(["/floor", "/kitchen", "/bar"]);
 // Each link's `labelKey` is resolved through the i18n hook at render
 // time so the nav switches language without a remount.
 const ALL_LINKS = [
-  { to: "/floor",        labelKey: "nav.floor",        icon: IconFloor,    roles: ["manager", "waiter"] },
-  { to: "/kitchen",      labelKey: "nav.kitchen",      icon: IconKitchen,  roles: ["manager", "kitchen"] },
-  { to: "/bar",          labelKey: "nav.bar",          icon: IconBar,      roles: ["manager", "bar"] },
-  { to: "/reservations", labelKey: "nav.reservations", icon: IconCalendar, roles: ["manager", "waiter"] },
-  { to: "/customers",    labelKey: "nav.customers",    icon: IconUsers,    roles: ["manager"] },
-  { to: "/items",        labelKey: "nav.menu",         icon: IconMenu,     roles: ["manager"] },
-  { to: "/stock",        labelKey: "nav.stock",        icon: IconStock,    roles: ["manager"] },
-  { to: "/staff",        labelKey: "nav.staff",        icon: IconStaff,    roles: ["manager"] },
-  { to: "/schedule",     labelKey: "nav.schedule",     icon: IconClock,    roles: ["manager"] },
-  { to: "/contracts",    labelKey: "nav.contracts",    icon: IconDoc,      roles: ["manager"] },
-  { to: "/rsz",          labelKey: "nav.rsz",          icon: IconShield,   roles: ["manager"] },
-  { to: "/reports",      labelKey: "nav.reports",      icon: IconReports,  roles: ["manager"] },
-  { to: "/settings",     labelKey: "nav.settings",     icon: IconCog,      roles: ["manager"] },
+  { to: "/floor",        labelKey: "nav.floor",        icon: IconFloor,       roles: ["manager", "waiter"] },
+  { to: "/kitchen",      labelKey: "nav.kitchen",      icon: IconKitchen,     roles: ["manager", "kitchen"] },
+  { to: "/bar",          labelKey: "nav.bar",          icon: IconBar,         roles: ["manager", "bar"] },
+  { to: "/reservations", labelKey: "nav.reservations", icon: IconCalendar,    roles: ["manager", "waiter"] },
+  { to: "/customers",    labelKey: "nav.customers",    icon: IconUsers,       roles: ["manager"] },
+  { to: "/items",        labelKey: "nav.menu",         icon: IconMenu,        roles: ["manager"] },
+  { to: "/stock",        labelKey: "nav.stock",        icon: IconStock,       roles: ["manager"] },
+  { to: "/staff",        labelKey: "nav.staff",        icon: IconStaff,       roles: ["manager"] },
+  { to: "/schedule",     labelKey: "nav.schedule",     icon: IconClock,       roles: ["manager"] },
+  { to: "/contracts",    labelKey: "nav.contracts",    icon: IconDoc,         roles: ["manager"] },
+  { to: "/rsz",          labelKey: "nav.rsz",          icon: IconShield,      roles: ["manager"] },
+  { to: "/haccp",        labelKey: "nav.haccp",        icon: IconThermometer, roles: ["manager", "kitchen"] },
+  { to: "/reports",      labelKey: "nav.reports",      icon: IconReports,     roles: ["manager"] },
+  { to: "/settings",     labelKey: "nav.settings",     icon: IconCog,         roles: ["manager"] },
 ];
 
 export default function Nav() {
@@ -362,6 +363,16 @@ function IconShield(p) {
     <>
       <path d="M12 2l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V6z" />
       <path d="M9 12l2 2 4-4" />
+    </>
+  );
+}
+function IconThermometer(p) {
+  return svg(
+    p,
+    <>
+      <path d="M14 4a2 2 0 1 0-4 0v10.5a4 4 0 1 0 4 0z" />
+      <path d="M12 8v8" />
+      <circle cx="12" cy="17" r="1.6" />
     </>
   );
 }
