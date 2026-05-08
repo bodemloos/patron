@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>Patron — Feature tour for restaurants</title>
+    <meta
+      name="description"
+      content="A guided walkthrough of every Patron feature — floor plan, POS, reservations, payroll, FAVV/HACCP, and more — for restaurant owners evaluating the software."
+    />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:wght@500;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0f0f10;
+        --bg-2: #131314;
+        --surface: #1c1c1d;
+        --surface-2: #232325;
+        --surface-3: #2c2c2e;
+        --border: rgba(255, 255, 255, 0.06);
+        --border-bright: rgba(255, 255, 255, 0.14);
+        --text: #f5f5f5;
+        --text-muted: #b8b8b8;
+        --text-dim: #7a7a7a;
+        --brand: #ea580c;
+        --brand-bright: #fb923c;
+        --brand-soft: rgba(234, 88, 12, 0.16);
+        --emerald: #34d399;
+        --azure: #60a5fa;
+        --rose: #fb7185;
+        --amber: #fbbf24;
+        --shadow: 0 18px 60px -22px rgba(0, 0, 0, 0.85);
+        --shadow-glow: 0 12px 32px -8px rgba(234, 88, 12, 0.55),
+          0 0 18px -4px rgba(249, 115, 22, 0.32);
+      }
+
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      html { scroll-behavior: smooth; scroll-padding-top: 96px; }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+        font-size: 16px;
+        line-height: 1.6;
+        overflow-x: hidden;
+      }
+      a { color: inherit; text-decoration: none; }
+      ::selection { background: var(--brand-soft); color: white; }
+      .display { font-family: "Fraunces", Georgia, serif; font-weight: 700; letter-spacing: -0.02em; }
+
+      /* ---- top nav ---- */
+      .nav {
+        position: sticky; top: 0; z-index: 30;
+        backdrop-filter: blur(14px);
+        background: rgba(15, 15, 16, 0.78);
+        border-bottom: 1px solid var(--border);
+      }
+      .nav-inner {
+        max-width: 1240px; margin: 0 auto; padding: 14px 24px;
+        display: flex; align-items: center; gap: 18px;
+      }
+      .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; }
+      .brand-dot {
+        width: 24px; height: 24px; border-radius: 7px;
+        background: linear-gradient(135deg, var(--brand-bright), var(--brand));
+        box-shadow: var(--shadow-glow);
+      }
+      .nav-links { margin-left: auto; display: flex; gap: 4px; flex-wrap: wrap; }
+      .nav-links a {
+        padding: 7px 12px; border-radius: 8px; font-size: 13.5px;
+        color: var(--text-muted); transition: 0.15s;
+      }
+      .nav-links a:hover { color: var(--text); background: var(--surface-2); }
+      .nav-cta {
+        padding: 8px 16px !important; border-radius: 9px !important;
+        background: var(--brand) !important; color: white !important;
+        font-weight: 600 !important;
+      }
+      .nav-cta:hover { background: var(--brand-bright) !important; }
+
+      /* ---- hero ---- */
+      .hero {
+        max-width: 1240px; margin: 0 auto;
+        padding: 96px 24px 72px;
+        display: grid; gap: 48px;
+        grid-template-columns: 1.1fr 0.9fr;
+        align-items: center;
+      }
+      .hero-eyebrow {
+        display: inline-flex; align-items: center; gap: 10px;
+        padding: 6px 14px; border-radius: 999px;
+        background: var(--brand-soft); color: var(--brand-bright);
+        font-size: 13px; font-weight: 600; letter-spacing: 0.02em;
+      }
+      .hero-eyebrow .pulse {
+        width: 8px; height: 8px; border-radius: 50%;
+        background: var(--brand-bright);
+        box-shadow: 0 0 0 0 rgba(251, 146, 60, 0.7);
+        animation: pulse 2s infinite;
+      }
+      @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(251, 146, 60, 0.55); }
+        70% { box-shadow: 0 0 0 12px rgba(251, 146, 60, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(251, 146, 60, 0); }
+      }
+      .hero h1 {
+        font-size: clamp(40px, 6vw, 72px); line-height: 1.04;
+        margin: 22px 0 18px;
+      }
+      .hero h1 .accent {
+        background: linear-gradient(120deg, var(--brand-bright) 0%, var(--brand) 50%, var(--rose) 100%);
+        -webkit-background-clip: text; background-clip: text; color: transparent;
+      }
+      .hero-sub {
+        font-size: 19px; color: var(--text-muted); max-width: 540px;
+      }
+      .hero-cta { margin-top: 32px; display: flex; gap: 12px; flex-wrap: wrap; }
+      .btn {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 13px 22px; border-radius: 10px;
+        font-weight: 600; font-size: 15px;
+        transition: 0.18s; border: 1px solid transparent; cursor: pointer;
+      }
+      .btn-primary { background: var(--brand); color: white; box-shadow: var(--shadow-glow); }
+      .btn-primary:hover { background: var(--brand-bright); transform: translateY(-1px); }
+      .btn-ghost { background: var(--surface-2); border-color: var(--border-bright); color: var(--text); }
+      .btn-ghost:hover { background: var(--surface-3); }
+
+      .hero-stats { margin-top: 48px; display: flex; gap: 32px; flex-wrap: wrap; }
+      .hero-stat .num { font-family: "Fraunces", serif; font-size: 32px; color: var(--brand-bright); font-weight: 700; }
+      .hero-stat .lab { font-size: 13px; color: var(--text-dim); margin-top: 2px; }
+
+      /* hero collage */
+      .hero-art {
+        position: relative; aspect-ratio: 4/3.5;
+        background: radial-gradient(ellipse at top right, rgba(234,88,12,0.18), transparent 50%);
+        border-radius: 24px;
+      }
+      .chip {
+        position: absolute; padding: 14px 18px;
+        background: var(--surface); border: 1px solid var(--border-bright);
+        border-radius: 14px; box-shadow: var(--shadow);
+        font-size: 13.5px;
+      }
+      .chip strong { display: block; font-size: 12px; color: var(--text-dim); font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+      .chip .v { font-weight: 600; font-size: 18px; }
+      .chip-1 { top: 8%; left: 6%; }
+      .chip-2 { top: 38%; right: 4%; }
+      .chip-3 { bottom: 14%; left: 18%; transform: rotate(-2deg); }
+      .chip-4 { bottom: 4%; right: 22%; }
+      .chip .v-up { color: var(--emerald); }
+
+      /* ---- TOC ---- */
+      .layout {
+        max-width: 1240px; margin: 0 auto; padding: 0 24px 96px;
+        display: grid; gap: 64px; grid-template-columns: 240px 1fr;
+        align-items: start;
+      }
+      .toc {
+        position: sticky; top: 88px; padding-top: 8px;
+      }
+      .toc-title { font-size: 12px; letter-spacing: 0.1em; color: var(--text-dim); text-transform: uppercase; margin-bottom: 14px; }
+      .toc-list { list-style: none; padding: 0; margin: 0; border-left: 1px solid var(--border-bright); }
+      .toc-list li a {
+        display: block; padding: 8px 14px; margin-left: -1px;
+        font-size: 14px; color: var(--text-muted);
+        border-left: 2px solid transparent; transition: 0.15s;
+      }
+      .toc-list li a:hover { color: var(--text); }
+      .toc-list li a.active {
+        color: var(--brand-bright); border-left-color: var(--brand);
+      }
+
+      /* ---- value props strip ---- */
+      .value-strip {
+        margin: 24px 0 96px;
+        display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px;
+      }
+      .value-card {
+        padding: 28px;
+        background: linear-gradient(165deg, var(--surface) 0%, var(--surface-2) 100%);
+        border: 1px solid var(--border); border-radius: 18px;
+      }
+      .value-card .vico {
+        width: 44px; height: 44px; border-radius: 12px;
+        background: var(--brand-soft); color: var(--brand-bright);
+        display: grid; place-items: center; margin-bottom: 18px;
+      }
+      .value-card h3 { margin: 0 0 8px; font-size: 19px; font-weight: 600; }
+      .value-card p { margin: 0; color: var(--text-muted); font-size: 14.5px; }
+
+      /* ---- feature sections ---- */
+      .section { padding: 56px 0; border-top: 1px solid var(--border); }
+      .section:first-child { border-top: 0; padding-top: 0; }
+      .section-head { display: flex; align-items: baseline; gap: 16px; margin-bottom: 28px; flex-wrap: wrap; }
+      .section-num {
+        font-family: "Fraunces", serif; font-size: 14px; font-weight: 700;
+        color: var(--brand-bright);
+      }
+      .section h2 {
+        font-size: clamp(28px, 3vw, 40px); margin: 0;
+        line-height: 1.15;
+      }
+      .section .lede {
+        color: var(--text-muted); font-size: 17px; max-width: 640px; margin: 8px 0 0;
+      }
+
+      .feature-row {
+        display: grid; gap: 36px;
+        grid-template-columns: 1.05fr 0.95fr;
+        align-items: start;
+      }
+      .feature-row.flip { grid-template-columns: 0.95fr 1.05fr; }
+      .feature-row.flip .feature-art { order: -1; }
+
+      .feature-body h3 {
+        margin: 0 0 14px; font-size: 22px; font-weight: 600;
+      }
+      .feature-body .why {
+        background: rgba(234, 88, 12, 0.08); border-left: 3px solid var(--brand);
+        padding: 14px 18px; border-radius: 4px;
+        color: var(--text-muted); font-size: 14.5px;
+        margin-bottom: 22px;
+      }
+      .feature-body .why strong { color: var(--brand-bright); }
+
+      ul.beats { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+      ul.beats li {
+        display: flex; gap: 12px; padding: 12px 14px;
+        background: var(--surface); border: 1px solid var(--border); border-radius: 11px;
+        font-size: 14.5px; color: var(--text);
+      }
+      ul.beats li .ico {
+        flex: 0 0 24px; height: 24px; border-radius: 7px;
+        background: var(--brand-soft); color: var(--brand-bright);
+        display: grid; place-items: center;
+      }
+      ul.beats li b { color: var(--text); display: block; }
+      ul.beats li span { color: var(--text-muted); }
+
+      /* art panes — synthetic mock screenshots */
+      .feature-art {
+        background: linear-gradient(165deg, var(--surface) 0%, var(--bg-2) 100%);
+        border: 1px solid var(--border-bright); border-radius: 16px;
+        padding: 22px; box-shadow: var(--shadow);
+        position: relative; overflow: hidden;
+      }
+      .feature-art::before {
+        content: ''; position: absolute; inset: 0;
+        background: radial-gradient(ellipse at top right, rgba(234,88,12,0.08), transparent 60%);
+        pointer-events: none;
+      }
+      .art-title { font-size: 12px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; position: relative; }
+      .art-grid { display: grid; gap: 10px; position: relative; }
+
+      /* generic chip-tile patterns */
+      .tile {
+        padding: 14px; border-radius: 11px;
+        background: var(--surface-2); border: 1px solid var(--border);
+        font-size: 13px;
+      }
+      .tile .top { display: flex; align-items: center; justify-content: space-between; }
+      .tile .top b { font-weight: 600; }
+      .tile .meta { color: var(--text-dim); font-size: 11.5px; margin-top: 4px; }
+      .tile.warn { border-color: rgba(251,113,133,0.4); background: rgba(251,113,133,0.06); }
+      .tile.ok { border-color: rgba(52,211,153,0.35); background: rgba(52,211,153,0.06); }
+      .tag {
+        display: inline-block; padding: 2px 8px; border-radius: 6px;
+        font-size: 11px; font-weight: 500;
+      }
+      .tag-orange { background: var(--brand-soft); color: var(--brand-bright); }
+      .tag-emerald { background: rgba(52,211,153,0.16); color: var(--emerald); }
+      .tag-azure { background: rgba(96,165,250,0.16); color: var(--azure); }
+      .tag-amber { background: rgba(251,191,36,0.16); color: var(--amber); }
+      .tag-rose { background: rgba(251,113,133,0.16); color: var(--rose); }
+
+      /* floor plan mock */
+      .fp { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: 56px; gap: 8px; }
+      .fp .t {
+        border-radius: 12px; background: var(--surface-2); border: 1px solid var(--border);
+        display: grid; place-items: center; font-size: 12px; font-weight: 600;
+        position: relative;
+      }
+      .fp .t.round { border-radius: 50%; }
+      .fp .t.busy { background: rgba(251,191,36,0.14); border-color: rgba(251,191,36,0.4); color: var(--amber); }
+      .fp .t.open { background: rgba(234,88,12,0.18); border-color: rgba(234,88,12,0.5); color: var(--brand-bright); }
+      .fp .t.calling::after {
+        content: ''; position: absolute; top: 4px; right: 4px; width: 8px; height: 8px;
+        border-radius: 50%; background: var(--emerald);
+        box-shadow: 0 0 0 3px rgba(52,211,153,0.25);
+      }
+
+      /* ticket mock */
+      .ticket { background: var(--surface-2); padding: 14px; border-radius: 11px; border: 1px solid var(--border); }
+      .ticket-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+      .ticket-line { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; border-top: 1px dashed var(--border); }
+      .ticket-line:first-of-type { border-top: 0; }
+      .ticket-line.done { color: var(--text-dim); text-decoration: line-through; }
+
+      /* small bar chart for reports */
+      .bars { display: flex; align-items: end; gap: 6px; height: 110px; padding: 4px 0; }
+      .bars .b {
+        flex: 1; border-radius: 6px 6px 2px 2px;
+        background: linear-gradient(to top, var(--brand) 0%, var(--brand-bright) 100%);
+      }
+      .bars .b.dim { background: var(--surface-3); }
+
+      /* compliance card grid */
+      .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+      .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+
+      /* QR mock */
+      .qr {
+        background: white; padding: 14px; border-radius: 12px; aspect-ratio: 1;
+        background-image:
+          linear-gradient(45deg, #000 25%, transparent 25%),
+          linear-gradient(-45deg, #000 25%, transparent 25%),
+          linear-gradient(45deg, transparent 75%, #000 75%),
+          linear-gradient(-45deg, transparent 75%, #000 75%);
+        background-size: 12px 12px;
+        background-position: 0 0, 0 6px, 6px -6px, -6px 0;
+      }
+
+      /* CTA banner + footer */
+      .closer {
+        margin-top: 96px; padding: 64px 32px;
+        text-align: center; border-radius: 24px;
+        background:
+          radial-gradient(ellipse at top, rgba(234,88,12,0.22), transparent 60%),
+          linear-gradient(165deg, var(--surface) 0%, var(--surface-2) 100%);
+        border: 1px solid var(--border-bright);
+      }
+      .closer h2 { font-size: clamp(32px, 4vw, 48px); margin: 0 0 12px; }
+      .closer p { color: var(--text-muted); font-size: 18px; max-width: 580px; margin: 0 auto 28px; }
+      .closer .hero-cta { justify-content: center; }
+
+      footer {
+        border-top: 1px solid var(--border);
+        padding: 32px 24px;
+        text-align: center; color: var(--text-dim); font-size: 13px;
+      }
+      footer a { color: var(--text-muted); margin: 0 10px; }
+      footer a:hover { color: var(--text); }
+
+      /* mobile */
+      @media (max-width: 960px) {
+        .hero { grid-template-columns: 1fr; padding: 56px 20px 32px; }
+        .hero-art { aspect-ratio: 16/12; }
+        .layout { grid-template-columns: 1fr; gap: 32px; padding: 0 20px 64px; }
+        .toc { position: static; margin-bottom: 0; }
+        .toc-list { display: flex; gap: 4px; overflow-x: auto; border-left: 0; padding-bottom: 4px; }
+        .toc-list li a { white-space: nowrap; border-left: 0; border-bottom: 2px solid transparent; padding: 8px 12px; }
+        .toc-list li a.active { border-left-color: transparent; border-bottom-color: var(--brand); }
+        .feature-row, .feature-row.flip { grid-template-columns: 1fr; }
+        .feature-row.flip .feature-art { order: 0; }
+        .value-strip { grid-template-columns: 1fr; }
+        .grid-3 { grid-template-columns: 1fr 1fr; }
+        .nav-links a:not(.nav-cta) { display: none; }
+      }
+
+      /* reveal-on-scroll */
+      .reveal { opacity: 0; transform: translateY(18px); transition: 0.5s cubic-bezier(.2,.8,.2,1); }
+      .reveal.in { opacity: 1; transform: translateY(0); }
+
+      /* subtle ambient gradient orbs */
+      .orb {
+        position: fixed; pointer-events: none; z-index: -1;
+        filter: blur(80px); opacity: 0.45;
+      }
+      .orb.a { top: -120px; right: -120px; width: 380px; height: 380px;
+        background: radial-gradient(circle, rgba(234,88,12,0.5), transparent 70%); }
+      .orb.b { top: 50%; left: -180px; width: 360px; height: 360px;
+        background: radial-gradient(circle, rgba(96,165,250,0.35), transparent 70%); }
+    </style>
+  </head>
+  <body>
+    <div class="orb a"></div>
+    <div class="orb b"></div>
+
+    <header class="nav">
+      <div class="nav-inner">
+        <a href="/welcome.html" class="brand">
+          <span class="brand-dot"></span>
+          <span>Patron</span>
+        </a>
+        <nav class="nav-links">
+          <a href="#service">Service</a>
+          <a href="#kitchen">Kitchen &amp; bar</a>
+          <a href="#guests">Guests</a>
+          <a href="#operations">Operations</a>
+          <a href="#compliance">Compliance</a>
+          <a href="#reports">Reports</a>
+          <a href="#native">Native apps</a>
+          <a href="#cta" class="nav-cta">Book a demo</a>
+        </nav>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="hero-text">
+        <span class="hero-eyebrow"><span class="pulse"></span> Built for Belgian horeca</span>
+        <h1 class="display">
+          One app from the <span class="accent">first chair</span> to the
+          quarterly <span class="accent">RSZ filing</span>.
+        </h1>
+        <p class="hero-sub">
+          Patron runs your floor, your kitchen, your reservations book, your
+          stock counts, your payroll, your FAVV register, and your bookkeeping —
+          on one screen, in three languages, with no extra modules to buy.
+        </p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="#cta">
+            Book a 30-min demo
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </a>
+          <a class="btn btn-ghost" href="#service">Take the tour</a>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat"><div class="num">14</div><div class="lab">core modules included</div></div>
+          <div class="hero-stat"><div class="num">3</div><div class="lab">languages — NL · FR · EN</div></div>
+          <div class="hero-stat"><div class="num">€0</div><div class="lab">setup, per-table or POS-licence fees</div></div>
+        </div>
+      </div>
+      <div class="hero-art">
+        <div class="chip chip-1">
+          <strong>Tonight</strong>
+          <div class="v">28 covers</div>
+        </div>
+        <div class="chip chip-2">
+          <strong>Bar fridge</strong>
+          <div class="v">3.4 °C <span class="v-up">✓ in range</span></div>
+        </div>
+        <div class="chip chip-3">
+          <strong>Today's revenue</strong>
+          <div class="v">€2 480 <span class="v-up">▲ 12 %</span></div>
+        </div>
+        <div class="chip chip-4">
+          <strong>T7 calling waiter</strong>
+          <div class="v" style="font-size:14px;color:var(--emerald)">just now</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="value-strip layout-narrow" style="max-width:1240px;margin:0 auto;padding:0 24px;">
+      <div class="value-card reveal">
+        <div class="vico">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>
+        </div>
+        <h3>End-to-end, not bolted-on</h3>
+        <p>POS, reservations, kitchen, stock, payroll, contracts, FAVV — all in one database. No CSV exports, no third-party integrations, no monthly per-module surcharges.</p>
+      </div>
+      <div class="value-card reveal">
+        <div class="vico">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 6v6c0 5 3 9 8 10 5-1 8-5 8-10V6z"/><path d="m9 12 2 2 4-4"/></svg>
+        </div>
+        <h3>Belgian compliance at the core</h3>
+        <p>Dimona, DmfA, FAVV temperature & cleaning logs, flexi-job and student contracts, NL/FR statute wording — designed against the rules you actually file under, not bolted on.</p>
+      </div>
+      <div class="value-card reveal">
+        <div class="vico">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="14" height="12" rx="2"/><rect x="16" y="3" width="6" height="18" rx="2"/></svg>
+        </div>
+        <h3>Runs on what you already own</h3>
+        <p>Web app on every browser; native iOS &amp; Android shell for floor tablets and phones; embeddable booking widget for your own website. No proprietary terminal hardware.</p>
+      </div>
+    </div>
+
+    <div class="layout">
+      <aside class="toc">
+        <div class="toc-title">Tour</div>
+        <ul class="toc-list" id="toc">
+          <li><a href="#service">01 — Floor &amp; service</a></li>
+          <li><a href="#kitchen">02 — Kitchen &amp; bar</a></li>
+          <li><a href="#guests">03 — Reservations &amp; guests</a></li>
+          <li><a href="#order">04 — QR &amp; tableside ordering</a></li>
+          <li><a href="#menu">05 — Menu &amp; recipes</a></li>
+          <li><a href="#stock">06 — Stock &amp; suppliers</a></li>
+          <li><a href="#operations">07 — Staff &amp; payroll</a></li>
+          <li><a href="#compliance">08 — Compliance toolkit</a></li>
+          <li><a href="#reports">09 — Reports &amp; close-out</a></li>
+          <li><a href="#native">10 — One app, every device</a></li>
+        </ul>
+      </aside>
+
+      <main>
+        <!-- 01 -->
+        <section id="service" class="section">
+          <div class="section-head">
+            <div class="section-num">01</div>
+            <div>
+              <h2 class="display">Take orders. Track tables. Get out of the way.</h2>
+              <p class="lede">A drag-and-drop floor plan, a slide-over POS, and live colour-coded status across every device on the network.</p>
+            </div>
+          </div>
+
+          <div class="feature-row">
+            <div class="feature-body reveal">
+              <h3>Floor plan that learns your room</h3>
+              <div class="why">
+                <strong>Why it matters.</strong> Most POS systems ship with a fixed grid. Patron lets you draw your actual room — round bar tops, the corner banquette, the terrace — once, and every iPad sees the same layout instantly.
+              </div>
+              <ul class="beats">
+                <li><span class="ico">✓</span><span><b>Room, zone, shape, capacity.</b> Drag-resize tables, switch between indoor/outdoor zones, group by room.</span></li>
+                <li><span class="ico">✓</span><span><b>Colour at a glance.</b> Grey free, amber holding orders, orange sent to kitchen, green dot when a guest calls the waiter.</span></li>
+                <li><span class="ico">✓</span><span><b>POS slide-over.</b> Tap a table, get the menu, modifiers (size / milk / extras / notes), course routing, split-bill and tip — without leaving the floor view.</span></li>
+                <li><span class="ico">✓</span><span><b>Real-time everywhere.</b> Server-Sent Events stream changes to every connected device in under a second. No polling, no stale views.</span></li>
+              </ul>
+            </div>
+            <div class="feature-art reveal">
+              <div class="art-title">Live floor — 19:45</div>
+              <div class="fp">
+                <div class="t">T1</div>
+                <div class="t busy">T2</div>
+                <div class="t open">T3</div>
+                <div class="t round">T4</div>
+                <div class="t open">T5</div>
+                <div class="t busy">T6</div>
+                <div class="t round calling">T7</div>
+                <div class="t round">T8</div>
+                <div class="t open">P1</div>
+                <div class="t">P2</div>
+                <div class="t round">B1</div>
+                <div class="t round">B2</div>
+              </div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;font-size:12px;color:var(--text-dim)">
+                <span><span class="tag tag-orange">●</span> sent to kitchen</span>
+                <span><span class="tag tag-amber">●</span> open order</span>
+                <span><span class="tag tag-emerald">●</span> guest calling</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 02 -->
+        <section id="kitchen" class="section">
+          <div class="section-head">
+            <div class="section-num">02</div>
+            <div>
+              <h2 class="display">Kitchen and bar see exactly what they need.</h2>
+              <p class="lede">Two queues, one source of truth, with a one-tap 86-list for when the saumon runs out at 21:30.</p>
+            </div>
+          </div>
+
+          <div class="feature-row flip">
+            <div class="feature-body reveal">
+              <h3>Course-aware ticketing</h3>
+              <div class="why">
+                <strong>Why it matters.</strong> Drinks belong at the bar; mains belong in the kitchen. Patron routes every line automatically based on its category, so the chef never sees "1 × Duvel" mixed in with the entrées.
+              </div>
+              <ul class="beats">
+                <li><span class="ico">✓</span><span><b>Status flow per line.</b> Pending → preparing → ready → served. Tap to advance; the floor plan updates in real time.</span></li>
+                <li><span class="ico">✓</span><span><b>86-list in one tap.</b> Out of mussels? Toggle in the kitchen view; POS and the customer menu instantly grey them out.</span></li>
+                <li><span class="ico">✓</span><span><b>Modifier-aware.</b> "Burger, no onion, side of fries instead of salad" arrives as a structured order line, not a freeform note.</span></li>
+                <li><span class="ico">✓</span><span><b>Quiet by design.</b> No printer thermal-receipt clatter; tickets live on a tablet at the pass.</span></li>
+              </ul>
+            </div>
+            <div class="feature-art reveal">
+              <div class="art-title">Kitchen — Table 5</div>
+              <div class="ticket">
+                <div class="ticket-head">
+                  <b>T5 · Lucas</b>
+                  <span class="tag tag-orange">3 lines</span>
+                </div>
+                <div class="ticket-line"><span>2 × Steak frites · medium</span><span class="tag tag-amber">prep</span></div>
+                <div class="ticket-line done"><span>1 × Caesar salad</span><span class="tag tag-emerald">ready</span></div>
+                <div class="ticket-line"><span>1 × Soupe du jour</span><span class="tag tag-rose">pending</span></div>
+              </div>
+              <div class="art-title" style="margin-top:18px">Bar — 86 list</div>
+              <div class="grid-3">
+                <div class="tile"><b>Duvel</b><div class="meta">€4.90</div></div>
+                <div class="tile" style="opacity:0.5;text-decoration:line-through"><b>Westmalle Tripel</b><div class="meta">86'd · 2 min ago</div></div>
+                <div class="tile"><b>Chimay Bleue</b><div class="meta">€5.20</div></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 03 -->
+        <section id="guests" class="section">
+          <div class="section-head">
+            <div class="section-num">03</div>
+            <div>
+              <h2 class="display">Bookings without the back-and-forth.</h2>
+              <p class="lede">An embeddable widget on your website, a calendar your team actually uses, and a quietly-built customer database underneath.</p>
+            </div>
+          </div>
+
+          <div class="feature-row">
+            <div class="feature-body reveal">
+              <h3>Reservations + the Tablebookers widget</h3>
+              <div class="why">
+                <strong>Why it matters.</strong> A bookings page on your own domain — no commission, no per-cover fee — driven by the same engine your team uses. Capacity-aware, opening-hours-aware, closure-aware.
+              </div>
+              <ul class="beats">
+                <li><span class="ico">✓</span><span><b>Embed, don't outsource.</b> One iframe on your website. Guests pick a slot, leave a name and phone, get a confirmation. You own the data.</span></li>
+                <li><span class="ico">✓</span><span><b>Capacity check.</b> The widget can't double-book a table. Your team can't either.</span></li>
+                <li><span class="ico">✓</span><span><b>Customer profiles, automatic.</b> Every reservation and every paid order populates a Customer record. Visit count, lifetime spend, last visit — built quietly while you cook.</span></li>
+                <li><span class="ico">✓</span><span><b>VIP flag &amp; notes.</b> Mark regulars; their next reservation card shows the badge.</span></li>
+              </ul>
+            </div>
+            <div class="feature-art reveal">
+              <div class="art-title">Tonight — confirmed</div>
+              <div class="art-grid">
+                <div class="tile">
+                  <div class="top"><b>Anna Janssens — 2</b><span class="tag tag-emerald">confirmed</span></div>
+                  <div class="meta">19:00 · T2 · 3rd visit</div>
+                </div>
+                <div class="tile">
+                  <div class="top"><b>Marc De Vos — 4</b><span class="tag tag-emerald">confirmed</span></div>
+                  <div class="meta">20:00 · T6 · "anniversary"</div>
+                </div>
+                <div class="tile">
+                  <div class="top"><b>Tom Vermeer — 6</b><span class="tag tag-amber">pending</span></div>
+                  <div class="meta">19:30 · "one nut allergy"</div>
+                </div>
+              </div>
+              <div class="art-title" style="margin-top:18px">Customer · Anna Janssens <span class="tag tag-orange" style="margin-left:6px">VIP</span></div>
+              <div class="grid-2">
+                <div class="tile"><b>3</b><div class="meta">visits</div></div>
+                <div class="tile"><b>€187</b><div class="meta">lifetime spend</div></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 04 -->
+        <section id="order" class="section">
+          <div class="section-head">
+            <div class="section-num">04</div>
+            <div>
+              <h2 class="display">QR menus that actually feel like your restaurant.</h2>
+              <p class="lede">A fully themed mobile menu the guest scans at the table — order or call the waiter without flagging anyone down.</p>
+            </div>
+          </div>
+
+          <div class="feature-row flip">
+            <div class="feature-body reveal">
+              <h3>Tableside ordering &amp; service requests</h3>
+              <div class="why">
+                <strong>Why it matters.</strong> Half your guests just want another round; the other half want the bill. Both can happen without finding a waiter — and your team sees both clearly on the floor plan.
+              </div>
+              <ul class="beats">
+                <li><span class="ico">✓</span><span><b>Print-ready QR sheet.</b> Generate one A4 with every table's QR; scan once, the menu opens to that table.</span></li>
+                <li><span class="ico">✓</span><span><b>Themed customer menu.</b> Theme presets, your colours, your fonts, your cover photo — picked in Settings, applied instantly.</span></li>
+                <li><span class="ico">✓</span><span><b>"Vraag de bediening" / "Vraag de rekening".</b> Two buttons that surface on the floor plan as a green dot at the calling table. Acknowledge with a tap.</span></li>
+                <li><span class="ico">✓</span><span><b>Three languages on tap.</b> The guest picks NL, FR, or EN — independent of what your iPad is set to.</span></li>
+              </ul>
+            </div>
+            <div class="feature-art reveal">
+              <div class="art-title">Guest at table 7</div>
+              <div style="display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center;">
+                <div class="qr" style="width:120px"></div>
+                <div>
+                  <div style="font-size:14px;color:var(--text-muted);margin-bottom:6px">Scan opens</div>
+                  <div style="font-family:monospace;font-size:12px;background:var(--surface-2);padding:8px 10px;border-radius:6px;border:1px solid var(--border)">order.html?table=T7</div>
+                  <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
+                    <span class="tag tag-orange">Beers (tap)</span>
+                    <span class="tag tag-azure">Soft drinks</span>
+                    <span class="tag tag-emerald">Snacks</span>
+                  </div>
+                </div>
+              </div>
+              <div class="grid-2" style="margin-top:14px">
+                <div class="tile ok"><b>Vraag de bediening</b><div class="meta">→ green dot on T7</div></div>
+                <div class="tile ok"><b>Vraag de rekening</b><div class="meta">→ green dot on T7</div></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 05 -->
+        <section id="menu" class="section">
+          <div class="section-head">
+            <div class="section-num">05</div>
+            <div>
+              <h2 class="display">A menu that knows what it costs.</h2>
+              <p class="lede">Two-tier categories, modifier-aware items, and recipes that decrement stock and feed your COGS automatically.</p>
+            </div>
+          </div>
+
+          <div class="feature-row">
+            <div class="feature-body reveal">
+              <h3>Items, categories, recipes</h3>
+              <div class="why">
+                <strong>Why it matters.</strong> Your menu changes every season. Patron's two-tier category system maps onto a real menu (Drinks → Beers (tap) → Jour De Fête), and recipes turn every sale into a real-time cost number.
+              </div>
+              <ul class="beats">
+                <li><span class="ico">✓</span><span><b>Two-tier categories.</b> Parent chips, sub-category chips. Same structure on POS, kitchen, and customer menu.</span></li>
+                <li><span class="ico">✓</span><span><b>Modifiers &amp; sizes.</b> Per-item small/medium/large with price deltas; modifier popup with structured options and freeform notes.</span></li>
+                <li><span class="ico">✓</span><span><b>Recipes feed COGS.</b> Each item lists the stock it consumes; paying an order decrements stock and stamps the line with its real cost-of-goods.</span></li>
+                <li><span class="ico">✓</span><span><b>Per-category VAT.</b> Drinks at 21 %, food at 12 % — categories override the global default automatically.</span></li>
+              </ul>
+            </div>
+            <div class="feature-art reveal">
+              <div class="art-title">Beers (tap)</div>
+              <div class="art-grid" style="grid-template-columns:1fr 1fr;gap:8px">
+                <div class="tile"><div class="top"><b>Jour De Fête</b><span class="tag tag-orange">€4.20</span></div><div class="meta">recipe: 250 ml keg</div></div>
+                <div class="tile"><div class="top"><b>Hoogheid</b><span class="tag tag-orange">€4.70</span></div><div class="meta">recipe: 250 ml keg</div></div>
+                <div class="tile"><div class="top"><b>Black Pudding (20cl)</b><span class="tag tag-orange">€4.70</span></div><div class="meta">recipe: 200 ml keg</div></div>
+                <div class="tile"><div class="top"><b>Super Bavik Pils</b><span class="tag tag-orange">€2.80</span></div><div class="meta">recipe: 250 ml keg</div></div>
+              </div>
+              <div style="margin-top:14px;font-size:12.5px;color:var(--text-muted);">
+                Selling 1× Hoogheid → −250 ml from "Hoogheid keg" stock and €1.50 cost on the P&amp;L. Automatic.
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 06 -->
+        <section id="stock" class="section">
+          <div class="section-head">
+            <div class="section-num">06</div>
+            <div>
+              <h2 class="display">Inventory that re-orders itself in your inbox.</h2>
+              <p class="lede">Live stock counts driven by real sales, low-stock alerts, and a printable shopping list grouped by supplier.</p>
+            </div>
+          </div>
+
+          <div class="feature-row flip">
+            <div class="feature-body reveal">
+              <h3>Stock, suppliers, shopping list</h3>
+              <div class="why">
+                <strong>Why it matters.</strong> Stock-outs lose covers; over-ordering ties up cash. Patron knows exactly what you sold last week — and turns it into a one-click email order to each of your suppliers.
+              </div>
+              <ul class="beats">
+                <li><span class="ico">✓</span><span><b>Auto-decrement.</b> Every paid order deducts each recipe's quantities. No manual count for what just walked out the door.</span></li>
+                <li><span class="ico">✓</span><span><b>Low-stock alerts.</b> Set a minimum per item; under-stock items glow red across the app.</span></li>
+                <li><span class="ico">✓</span><span><b>Shopping list, by supplier.</b> Grouped &amp; suggested-quantity reorder list with a pre-filled mailto link per supplier.</span></li>
+                <li><span class="ico">✓</span><span><b>Cost per unit, kept honest.</b> Update the supplier price; future COGS reflects it instantly.</span></li>
+              </ul>
+            </div>
+            <div class="feature-art reveal">
+              <div class="art-title">Shopping list — to send today</div>
+              <div class="art-grid">
+                <div class="tile warn">
+                  <div class="top"><b>Vleesgroothandel Janssens</b><span class="tag tag-rose">3 items</span></div>
+                  <div class="meta">5 kg gehakt · 2 kg kalfslever · 8 kg kippenfilet</div>
+                </div>
+                <div class="tile warn">
+                  <div class="top"><b>Bakker De Smet</b><span class="tag tag-rose">1 item</span></div>
+                  <div class="meta">40× pistolets</div>
+                </div>
+                <div class="tile">
+                  <div class="top"><b>Vishandel Oostende</b><span class="tag tag-emerald">stocked</span></div>
+                  <div class="meta">all items above min</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 07 -->
+        <section id="operations" class="section">
+          <div class="section-head">
+            <div class="section-num">07</div>
+            <div>
+              <h2 class="display">Staff in. Hours out. Payroll counted.</h2>
+              <p class="lede">Clock-in, schedule, and payroll preview — with the Belgian fields you need on day one (NISS, IBAN, statute, hourly rate).</p>
+            </div>
+          </div>
+
+          <div class="feature-row">
+            <div class="feature-body reveal">
+              <h3>Staff, schedule, paychecks</h3>
+              <div class="why">
+                <strong>Why it matters.</strong> Belgian labour law makes "casual" expensive. Patron tracks the right fields for flexi-jobs, students, and extras — and previews wages from real clocked time, not from "what we agreed".
+              </div>
+              <ul class="beats">
+                <li><span class="ico">✓</span><span><b>Clock-in / clock-out.</b> One-tap on the tablet; active shifts pinned at the top of the staff page so everyone sees who's on.</span></li>
+                <li><span class="ico">✓</span><span><b>Drag-and-drop schedule.</b> Plan next week's rota across days; estimated labour cost updates as you drag.</span></li>
+                <li><span class="ico">✓</span><span><b>Payroll summary.</b> Pick a date range, get hours and cost per worker, with the underlying shifts visible.</span></li>
+                <li><span class="ico">✓</span><span><b>Belgian payroll fields.</b> NISS, date of birth, nationality, IBAN, address — captured once on the staff record, reused everywhere.</span></li>
+              </ul>
+            </div>
+            <div class="feature-art reveal">
+              <div class="art-title">Schedule — week 19</div>
+              <div style="display:grid;grid-template-columns:80px repeat(4,1fr);gap:6px;font-size:12px;">
+                <div></div>
+                <div style="text-align:center;color:var(--text-dim)">Tue</div>
+                <div style="text-align:center;color:var(--text-dim)">Wed</div>
+                <div style="text-align:center;color:var(--text-dim)">Thu</div>
+                <div style="text-align:center;color:var(--text-dim)">Fri</div>
+                <div style="color:var(--text-muted);align-self:center">Sophie</div>
+                <div class="tile" style="padding:6px 8px;font-size:11px"><span class="tag tag-orange">17–23</span></div>
+                <div></div>
+                <div class="tile" style="padding:6px 8px;font-size:11px"><span class="tag tag-orange">17–23</span></div>
+                <div class="tile" style="padding:6px 8px;font-size:11px"><span class="tag tag-orange">17–23</span></div>
+                <div style="color:var(--text-muted);align-self:center">Lucas</div>
+                <div></div>
+                <div class="tile" style="padding:6px 8px;font-size:11px"><span class="tag tag-azure">11–15</span></div>
+                <div class="tile" style="padding:6px 8px;font-size:11px"><span class="tag tag-azure">11–22</span></div>
+                <div class="tile" style="padding:6px 8px;font-size:11px"><span class="tag tag-azure">11–22</span></div>
+                <div style="color:var(--text-muted);align-self:center">Karim</div>
+                <div class="tile" style="padding:6px 8px;font-size:11px"><span class="tag tag-emerald">12–22</span></div>
+                <div class="tile" style="padding:6px 8px;font-size:11px"><span class="tag tag-emerald">12–22</span></div>
+                <div class="tile" style="padding:6px 8px;font-size:11px"><span class="tag tag-emerald">12–22</span></div>
+                <div class="tile" style="padding:6px 8px;font-size:11px"><span class="tag tag-emerald">12–22</span></div>
+              </div>
+              <div style="margin-top:12px;font-size:13px;color:var(--text-muted);display:flex;justify-content:space-between;">
+                <span>Estimated labour cost</span>
+                <b style="color:var(--text)">€2 184</b>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 08 -->
+        <section id="compliance" class="section">
+          <div class="section-head">
+            <div class="section-num">08</div>
+            <div>
+              <h2 class="display">Compliance built in, not bolted on.</h2>
+              <p class="lede">Contracts, Dimona, DmfA, and FAVV/HACCP registratie — all the paperwork the inspector asks for, generated where the work happens.</p>
+            </div>
+          </div>
+
+          <div class="feature-row flip">
+            <div class="feature-body reveal">
+              <h3>Contracts · Dimona · RSZ · HACCP</h3>
+              <div class="why">
+                <strong>Why it matters.</strong> Most apps make you stitch payroll, social-security, and food-safety together yourself. Patron treats them as native modules, with the right fields and the right wording in NL/FR.
+              </div>
+              <ul class="beats">
+                <li><span class="ico">✓</span><span><b>Belgian-statute contracts.</b> Permanent, fixed-term, flexi-job, student, extra, interim, internship — with NL/FR clauses ready to sign in the app.</span></li>
+                <li><span class="ico">✓</span><span><b>Dimona &amp; DmfA submission flow.</b> Opening / closing declarations on hire and departure; quarterly hours batch from clocked shifts. Wired for the RSZ web service.</span></li>
+                <li><span class="ico">✓</span><span><b>FAVV temperature register.</b> Per-equipment min/max bands; out-of-range readings prompt for corrective action and stay flagged in the audit log.</span></li>
+                <li><span class="ico">✓</span><span><b>Cleaning checklist with overdue alerts.</b> Daily, weekly, monthly tasks with last-completion timestamps; overdue tiles glow red.</span></li>
+                <li><span class="ico">✓</span><span><b>Receiving log.</b> Supplier, items, cold-chain temperature, packaging &amp; expiry checks — with corrective action when something fails.</span></li>
+              </ul>
+            </div>
+            <div class="feature-art reveal">
+              <div class="art-title">HACCP · today's readings</div>
+              <div class="art-grid">
+                <div class="tile ok">
+                  <div class="top"><b>Walk-in cooler</b><span class="tag tag-emerald">2.8 °C</span></div>
+                  <div class="meta">target 0–4 °C · Karim · 09:14</div>
+                </div>
+                <div class="tile warn">
+                  <div class="top"><b>Bar fridge</b><span class="tag tag-rose">8.4 °C ⚠</span></div>
+                  <div class="meta">target 1–7 °C · adjusted thermostat</div>
+                </div>
+                <div class="tile ok">
+                  <div class="top"><b>Freezer</b><span class="tag tag-emerald">−21 °C</span></div>
+                  <div class="meta">target −25 to −18 °C · Noor · 09:18</div>
+                </div>
+              </div>
+              <div class="art-title" style="margin-top:18px">Contracts</div>
+              <div class="grid-2">
+                <div class="tile"><div class="top"><b>Lucas — flexi-job</b><span class="tag tag-emerald">active</span></div><div class="meta">Dimona: stub-1182</div></div>
+                <div class="tile"><div class="top"><b>Emma — student</b><span class="tag tag-amber">draft</span></div><div class="meta">awaiting signature</div></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 09 -->
+        <section id="reports" class="section">
+          <div class="section-head">
+            <div class="section-num">09</div>
+            <div>
+              <h2 class="display">Closing the night = closing the books.</h2>
+              <p class="lede">P&amp;L, top items, payment splits, Z-report and CSV exports — everything your accountant asks for, on the same screen.</p>
+            </div>
+          </div>
+
+          <div class="feature-row">
+            <div class="feature-body reveal">
+              <h3>Reports &amp; close-out</h3>
+              <div class="why">
+                <strong>Why it matters.</strong> Don't spend Monday morning rebuilding Sunday's books from receipts. Patron has every line item, every tip, and every payment method — already aggregated.
+              </div>
+              <ul class="beats">
+                <li><span class="ico">✓</span><span><b>P&amp;L by day, week, month, year.</b> Revenue, COGS, VAT, tips, payment-method breakdown — toggleable range.</span></li>
+                <li><span class="ico">✓</span><span><b>Top items.</b> Best sellers by quantity and revenue. Spot the bottle that's pulling its weight; spot the dessert that isn't.</span></li>
+                <li><span class="ico">✓</span><span><b>Z-report.</b> Daily close-out summary on demand — orders, subtotals, tax by rate, payments.</span></li>
+                <li><span class="ico">✓</span><span><b>CSV exports.</b> Orders and shifts, date-range scoped, ready for your accountant or Excel.</span></li>
+              </ul>
+            </div>
+            <div class="feature-art reveal">
+              <div class="art-title">Revenue · this week</div>
+              <div class="bars">
+                <div class="b" style="height:36%"></div>
+                <div class="b" style="height:48%"></div>
+                <div class="b" style="height:62%"></div>
+                <div class="b" style="height:54%"></div>
+                <div class="b" style="height:78%"></div>
+                <div class="b" style="height:96%"></div>
+                <div class="b dim" style="height:12%"></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-dim);margin-top:6px">
+                <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+              </div>
+              <div class="grid-3" style="margin-top:18px">
+                <div class="tile"><div class="meta">Net</div><b style="font-size:18px">€14 280</b></div>
+                <div class="tile"><div class="meta">COGS</div><b style="font-size:18px;color:var(--rose)">€4 160</b></div>
+                <div class="tile"><div class="meta">Tips</div><b style="font-size:18px;color:var(--emerald)">€480</b></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 10 -->
+        <section id="native" class="section">
+          <div class="section-head">
+            <div class="section-num">10</div>
+            <div>
+              <h2 class="display">One web app, every device.</h2>
+              <p class="lede">Manage on your laptop, take orders on an iPad, scan deliveries on the kitchen phone — all the same app, all in sync.</p>
+            </div>
+          </div>
+
+          <div class="feature-row flip">
+            <div class="feature-body reveal">
+              <h3>Web · iOS · Android · embedded widget</h3>
+              <div class="why">
+                <strong>Why it matters.</strong> No proprietary till hardware. The app you bought runs everywhere — and the same engine powers the booking widget on your own marketing site.
+              </div>
+              <ul class="beats">
+                <li><span class="ico">✓</span><span><b>Web first.</b> Every browser. Use it from your laptop or any iPad / Android tablet without an app store.</span></li>
+                <li><span class="ico">✓</span><span><b>Native iOS &amp; Android.</b> Wrapped via Capacitor — splash screens, status bars, keyboard handling tuned for floor use.</span></li>
+                <li><span class="ico">✓</span><span><b>Real-time sync.</b> Server-Sent Events keep every device on the same view; one chef marking a line "ready" updates the floor plan within a second.</span></li>
+                <li><span class="ico">✓</span><span><b>Embeddable booking.</b> Drop the Tablebookers iframe on your existing website — no commission, no per-cover fee, your own data.</span></li>
+              </ul>
+            </div>
+            <div class="feature-art reveal">
+              <div class="art-title">Same data, every screen</div>
+              <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center;justify-content:center;padding:14px 0">
+                <div style="text-align:center;font-size:12px;color:var(--text-muted)">
+                  <div style="width:80px;height:60px;border:2px solid var(--border-bright);border-radius:8px;margin:0 auto 8px;background:var(--surface-2);position:relative">
+                    <div style="position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);width:30px;height:4px;background:var(--border-bright);border-radius:2px"></div>
+                  </div>
+                  Laptop
+                </div>
+                <div style="text-align:center;font-size:12px;color:var(--text-muted)">
+                  <div style="width:60px;height:80px;border:2px solid var(--brand);border-radius:8px;margin:0 auto 8px;background:var(--surface-2)"></div>
+                  iPad
+                </div>
+                <div style="text-align:center;font-size:12px;color:var(--text-muted)">
+                  <div style="width:30px;height:60px;border:2px solid var(--border-bright);border-radius:6px;margin:0 auto 8px;background:var(--surface-2)"></div>
+                  Phone
+                </div>
+                <div style="text-align:center;font-size:12px;color:var(--text-muted)">
+                  <div style="width:80px;height:50px;border:2px dashed var(--border-bright);border-radius:8px;margin:0 auto 8px;background:transparent;display:grid;place-items:center;font-size:10px;color:var(--text-dim)">your site</div>
+                  Booking widget
+                </div>
+              </div>
+              <div style="font-size:12.5px;color:var(--text-muted);text-align:center;margin-top:6px">
+                One backend. One database. One live view of the room.
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- closer -->
+        <div id="cta" class="closer reveal">
+          <h2 class="display">See Patron run your restaurant.</h2>
+          <p>Bring your menu, your supplier list, and a few staff names — we'll have your floor plan, recipes, and FAVV register populated before the espresso cools.</p>
+          <div class="hero-cta">
+            <a class="btn btn-primary" href="mailto:hello@bodemloos.be?subject=Patron%20demo%20request">
+              Book a 30-min demo
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+            </a>
+            <a class="btn btn-ghost" href="/welcome.html">Read the overview</a>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <footer>
+      <div>
+        Patron · made by <a href="https://bodemloos.be">Bodemloos</a> ·
+        <a href="/welcome.html">Home</a> ·
+        <a href="/patronize.html">For diners</a> ·
+        <a href="/tablebookers.html">Booking widget</a>
+      </div>
+    </footer>
+
+    <script>
+      // Reveal-on-scroll for any .reveal element.
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) {
+            if (e.isIntersecting) {
+              e.target.classList.add('in');
+              io.unobserve(e.target);
+            }
+          }
+        },
+        { rootMargin: '0px 0px -8% 0px', threshold: 0.06 }
+      );
+      document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+
+      // Active TOC link as the user scrolls.
+      const tocLinks = document.querySelectorAll('#toc a');
+      const sections = [...tocLinks].map((a) =>
+        document.querySelector(a.getAttribute('href'))
+      );
+      function updateToc() {
+        const y = window.scrollY + 140;
+        let activeIdx = 0;
+        sections.forEach((s, i) => {
+          if (s && s.offsetTop <= y) activeIdx = i;
+        });
+        tocLinks.forEach((a, i) =>
+          a.classList.toggle('active', i === activeIdx)
+        );
+      }
+      window.addEventListener('scroll', updateToc, { passive: true });
+      updateToc();
+    </script>
+  </body>
+</html>
