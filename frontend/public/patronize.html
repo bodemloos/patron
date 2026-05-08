@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="nl">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Patronize — Reserve a table</title>
+    <title>Patronize — Reserveer een tafel</title>
     <style>
       /*
     Patronize — embeddable reservation widget.
@@ -326,73 +326,109 @@
       .hidden {
         display: none !important;
       }
+
+      /* Compact NL/FR/EN switcher in the panel header — sits next
+         to the close button. NL is the default. */
+      .lang-switch {
+        position: absolute;
+        top: 12px;
+        right: 44px;
+        display: inline-flex;
+        gap: 1px;
+        background: var(--surface-2);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 2px;
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+      }
+      .lang-switch button {
+        background: transparent;
+        border: 0;
+        color: var(--text-muted);
+        padding: 3px 7px;
+        border-radius: 999px;
+        cursor: pointer;
+        font: inherit;
+      }
+      .lang-switch button.active {
+        background: var(--surface);
+        color: var(--text);
+      }
     </style>
   </head>
   <body data-state="closed">
     <!-- Booking panel (rendered above launcher when state=open). -->
     <div class="panel" id="panel" aria-hidden="true">
-      <button class="panel-close" id="panel-close" aria-label="Close">×</button>
+      <div class="lang-switch" id="lang-switch" role="group" aria-label="Taal">
+        <button type="button" data-lang="nl">NL</button>
+        <button type="button" data-lang="fr">FR</button>
+        <button type="button" data-lang="en">EN</button>
+      </div>
+      <button class="panel-close" id="panel-close" aria-label="Sluit">×</button>
 
       <div id="step-form">
-        <h1>Reserve a table</h1>
-        <p class="subtitle">
-          Pick a date, party size, and time. We'll hold a table for you.
+        <h1 data-i18n="title">Reserveer een tafel</h1>
+        <p class="subtitle" data-i18n="subtitle">
+          Kies een datum, aantal personen en tijdstip. We houden een tafel voor u.
         </p>
 
-        <div class="step-label">Party size</div>
+        <div class="step-label" data-i18n="partySize">Aantal personen</div>
         <div class="stepper">
-          <button type="button" id="party-minus" aria-label="Decrease">
+          <button type="button" id="party-minus" aria-label="−">
             −
           </button>
           <span class="count" id="party-count">2</span>
-          <button type="button" id="party-plus" aria-label="Increase">+</button>
-          <span class="summary"><span id="party-word">guests</span></span>
+          <button type="button" id="party-plus" aria-label="+">+</button>
+          <span class="summary"><span id="party-word">personen</span></span>
         </div>
 
-        <div class="step-label">Date</div>
+        <div class="step-label" data-i18n="date">Datum</div>
         <input type="date" id="date" />
 
-        <div class="step-label">Time</div>
+        <div class="step-label" data-i18n="time">Tijdstip</div>
         <div class="slots" id="slots">
-          <div class="empty">Pick a date to see available times.</div>
+          <div class="empty" data-i18n="pickDate">Kies een datum om beschikbare tijden te zien.</div>
         </div>
 
-        <div class="step-label">Your details</div>
+        <div class="step-label" data-i18n="yourDetails">Uw gegevens</div>
         <label class="field">
-          <span class="field-label">Name</span>
+          <span class="field-label" data-i18n="name">Naam</span>
           <input type="text" id="name" autocomplete="name" required />
         </label>
         <div class="row">
           <label class="field">
-            <span class="field-label">Email</span>
+            <span class="field-label" data-i18n="email">E-mail</span>
             <input type="email" id="email" autocomplete="email" />
           </label>
           <label class="field">
-            <span class="field-label">Phone</span>
+            <span class="field-label" data-i18n="phone">Telefoon</span>
             <input type="tel" id="phone" autocomplete="tel" />
           </label>
         </div>
         <label class="field">
-          <span class="field-label">Notes / allergies (optional)</span>
+          <span class="field-label" data-i18n="notes">Opmerkingen / allergieën (optioneel)</span>
           <textarea
             id="notes"
-            placeholder="Anything we should know?"
+            data-i18n-placeholder="notesPlaceholder"
+            placeholder="Iets wat we moeten weten?"
           ></textarea>
         </label>
 
-        <button class="submit" id="submit" type="button">Reserve</button>
+        <button class="submit" id="submit" type="button" data-i18n="book">Reserveer</button>
         <div id="feedback"></div>
       </div>
 
       <div id="step-success" class="hidden">
-        <h1>Reservation confirmed</h1>
+        <h1 data-i18n="confirmed">Reservatie bevestigd</h1>
         <div class="feedback ok" id="success-msg" style="margin-top: 8px"></div>
-        <button class="submit" id="another" type="button">
-          Make another reservation
+        <button class="submit" id="another" type="button" data-i18n="another">
+          Maak nog een reservatie
         </button>
       </div>
 
-      <div class="footer-note">Powered by Patron</div>
+      <div class="footer-note" data-i18n="poweredBy">Aangedreven door Patron</div>
     </div>
 
     <!-- Launcher — visible in both states; opens/closes the panel. -->
@@ -400,7 +436,7 @@
       class="launcher"
       id="launcher"
       type="button"
-      aria-label="Make a reservation"
+      aria-label="Reserveer"
       aria-expanded="false"
     >
       <svg
@@ -419,7 +455,7 @@
         <path d="M8 3v3" />
         <path d="M16 3v3" />
       </svg>
-      <span>Make a reservation</span>
+      <span data-i18n="launcher">Reserveer</span>
       <span class="chevron" aria-hidden="true">▴</span>
     </button>
 
@@ -431,6 +467,170 @@
         function url(path) {
           return API.replace(/\/$/, "") + path;
         }
+
+        // ── Inline i18n. NL is the default. Caller can override via
+        // ?lang=nl|fr|en (the loader script forwards the host site's
+        // <html lang> when present). Falls back to localStorage and
+        // finally NL.
+        var I18N_KEY = "patronize.lang";
+        var SUPPORTED = ["nl", "fr", "en"];
+        var TRANSLATIONS = {
+          nl: {
+            "title":            "Reserveer een tafel",
+            "subtitle":         "Kies een datum, aantal personen en tijdstip. We houden een tafel voor u.",
+            "partySize":        "Aantal personen",
+            "date":             "Datum",
+            "time":             "Tijdstip",
+            "yourDetails":      "Uw gegevens",
+            "name":             "Naam",
+            "email":            "E-mail",
+            "phone":            "Telefoon",
+            "notes":            "Opmerkingen / allergieën (optioneel)",
+            "notesPlaceholder": "Iets wat we moeten weten?",
+            "book":             "Reserveer",
+            "booking":          "Reserveren…",
+            "confirmed":        "Reservatie bevestigd",
+            "another":          "Maak nog een reservatie",
+            "poweredBy":        "Aangedreven door Patron",
+            "launcher":         "Reserveer",
+            "guest":            "persoon",
+            "guests":           "personen",
+            "pickDate":         "Kies een datum om beschikbare tijden te zien.",
+            "loading":          "Laden…",
+            "loadError":        "Kon tijden niet laden. Probeer opnieuw.",
+            "closed":           "Gesloten op deze datum.",
+            "closedReason":     "Gesloten — {reason}.",
+            "noTablesFor":      "Geen tafels vrij voor {n} op deze dag. Probeer een andere datum.",
+            "err.name":         "Geef uw naam.",
+            "err.time":         "Kies een tijdstip.",
+            "err.contact":      "Geef een e-mailadres of telefoonnummer zodat we u kunnen bereiken.",
+            "err.generic":      "Er ging iets mis. Probeer opnieuw.",
+            "success.line":     "Het is geboekt, {name}. Tot {when} voor {n} {word}.",
+          },
+          fr: {
+            "title":            "Réserver une table",
+            "subtitle":         "Choisissez la date, le nombre de personnes et l'heure. Nous gardons une table pour vous.",
+            "partySize":        "Nombre de personnes",
+            "date":             "Date",
+            "time":             "Heure",
+            "yourDetails":      "Vos coordonnées",
+            "name":             "Nom",
+            "email":            "E-mail",
+            "phone":            "Téléphone",
+            "notes":            "Notes / allergies (optionnel)",
+            "notesPlaceholder": "Quelque chose à signaler ?",
+            "book":             "Réserver",
+            "booking":          "Réservation…",
+            "confirmed":        "Réservation confirmée",
+            "another":          "Faire une autre réservation",
+            "poweredBy":        "Propulsé par Patron",
+            "launcher":         "Réserver",
+            "guest":            "personne",
+            "guests":           "personnes",
+            "pickDate":         "Choisissez une date pour voir les heures disponibles.",
+            "loading":          "Chargement…",
+            "loadError":        "Impossible de charger les heures. Veuillez réessayer.",
+            "closed":           "Fermé à cette date.",
+            "closedReason":     "Fermé — {reason}.",
+            "noTablesFor":      "Aucune table libre pour {n} ce jour-là. Essayez une autre date.",
+            "err.name":         "Veuillez saisir votre nom.",
+            "err.time":         "Veuillez choisir une heure.",
+            "err.contact":      "Donnez un e-mail ou un numéro de téléphone pour qu'on puisse vous joindre.",
+            "err.generic":      "Une erreur s'est produite. Veuillez réessayer.",
+            "success.line":     "C'est réservé, {name}. À {when} pour {n} {word}.",
+          },
+          en: {
+            "title":            "Reserve a table",
+            "subtitle":         "Pick a date, party size, and time. We'll hold a table for you.",
+            "partySize":        "Party size",
+            "date":             "Date",
+            "time":             "Time",
+            "yourDetails":      "Your details",
+            "name":             "Name",
+            "email":            "Email",
+            "phone":            "Phone",
+            "notes":            "Notes / allergies (optional)",
+            "notesPlaceholder": "Anything we should know?",
+            "book":             "Reserve",
+            "booking":          "Reserving…",
+            "confirmed":        "Reservation confirmed",
+            "another":          "Make another reservation",
+            "poweredBy":        "Powered by Patron",
+            "launcher":         "Make a reservation",
+            "guest":            "guest",
+            "guests":           "guests",
+            "pickDate":         "Pick a date to see available times.",
+            "loading":          "Loading…",
+            "loadError":        "Couldn\u2019t load times. Please retry.",
+            "closed":           "Closed on this date.",
+            "closedReason":     "Closed — {reason}.",
+            "noTablesFor":      "No tables free for {n} on this day. Try another date.",
+            "err.name":         "Please enter your name.",
+            "err.time":         "Please pick a time.",
+            "err.contact":      "Please add an email or phone number so we can reach you.",
+            "err.generic":      "Something went wrong. Please try again.",
+            "success.line":     "You\u2019re booked, {name}. We\u2019ll see you on {when} for {n} {word}.",
+          },
+        };
+        var lang = (function detectLang() {
+          var fromUrl = (qs.get("lang") || "").toLowerCase();
+          if (SUPPORTED.indexOf(fromUrl) !== -1) return fromUrl;
+          try {
+            var saved = localStorage.getItem(I18N_KEY);
+            if (saved && SUPPORTED.indexOf(saved) !== -1) return saved;
+          } catch (e) { /* ignore */ }
+          var nav = (navigator.language || "").toLowerCase();
+          if (nav.indexOf("nl") === 0) return "nl";
+          return "nl";
+        })();
+        function t(key, vars) {
+          var dict = TRANSLATIONS[lang] || TRANSLATIONS.nl;
+          var s = dict[key];
+          if (s === undefined) s = (TRANSLATIONS.en && TRANSLATIONS.en[key]) || key;
+          if (vars && typeof s === "string") {
+            for (var v in vars) {
+              s = s.replace(new RegExp("\\{" + v + "\\}", "g"), String(vars[v]));
+            }
+          }
+          return s;
+        }
+        function applyStaticI18n() {
+          document.querySelectorAll("[data-i18n]").forEach(function (el) {
+            el.textContent = t(el.getAttribute("data-i18n"));
+          });
+          document.querySelectorAll("[data-i18n-placeholder]").forEach(function (el) {
+            el.placeholder = t(el.getAttribute("data-i18n-placeholder"));
+          });
+          document.documentElement.setAttribute("lang", lang);
+          document.title = "Patronize — " + t("title");
+          var sw = document.getElementById("lang-switch");
+          if (sw) {
+            sw.querySelectorAll("button[data-lang]").forEach(function (b) {
+              if (b.getAttribute("data-lang") === lang) b.classList.add("active");
+              else b.classList.remove("active");
+            });
+          }
+        }
+        function setLang(next) {
+          if (SUPPORTED.indexOf(next) === -1) return;
+          lang = next;
+          try { localStorage.setItem(I18N_KEY, next); } catch (e) {}
+          applyStaticI18n();
+          // Re-render the bits that aren't tagged with data-i18n.
+          if (typeof renderParty === "function") renderParty();
+          if (typeof loadAvailability === "function") loadAvailability();
+        }
+        document.addEventListener("DOMContentLoaded", function () {
+          var sw = document.getElementById("lang-switch");
+          if (sw) {
+            sw.addEventListener("click", function (e) {
+              var b = e.target.closest("button[data-lang]");
+              if (b) setLang(b.getAttribute("data-lang"));
+            });
+          }
+          applyStaticI18n();
+        });
+        applyStaticI18n();
 
         // ----- State -----
         var state = {
@@ -506,7 +706,7 @@
         }
         function renderParty() {
           elPartyCount.textContent = state.partySize;
-          elPartyWord.textContent = state.partySize === 1 ? "guest" : "guests";
+          elPartyWord.textContent = state.partySize === 1 ? t("guest") : t("guests");
         }
         function renderSlots(slots, closed, closureReason) {
           if (closed || !slots || !slots.length) {
@@ -518,8 +718,8 @@
             elSlots.innerHTML =
               '<div class="empty">' +
               (safeReason
-                ? "Closed — " + safeReason + "."
-                : "Closed on this date.") +
+                ? t("closedReason", { reason: safeReason })
+                : t("closed")) +
               "</div>";
             return;
           }
@@ -554,10 +754,7 @@
           ) {
             var empty = document.createElement("div");
             empty.className = "empty";
-            empty.textContent =
-              "No tables free for " +
-              state.partySize +
-              " on this day. Try another date.";
+            empty.textContent = t("noTablesFor", { n: state.partySize });
             elSlots.appendChild(empty);
           }
         }
@@ -566,7 +763,7 @@
         function loadAvailability() {
           if (!state.date) return;
           var seq = ++loadSeq;
-          elSlots.innerHTML = '<div class="empty">Loading…</div>';
+          elSlots.innerHTML = '<div class="empty">' + t("loading") + '</div>';
           fetch(
             url(
               "/api/public/reservations/availability?date=" +
@@ -586,7 +783,7 @@
             .catch(function () {
               if (seq !== loadSeq) return;
               elSlots.innerHTML =
-                '<div class="empty">Couldn\u2019t load times. Please retry.</div>';
+                '<div class="empty">' + t("loadError") + '</div>';
             });
         }
 
@@ -618,17 +815,14 @@
           var email = (elEmail.value || "").trim();
           var phone = (elPhone.value || "").trim();
           var notes = (elNotes.value || "").trim();
-          if (!name) return setFeedback("error", "Please enter your name.");
-          if (!state.slot) return setFeedback("error", "Please pick a time.");
+          if (!name) return setFeedback("error", t("err.name"));
+          if (!state.slot) return setFeedback("error", t("err.time"));
           if (!email && !phone)
-            return setFeedback(
-              "error",
-              "Please add an email or phone number so we can reach you."
-            );
+            return setFeedback("error", t("err.contact"));
 
           state.submitting = true;
           elSubmit.disabled = true;
-          elSubmit.textContent = "Reserving…";
+          elSubmit.textContent = t("booking");
 
           fetch(url("/api/public/reservations"), {
             method: "POST",
@@ -652,36 +846,33 @@
               });
             })
             .then(function (j) {
-              var when = new Date(j.reservation.startsAt).toLocaleString([], {
-                weekday: "long",
-                month: "short",
-                day: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
+              var localeMap = { nl: "nl-BE", fr: "fr-BE", en: "en-IE" };
+              var when = new Date(j.reservation.startsAt).toLocaleString(
+                localeMap[lang] || "nl-BE",
+                {
+                  weekday: "long",
+                  month: "short",
+                  day: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                }
+              );
+              elSuccessMsg.textContent = t("success.line", {
+                name: name,
+                when: when,
+                n: state.partySize,
+                word: state.partySize === 1 ? t("guest") : t("guests"),
               });
-              elSuccessMsg.textContent =
-                "You\u2019re booked, " +
-                name +
-                ". We\u2019ll see you on " +
-                when +
-                " for " +
-                state.partySize +
-                " " +
-                (state.partySize === 1 ? "guest" : "guests") +
-                ".";
               elStepForm.classList.add("hidden");
               elStepSuccess.classList.remove("hidden");
             })
             .catch(function (e) {
-              setFeedback(
-                "error",
-                e.message || "Something went wrong. Please try again."
-              );
+              setFeedback("error", e.message || t("err.generic"));
             })
             .finally(function () {
               state.submitting = false;
               elSubmit.disabled = false;
-              elSubmit.textContent = "Reserve";
+              elSubmit.textContent = t("book");
             });
         });
 

@@ -611,26 +611,102 @@
         border-color: var(--brand);
         color: #fff;
       }
+      .phone-search {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: var(--surface-2);
+        border: 1px solid var(--border);
+        font-size: 10px;
+        color: var(--text-dim);
+      }
+      .phone-search svg { flex-shrink: 0; opacity: 0.7; }
       .phone-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 6px;
       }
+      /* Magazine-style mock card: photo on the left, copy on the right,
+         tiny + button overlapping the photo and an info disc top-right
+         when the item has an info link. */
       .phone-item {
-        background: var(--surface);
+        position: relative;
+        background: var(--surface-2);
         border: 1px solid var(--border);
         border-radius: 10px;
-        padding: 8px;
+        padding: 6px 8px 6px 6px;
+        display: grid;
+        grid-template-columns: 36px 1fr;
+        gap: 6px;
+        align-items: stretch;
+      }
+      .phone-item .ph {
+        width: 36px;
+        height: 44px;
+        border-radius: 6px;
+        background: linear-gradient(135deg, var(--surface), var(--surface-3));
+        position: relative;
+      }
+      .phone-item .ph .ph-add {
+        position: absolute;
+        right: -3px;
+        bottom: -3px;
+        width: 13px;
+        height: 13px;
+        border-radius: 50%;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        font-size: 9px;
+        line-height: 11px;
+        color: var(--text);
+        display: grid;
+        place-items: center;
+      }
+      .phone-item .info {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        font-size: 8px;
+        font-weight: 600;
+        line-height: 9px;
+        text-align: center;
+        color: var(--text-muted);
+      }
+      .phone-item .body {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 2px;
+        min-width: 0;
       }
       .phone-item .it {
         font-weight: 500;
-        font-size: 11px;
-        line-height: 1.3;
+        font-size: 10px;
+        line-height: 1.2;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+      .phone-item .desc {
+        font-size: 8px;
+        line-height: 1.2;
+        color: var(--text-muted);
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
       }
       .phone-item .pr {
-        color: var(--brand-bright);
-        font-size: 11px;
-        margin-top: 4px;
+        color: var(--brand);
+        font-size: 10px;
+        font-weight: 600;
+        margin-top: 2px;
       }
       .phone-cart {
         margin-top: auto;
@@ -1323,6 +1399,83 @@
                 stroke="currentColor"
                 stroke-width="2"
               >
+                <rect x="3" y="3" width="8" height="8" rx="1.5" />
+                <rect x="13" y="3" width="8" height="8" rx="1.5" />
+                <rect x="3" y="13" width="8" height="8" rx="1.5" />
+                <circle cx="17" cy="17" r="3.5" />
+                <line x1="17" y1="15.5" x2="17" y2="18.5" />
+                <line x1="15.5" y1="17" x2="18.5" y2="17" />
+              </svg>
+            </div>
+            <h3>Magazine-style menu</h3>
+            <p>
+              Each menu item gets a photo, a description, and a tap-to-add
+              button. Guests browse a card grid that feels like a delivery
+              app — not a printed PDF.
+            </p>
+          </article>
+
+          <article class="feature reveal">
+            <div class="icon">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <circle cx="12" cy="12" r="9" />
+                <line x1="12" y1="11" x2="12" y2="16" />
+                <circle cx="12" cy="8" r="0.8" fill="currentColor" />
+              </svg>
+            </div>
+            <h3>Untappd &amp; tasting-note previews</h3>
+            <p>
+              Paste an Untappd URL on a beer, a producer page on a wine, or
+              a recipe link on a dish. The customer gets a native preview
+              card — hero image, rating, description — without leaving the
+              menu and without the iframe-blocked-by-CSP nonsense.
+            </p>
+          </article>
+
+          <article class="feature reveal">
+            <div class="icon">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M3 6h18" />
+                <path d="M6 6v3a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V6" />
+                <path d="M9 12v6" />
+                <path d="M15 12v6" />
+                <circle cx="9" cy="20" r="0.6" fill="currentColor" />
+                <circle cx="15" cy="20" r="0.6" fill="currentColor" />
+              </svg>
+            </div>
+            <h3>Hierarchical menu &amp; auto-routing</h3>
+            <p>
+              Group categories under Food and Drinks. Customers see a
+              two-tier filter on the QR menu; the backend uses the parent to
+              route lines automatically — anything under Drinks lands at the
+              bar, everything else at the kitchen. No per-item config.
+            </p>
+          </article>
+
+          <article class="feature reveal">
+            <div class="icon">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
                 <path
                   d="M5 3v8a4 4 0 0 0 8 0V3M9 3v6M17 3l3 5v3a3 3 0 1 1-6 0V8z"
                 />
@@ -1581,41 +1734,76 @@
       <div class="container">
         <div class="qr-row">
           <div class="reveal" style="text-align: center">
-            <!-- Phone mockup illustrating the customer ordering page -->
+            <!-- Phone mockup illustrating the magazine-style QR menu -->
             <div class="phone">
               <div class="phone-inner">
                 <div class="phone-line">Bistro Lumière</div>
                 <div class="phone-title">Table 12</div>
                 <div class="phone-cats">
-                  <span class="phone-cat active">All</span>
+                  <span class="phone-cat active">Food</span>
                   <span class="phone-cat">Drinks</span>
-                  <span class="phone-cat">Mains</span>
-                  <span class="phone-cat">Desserts</span>
+                </div>
+                <div class="phone-cats" style="margin-top:-4px">
+                  <span class="phone-cat active" style="background:var(--surface-3);border-color:var(--border);color:var(--text)">Mains</span>
+                  <span class="phone-cat" style="background:var(--surface-2)">Desserts</span>
+                </div>
+                <div class="phone-search">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="11" cy="11" r="7"/>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                  </svg>
+                  <span>Search the menu</span>
                 </div>
                 <div class="phone-grid">
                   <div class="phone-item">
-                    <div class="it">Steak frites</div>
-                    <div class="pr">€24.00</div>
+                    <div class="ph"><div class="ph-add">+</div></div>
+                    <div class="body">
+                      <div class="it">Steak frites</div>
+                      <div class="desc">28-day aged</div>
+                      <div class="pr">€24.00</div>
+                    </div>
                   </div>
                   <div class="phone-item">
-                    <div class="it">House red, glass</div>
-                    <div class="pr">€7.50</div>
+                    <div class="ph"><div class="ph-add">+</div></div>
+                    <div class="info">i</div>
+                    <div class="body">
+                      <div class="it">House red</div>
+                      <div class="desc">Côtes du Rhône</div>
+                      <div class="pr">€7.50</div>
+                    </div>
                   </div>
                   <div class="phone-item">
-                    <div class="it">Ratatouille</div>
-                    <div class="pr">€18.00</div>
+                    <div class="ph"><div class="ph-add">+</div></div>
+                    <div class="body">
+                      <div class="it">Ratatouille</div>
+                      <div class="desc">Provençal</div>
+                      <div class="pr">€18.00</div>
+                    </div>
                   </div>
                   <div class="phone-item">
-                    <div class="it">Tarte tatin</div>
-                    <div class="pr">€8.50</div>
+                    <div class="ph"><div class="ph-add">+</div></div>
+                    <div class="info">i</div>
+                    <div class="body">
+                      <div class="it">Westmalle</div>
+                      <div class="desc">Tripel · 9.5%</div>
+                      <div class="pr">€4.90</div>
+                    </div>
                   </div>
                   <div class="phone-item">
-                    <div class="it">Espresso</div>
-                    <div class="pr">€2.80</div>
+                    <div class="ph"><div class="ph-add">+</div></div>
+                    <div class="body">
+                      <div class="it">Tarte tatin</div>
+                      <div class="desc">Crème fraîche</div>
+                      <div class="pr">€8.50</div>
+                    </div>
                   </div>
                   <div class="phone-item">
-                    <div class="it">San Pellegrino</div>
-                    <div class="pr">€4.00</div>
+                    <div class="ph"><div class="ph-add">+</div></div>
+                    <div class="body">
+                      <div class="it">Espresso</div>
+                      <div class="desc">Single origin</div>
+                      <div class="pr">€2.80</div>
+                    </div>
                   </div>
                 </div>
                 <div class="phone-cart">
@@ -1628,27 +1816,41 @@
           <div class="reveal">
             <div class="section-eyebrow">Table-side ordering</div>
             <h2 class="section-title">
-              A QR per table. The whole menu in their pocket.
+              A QR per table. A magazine in their pocket.
             </h2>
             <p class="section-sub" style="margin-bottom: 18px">
               Edit a table in the floor plan, click the QR button, print the
-              SVG. Pin it to the table. That's it.
+              SVG. Pin it to the table. Guests scan into a photo-driven
+              menu that feels like a delivery app — not a printed PDF.
             </p>
             <ul class="embed-list">
               <li>
-                <span class="check">✓</span> Generates PNG and SVG QR codes per
-                table, downloadable and printable.
+                <span class="check">✓</span> Magazine layout with photos,
+                descriptions, search bar, and a tap-to-add &quot;+&quot;
+                button on every item.
               </li>
               <li>
-                <span class="check">✓</span> "Print all QR codes" lays out the
-                whole restaurant on one printable sheet.
+                <span class="check">✓</span> Two-tier filter — Food / Drinks
+                on top, sub-categories below. Drinks auto-route to the bar.
               </li>
               <li>
-                <span class="check">✓</span> Customers see the same dark-themed
-                menu, send lines straight to the kitchen.
+                <span class="check">✓</span> Info icon on items pulls a
+                native preview card from the URL you paste — Untappd for a
+                beer, the producer for a wine, a recipe for a dish. No
+                iframe, no &quot;refused to load&quot; message.
               </li>
               <li>
-                <span class="check">✓</span> Waiter still finalises payment —
+                <span class="check">✓</span> Generates PNG and SVG QR codes
+                per table; &quot;Print all QR codes&quot; lays the entire
+                room out on a single printable sheet.
+              </li>
+              <li>
+                <span class="check">✓</span> Theme presets, cover image,
+                tagline, custom heading font — apply, live-preview without
+                saving, then publish.
+              </li>
+              <li>
+                <span class="check">✓</span> Waiter still finalises payment;
                 guests don't see the till.
               </li>
             </ul>

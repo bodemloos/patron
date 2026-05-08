@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { api, fmtEur } from '../api.js';
+import { useT } from '../i18n/index.jsx';
 
 export default function Customers() {
+  const { t } = useT();
   const [list, setList] = useState([]);
   const [q, setQ] = useState('');
   const [selected, setSelected] = useState(null);
@@ -27,14 +29,14 @@ export default function Customers() {
     <div className="p-3 sm:p-6 space-y-4 sm:space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-xl sm:text-2xl font-semibold">Customers</h1>
+          <h1 className="text-xl sm:text-2xl font-semibold">{t('customers.title')}</h1>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
-            Auto-built from reservations and paid orders. Mark VIPs to highlight them on the floor plan.
+            {t('customers.sub')}
           </p>
         </div>
         <input
           className="input w-auto"
-          placeholder="Search by name, email, phone…"
+          placeholder={t('customers.search')}
           value={q}
           onChange={(e) => setQ(e.target.value)}
         />
@@ -45,11 +47,11 @@ export default function Customers() {
           <table className="w-full text-sm">
             <thead className="bg-slate-50 dark:bg-surface-950 text-slate-500 dark:text-slate-400 text-left">
               <tr>
-                <th className="px-4 py-2">Name</th>
-                <th className="px-4 py-2">Contact</th>
-                <th className="px-4 py-2">Visits</th>
-                <th className="px-4 py-2">Spend</th>
-                <th className="px-4 py-2">Last visit</th>
+                <th className="px-4 py-2">{t('customers.col.name')}</th>
+                <th className="px-4 py-2">{t('customers.col.contact')}</th>
+                <th className="px-4 py-2">{t('customers.col.visits')}</th>
+                <th className="px-4 py-2">{t('customers.col.spend')}</th>
+                <th className="px-4 py-2">{t('customers.col.lastVisit')}</th>
                 <th className="px-4 py-2"></th>
               </tr>
             </thead>
@@ -76,26 +78,26 @@ export default function Customers() {
                       className="text-xs text-brand-700 dark:text-brand-400 hover:underline"
                       onClick={(e) => { e.stopPropagation(); toggleVip(c); }}
                     >
-                      {c.vip ? 'Unmark VIP' : 'Mark VIP'}
+                      {c.vip ? t('customers.unmarkVip') : t('customers.markVip')}
                     </button>
                   </td>
                 </tr>
               ))}
               {!list.length && (
-                <tr><td colSpan="6" className="text-center py-10 text-slate-400 dark:text-slate-500">No customers yet — they'll show up after reservations or paid orders.</td></tr>
+                <tr><td colSpan="6" className="text-center py-10 text-slate-400 dark:text-slate-500">{t('customers.empty')}</td></tr>
               )}
             </tbody>
           </table>
         </section>
 
         <aside className="card p-4 h-fit">
-          {!selected && <div className="text-sm text-slate-400 dark:text-slate-500">Pick a customer to see their history.</div>}
+          {!selected && <div className="text-sm text-slate-400 dark:text-slate-500">{t('customers.pickHint')}</div>}
           {selected && (
             <div className="space-y-3">
               <div>
                 <div className="font-medium text-base">{selected.name}</div>
                 <div className="text-xs text-slate-500 dark:text-slate-400">
-                  {[selected.email, selected.phone].filter(Boolean).join(' · ') || 'no contact info'}
+                  {[selected.email, selected.phone].filter(Boolean).join(' · ') || t('customers.noContact')}
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-2 text-center">
@@ -133,7 +135,7 @@ export default function Customers() {
                 <textarea
                   className="input"
                   rows="2"
-                  placeholder="Internal notes (allergies, preferences, do-not-seat areas)…"
+                  placeholder={t('customers.notesPh')}
                   value={selected.notes || ''}
                   onBlur={async (e) => {
                     if ((e.target.value || '') === (selected.notes || '')) return;

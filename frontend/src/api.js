@@ -1,12 +1,58 @@
 // Thin fetch wrapper.
 //
-//   Dev:    Vite proxies /api → http://localhost:4000 (no env var needed).
-//   Prod:   set VITE_API_BASE in the Vercel project to your Render URL
-//           (e.g. https://patron-abc123.onrender.com) to call the backend
-//           directly. Leave it unset and use the vercel.json /api rewrite
-//           instead — fine for normal requests but the SSE stream in
-//           lib/events.js works better with a direct connection.
-const API_BASE = (import.meta.env?.VITE_API_BASE || '').replace(/\/$/, '');
+//   Dev (web):    Vite proxies /api → http://localhost:4000 (no env var needed).
+//   Prod (web):   set VITE_API_BASE in the Vercel project to your Render URL
+//                 (e.g. https://patron-abc123.onrender.com) to call the backend
+//                 directly. Leave it unset and use the vercel.json /api rewrite
+//                 instead — fine for normal requests but the SSE stream in
+//                 lib/events.js works better with a direct connection.
+//   Native (Capacitor):
+//                 The shell loads index.html from the device, so a same-origin
+//                 /api/... request goes nowhere. We need an absolute URL.
+//                 Set VITE_API_BASE at build time (recommended) or rely on the
+//                 baked-in fallback — `window.__patronApiBase` lets a custom
+//                 native build override it at runtime.
+const BUILD_API_BASE = (import.meta.env?.VITE_API_BASE || '').replace(/\/$/, '');
+
+// Compile-time native check — Vite replaces `import.meta.env.MODE` etc.,
+// but `Capacitor.isNativePlatform()` is a runtime check we can do once.
+function isNativeShell() {
+  if (typeof window === 'undefined') return false;
+  // Capacitor injects a global stub on iOS/Android that exposes
+  // isNativePlatform() before any of our JS runs. Probe it without
+  // importing @capacitor/core so the web bundle stays lean.
+  try {
+    const cap = window.Capacitor;
+    if (cap && typeof cap.isNativePlatform === 'function' && cap.isNativePlatform()) {
+      return true;
+    }
+  } catch { /* ignore */ }
+  return false;
+}
+
+// Resolve once and cache. Order of preference:
+//   1. window.__patronApiBase  — runtime override for QA / staging builds
+//   2. VITE_API_BASE           — baked at build time
+//   3. ''                      — same-origin (works on web, breaks native)
+function resolveApiBase() {
+  if (typeof window !== 'undefined' && typeof window.__patronApiBase === 'string') {
+    return window.__patronApiBase.replace(/\/$/, '');
+  }
+  if (BUILD_API_BASE) return BUILD_API_BASE;
+  // No explicit base + native shell → there's nothing we can do but warn.
+  // The first failed fetch will surface as a clear error in the UI.
+  if (isNativeShell()) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      '[patron] Running in a native shell but VITE_API_BASE is not set. ' +
+        'API calls will fail — set VITE_API_BASE before `npm run build` or ' +
+        'expose window.__patronApiBase before the bundle loads.'
+    );
+  }
+  return '';
+}
+
+const API_BASE = resolveApiBase();
 
 function url(path) {
   return path.startsWith('http') ? path : API_BASE + path;
@@ -131,6 +177,10 @@ export const api = {
   signContract: (id, body) => request(`/api/contracts/${id}/sign`, { method: 'POST', body }),
   contractDocumentUrl: (id) => url(`/api/contracts/${id}/document.html`),
   submitDimona: (id, direction) => request(`/api/contracts/${id}/dimona`, { method: 'POST', body: { direction } }),
+
+  tableRequests: (status = 'pending') => request('/api/table-requests' + (status ? `?status=${status}` : '')),
+  ackTableRequest: (id, by = '') => request(`/api/table-requests/${id}`, { method: 'PATCH', body: { status: 'acknowledged', acknowledgedBy: by } }),
+  deleteTableRequest: (id) => request(`/api/table-requests/${id}`, { method: 'DELETE' }),
 
   rszDeclarations: (q = '') => request('/api/rsz/declarations' + (q ? `?${q}` : '')),
   rszHoursPreview: (from, to) => request(`/api/rsz/hours-preview?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`),

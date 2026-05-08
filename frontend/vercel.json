@@ -3,7 +3,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://patron-sijx.onrender.com"
+      "destination": "https://patron-sijx.onrender.com/api/:path*"
     },
     {
       "source": "/((?!.*\\.).*)",

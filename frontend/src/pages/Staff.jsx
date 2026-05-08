@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import dayjs from 'dayjs';
 import { api, fmtEur } from '../api.js';
 import Modal from '../components/Modal.jsx';
+import { useT } from '../i18n/index.jsx';
 
 const empty = {
   name: '', role: 'waiter', email: '', phone: '', hourlyRate: 14, active: true,
@@ -12,6 +13,7 @@ const empty = {
 };
 
 export default function StaffPage() {
+  const { t } = useT();
   const [staff, setStaff] = useState([]);
   const [shifts, setShifts] = useState([]);
   const [editing, setEditing] = useState(null);
@@ -44,7 +46,7 @@ export default function StaffPage() {
   }
 
   async function remove(id) {
-    if (!confirm('Delete staff member?')) return;
+    if (!confirm(t('staff.deleteConfirm'))) return;
     await api.deleteStaff(id);
     load();
   }
@@ -72,10 +74,10 @@ export default function StaffPage() {
   return (
     <div className="p-3 sm:p-6 space-y-4 sm:space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl sm:text-2xl font-semibold">Staff</h1>
+        <h1 className="text-xl sm:text-2xl font-semibold">{t('staff.title')}</h1>
         <button className="btn-primary" onClick={() => setEditing({ ...empty })}>
-          <span className="hidden sm:inline">+ Staff member</span>
-          <span className="sm:hidden">+ Staff</span>
+          <span className="hidden sm:inline">{t('staff.add')}</span>
+          <span className="sm:hidden">+</span>
         </button>
       </div>
 
@@ -84,11 +86,11 @@ export default function StaffPage() {
         <table className="w-full text-sm min-w-[700px]">
           <thead className="bg-slate-50 dark:bg-surface-950 text-slate-500 dark:text-slate-400 text-left">
             <tr>
-              <th className="px-4 py-2">Name</th>
-              <th className="px-4 py-2">Role</th>
-              <th className="px-4 py-2">Hourly rate</th>
-              <th className="px-4 py-2">Status</th>
-              <th className="px-4 py-2">Email</th>
+              <th className="px-4 py-2">{t('staff.col.name')}</th>
+              <th className="px-4 py-2">{t('staff.col.role')}</th>
+              <th className="px-4 py-2">{t('staff.col.rate')}</th>
+              <th className="px-4 py-2">{t('reservations.col.status')}</th>
+              <th className="px-4 py-2">{t('reservations.field.email')}</th>
               <th className="px-4 py-2"></th>
             </tr>
           </thead>
@@ -127,7 +129,7 @@ export default function StaffPage() {
               );
             })}
             {!staff.length && (
-              <tr><td colSpan="6" className="text-center py-8 text-slate-400 dark:text-slate-500">No staff yet.</td></tr>
+              <tr><td colSpan="6" className="text-center py-8 text-slate-400 dark:text-slate-500">{t('staff.empty')}</td></tr>
             )}
           </tbody>
         </table>
@@ -188,8 +190,8 @@ export default function StaffPage() {
         title={editing?._id ? 'Edit staff member' : 'New staff member'}
         footer={
           <>
-            <button className="btn-ghost" onClick={() => setEditing(null)}>Cancel</button>
-            <button className="btn-primary" onClick={save}>Save</button>
+            <button className="btn-ghost" onClick={() => setEditing(null)}>{t('common.cancel')}</button>
+            <button className="btn-primary" onClick={save}>{t('common.save')}</button>
           </>
         }
       >

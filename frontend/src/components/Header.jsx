@@ -1,8 +1,14 @@
 import { useStore, ROLES } from "../store.js";
 import Logo from "./Logo.jsx";
+import { useT } from "../i18n/index.jsx";
 
 export default function Header() {
   const { role, setRole } = useStore();
+  const { t, lang } = useT();
+  // Format the date in the active locale so the header reads as e.g.
+  // "Patron · 6 mei 2026" in Dutch instead of an en-US shape.
+  const localeMap = { nl: 'nl-BE', fr: 'fr-BE', en: 'en-IE' };
+  const dateStr = new Date().toLocaleDateString(localeMap[lang] || 'nl-BE');
   return (
     <header className="h-14 bg-white dark:bg-surface-900 border-b border-slate-200 dark:border-white/5 px-3 sm:px-6 flex items-center justify-between gap-2">
       <div className="flex items-center gap-2 min-w-0">
@@ -18,12 +24,12 @@ export default function Header() {
           <span className="text-slate-700 dark:text-slate-200 font-medium">
             Patron
           </span>{" "}
-          · {new Date().toLocaleDateString()}
+          · {dateStr}
         </div>
       </div>
       <div className="flex items-center gap-2 shrink-0">
         <span className="hidden sm:inline text-xs text-slate-500 dark:text-slate-400">
-          View as
+          {t('header.viewAs')}
         </span>
         <div className="flex bg-slate-100 dark:bg-surface-850 rounded-lg p-1 text-xs font-medium">
           {ROLES.map((r) => (
@@ -31,13 +37,13 @@ export default function Header() {
               key={r}
               onClick={() => setRole(r)}
               className={[
-                "px-2.5 sm:px-3 py-1 rounded-md capitalize transition",
+                "px-2.5 sm:px-3 py-1 rounded-md transition",
                 role === r
                   ? "bg-white dark:bg-surface-900 text-slate-900 dark:text-slate-100 shadow-sm"
                   : "text-slate-500 dark:text-slate-400",
               ].join(" ")}
             >
-              {r}
+              {t(`header.role.${r}`)}
             </button>
           ))}
         </div>

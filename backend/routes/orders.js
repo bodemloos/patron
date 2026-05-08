@@ -20,22 +20,28 @@ async function resolveTaxRate(item, settings) {
   return cat && cat.taxRate >= 0 ? cat.taxRate : settings.defaultTaxRate;
 }
 
-// Heuristic: derive the kitchen course from the category name. The
-// menu UI also lets a manager override per-line, but most items map
-// cleanly from their category.
-function courseForCategory(name) {
-  const n = (name || '').toLowerCase();
-  if (n.includes('starter') || n.includes('appetizer')) return 'starter';
-  if (n.includes('main')) return 'main';
-  if (n.includes('dessert') || n.includes('desert')) return 'dessert';
+// Derive the kitchen course from the (populated) category. Routing is
+// driven primarily by the top-level parent — anything under "Drinks"
+// goes to the bar, everything else (including any "Food" descendants
+// or orphan top-level categories) goes to the kitchen. The leaf's
+// name still feeds a finer-grained classification ("starter", "main",
+// "dessert") so the kitchen ticket can sort sensibly.
+function courseForCategory(cat) {
+  if (!cat) return 'other';
+  const top = cat.parent && cat.parent.name ? cat.parent : cat;
+  const topName = (top.name || '').toLowerCase();
+  if (topName.includes('drink')) return 'drink';
+
+  const leaf = (cat.name || '').toLowerCase();
+  if (leaf.includes('starter') || leaf.includes('appetizer')) return 'starter';
+  if (leaf.includes('dessert') || leaf.includes('desert')) return 'dessert';
+  if (leaf.includes('main')) return 'main';
+  // Defensive fallback — only fires when an item is somehow assigned
+  // to a stray drink-ish leaf without a Drinks parent.
   if (
-    n.includes('drink') ||
-    n.includes('coffee') ||
-    n.includes('tea') ||
-    n.includes('bar') ||
-    n.includes('beer') ||
-    n.includes('wine') ||
-    n.includes('cocktail')
+    leaf.includes('coffee') || leaf.includes('tea') ||
+    leaf.includes('bar')    || leaf.includes('beer') ||
+    leaf.includes('wine')   || leaf.includes('cocktail')
   ) return 'drink';
   return 'other';
 }
@@ -82,7 +88,8 @@ router.post('/:id/lines', async (req, res, next) => {
     const { itemId, qty, note, modifiers, course } = req.body;
     const order = await Order.findById(req.params.id);
     if (!order) return res.status(404).json({ error: 'Order not found' });
-    const item = await Item.findById(itemId).populate('category');
+    const item = await Item.findById(itemId)
+      .populate({ path: 'category', populate: { path: 'parent' } });
     if (!item) return res.status(404).json({ error: 'Item not found' });
     if (item.available === false) {
       return res.status(409).json({ error: `${item.name} is currently unavailable.` });
@@ -90,7 +97,7 @@ router.post('/:id/lines', async (req, res, next) => {
 
     const settings = await Settings.get();
     const taxRate = await resolveTaxRate(item, settings);
-    const lineCourse = course || courseForCategory(item.category?.name);
+    const lineCourse = course || courseForCategory(item.category);
 
     const cleanMods = Array.isArray(modifiers)
       ? modifiers

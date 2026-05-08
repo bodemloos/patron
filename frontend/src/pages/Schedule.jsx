@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import dayjs from "dayjs";
 import { api } from "../api.js";
+import { useT } from "../i18n/index.jsx";
 
 /**
  * Schedule — week and month grid for shift planning.
@@ -17,6 +18,7 @@ import { api } from "../api.js";
 const VIEWS = ["week", "month"];
 
 export default function Schedule() {
+  const { t } = useT();
   const [view, setView] = useState("month");
   const [cursor, setCursor] = useState(() => dayjs());
   const [staff, setStaff] = useState([]);
@@ -133,7 +135,7 @@ export default function Schedule() {
     <div className="p-3 sm:p-6 space-y-4">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-xl sm:text-2xl font-semibold">Schedule</h1>
+          <h1 className="text-xl sm:text-2xl font-semibold">{t('schedule.title')}</h1>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
             {subtitle}
             {" · "}
@@ -151,13 +153,13 @@ export default function Schedule() {
                 key={v}
                 onClick={() => setView(v)}
                 className={[
-                  "px-3 py-1 rounded-md capitalize transition",
+                  "px-3 py-1 rounded-md transition",
                   view === v
                     ? "bg-white dark:bg-surface-900 text-slate-900 dark:text-slate-100 shadow-sm"
                     : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200",
                 ].join(" ")}
               >
-                {v}
+                {t(`schedule.view.${v}`)}
               </button>
             ))}
           </div>
@@ -201,7 +203,7 @@ export default function Schedule() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="font-semibold">
-              {editing._id ? "Edit shift" : "New shift"}
+              {editing._id ? t('schedule.modal.edit') : t('schedule.modal.new')}
             </div>
             <label className="block text-sm">
               <span className="text-slate-600 dark:text-slate-300">Staff</span>
@@ -263,14 +265,14 @@ export default function Schedule() {
                 className="btn-ghost text-red-600 dark:text-red-400"
                 onClick={remove}
               >
-                {editing._id ? "Delete" : "Cancel"}
+                {editing._id ? t('common.delete') : t('common.cancel')}
               </button>
               <div className="flex gap-2">
                 <button className="btn-ghost" onClick={() => setEditing(null)}>
-                  Close
+                  {t('common.close')}
                 </button>
                 <button className="btn-primary" onClick={save}>
-                  Save
+                  {t('common.save')}
                 </button>
               </div>
             </div>

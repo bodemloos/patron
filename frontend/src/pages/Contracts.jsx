@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import dayjs from 'dayjs';
 import { api, fmtEur } from '../api.js';
 import Modal from '../components/Modal.jsx';
+import { useT } from '../i18n/index.jsx';
 
 const STATUTE_LABELS = {
   permanent:  'Vast contract (onbepaalde duur)',
@@ -27,6 +28,7 @@ const empty = {
 };
 
 export default function Contracts() {
+  const { t } = useT();
   const [staffList, setStaffList] = useState([]);
   const [list, setList] = useState([]);
   const [editing, setEditing] = useState(null);
@@ -84,9 +86,9 @@ export default function Contracts() {
     <div className="p-3 sm:p-6 space-y-4 sm:space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-xl sm:text-2xl font-semibold">Contracts</h1>
+          <h1 className="text-xl sm:text-2xl font-semibold">{t('contracts.title')}</h1>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
-            Belgian employment contracts per staff member. Generate a printable document, mark signed, then submit a Dimona to RSZ.
+            {t('contracts.sub')}
           </p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
@@ -101,7 +103,7 @@ export default function Contracts() {
             <option value="all">All statutes</option>
             {Object.entries(STATUTE_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
           </select>
-          <button className="btn-primary" onClick={() => setEditing({ ...empty, staff: staffList[0]?._id || '' })}>+ New contract</button>
+          <button className="btn-primary" onClick={() => setEditing({ ...empty, staff: staffList[0]?._id || '' })}>{t('contracts.add')}</button>
         </div>
       </div>
 
@@ -110,12 +112,12 @@ export default function Contracts() {
           <table className="w-full text-sm min-w-[900px]">
             <thead className="bg-slate-50 dark:bg-surface-950 text-slate-500 dark:text-slate-400 text-left">
               <tr>
-                <th className="px-4 py-2">Staff</th>
-                <th className="px-4 py-2">Statute</th>
-                <th className="px-4 py-2">Period</th>
-                <th className="px-4 py-2">Hours / week</th>
-                <th className="px-4 py-2">Rate</th>
-                <th className="px-4 py-2">Status</th>
+                <th className="px-4 py-2">{t('contracts.col.staff')}</th>
+                <th className="px-4 py-2">{t('contracts.col.statute')}</th>
+                <th className="px-4 py-2">{t('contracts.col.from')} / {t('contracts.col.to')}</th>
+                <th className="px-4 py-2">{t('staff.col.rate')}</th>
+                <th className="px-4 py-2">{t('staff.col.rate')}</th>
+                <th className="px-4 py-2">{t('contracts.col.status')}</th>
                 <th className="px-4 py-2"></th>
               </tr>
             </thead>
@@ -165,7 +167,7 @@ export default function Contracts() {
                 </tr>
               ))}
               {!filtered.length && (
-                <tr><td colSpan="7" className="text-center py-10 text-slate-400 dark:text-slate-500">No contracts. Create one to get started.</td></tr>
+                <tr><td colSpan="7" className="text-center py-10 text-slate-400 dark:text-slate-500">{t('contracts.empty')}</td></tr>
               )}
             </tbody>
           </table>
@@ -178,8 +180,8 @@ export default function Contracts() {
         title={editing?._id ? 'Edit contract' : 'New contract'}
         wide
         footer={<>
-          <button className="btn-ghost" onClick={() => setEditing(null)}>Cancel</button>
-          <button className="btn-primary" onClick={save}>Save</button>
+          <button className="btn-ghost" onClick={() => setEditing(null)}>{t('common.cancel')}</button>
+          <button className="btn-primary" onClick={save}>{t('common.save')}</button>
         </>}
       >
         {editing && (

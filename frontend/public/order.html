@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Order at your table</title>
+    <title>Bestel aan tafel</title>
     <style>
       /*
     Customer QR ordering — the page a guest lands on after scanning the
@@ -40,7 +40,9 @@
           --text: #0f172a;
           --text-muted: #475569;
           --text-dim: #94a3b8;
-          --shadow: 0 8px 24px -12px rgba(15, 23, 42, 0.18);
+          /* Light cards look cleaner flat — the lifted-card look only
+             reads well on the dark palette. */
+          --shadow: none;
         }
       }
       * {
@@ -84,11 +86,22 @@
         gap: 6px;
         overflow-x: auto;
         padding: 8px 0;
-        margin: 0 -16px 16px;
+        margin: 0 -16px 0;
         padding-left: 16px;
         padding-right: 16px;
+      }
+      .cats.parents {
         border-bottom: 1px solid var(--border);
       }
+      /* Sub-row sits flush under the parents row, slightly smaller chips
+         so the hierarchy is obvious at a glance. */
+      .cats.subs {
+        margin-bottom: 16px;
+        border-bottom: 1px solid var(--border);
+        padding-top: 4px;
+        padding-bottom: 10px;
+      }
+      .cats.subs[hidden] { display: none; }
       .cat {
         flex-shrink: 0;
         padding: 6px 12px;
@@ -99,6 +112,11 @@
         font-size: 13px;
         font-weight: 500;
         cursor: pointer;
+      }
+      .cats.subs .cat {
+        padding: 5px 10px;
+        font-size: 12px;
+        background: var(--surface-2);
       }
       .cat.active {
         background: var(--brand);
@@ -126,6 +144,412 @@
         box-shadow: var(--shadow);
         transition: filter 0.15s, transform 0.05s;
       }
+
+      /* ── Layout: list ───────────────────────────────────────────
+         Single-column wider cards. More room for descriptions, price
+         a little larger — long-form menu feel. */
+      body[data-layout="list"] .grid {
+        grid-template-columns: 1fr;
+      }
+      @media (min-width: 640px) {
+        body[data-layout="list"] .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      body[data-layout="list"] .item { padding: 14px 16px; }
+      body[data-layout="list"] .item .item-price { font-size: 16px; }
+
+      /* ── Layout: magazine ───────────────────────────────────────
+         Default look. Two-column card grid on phones (single column
+         on the smallest screens). Each card has the product photo on
+         the left, copy on the right (name, description, price), a
+         circular + button overlapping the photo's bottom-right and
+         an optional info disc top-right that opens a webpage inside
+         the in-app iframe sheet. Inspired by the reference mock-ups
+         for "Popular Wine" cards. */
+      body[data-layout="magazine"] .grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      @media (max-width: 379px) {
+        body[data-layout="magazine"] .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (min-width: 720px) {
+        body[data-layout="magazine"] .grid {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+      /* Photo-tile design — the photo fills the tile and the name +
+         price ride a translucent overlay at the bottom. Matches the
+         reference mock from the menu picker. */
+      body[data-layout="magazine"] .item {
+        position: relative;
+        display: block;
+        padding: 0;
+        border: 0;
+        border-radius: 16px;
+        background: var(--surface-2);
+        cursor: pointer;
+        overflow: hidden;
+        aspect-ratio: 1 / 1;
+        text-align: left;
+      }
+      body[data-layout="magazine"] .item:hover { filter: none; background: var(--surface-2); }
+      body[data-layout="magazine"] .item:active { transform: scale(0.99); }
+      body[data-layout="magazine"] .cat-tag { display: none; }
+      body[data-layout="magazine"] .item-body {
+        position: absolute;
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+        padding: 9px 12px;
+        background: rgba(0, 0, 0, 0.55);
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+        border-radius: 12px;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 10px;
+        align-items: end;
+        min-width: 0;
+        z-index: 2;
+      }
+      body[data-layout="magazine"] .item-name {
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 1.25;
+        margin: 0;
+        color: #fff;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+      }
+      body[data-layout="magazine"] .item-desc {
+        display: none; /* photo-tile keeps it tight; description shows in the order sheet */
+      }
+      body[data-layout="magazine"] .item-price {
+        margin-top: 4px;
+        font-size: 13px;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.92);
+      }
+      body[data-layout="magazine"] .item-photo {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+      }
+      body[data-layout="magazine"] .item-photo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 16px;
+        background: var(--surface);
+        display: block;
+      }
+      /* Placeholder fill when no imageUrl is set — soft gradient so
+         the tile still reads as a "card" rather than empty space. */
+      body[data-layout="magazine"] .item-photo .ph {
+        width: 100%;
+        height: 100%;
+        border-radius: 16px;
+        background:
+          radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.08), transparent 65%),
+          linear-gradient(135deg, var(--surface-2), var(--surface-3));
+        display: grid;
+        place-items: center;
+        color: var(--text-dim);
+      }
+      body[data-layout="magazine"] .add-btn {
+        position: relative;
+        right: 0; bottom: 0;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        border: 0;
+        background: #fff;
+        color: #1a1a1a;
+        font-size: 18px;
+        line-height: 1;
+        display: grid;
+        place-items: center;
+        cursor: pointer;
+        box-shadow: 0 4px 12px -4px rgba(0, 0, 0, 0.45);
+        transition: transform 0.05s ease, background 0.15s ease;
+        z-index: 3;
+      }
+      body[data-layout="magazine"] .add-btn:active { transform: scale(0.92); }
+      body[data-layout="magazine"] .add-btn:hover {
+        background: var(--brand);
+        color: #fff;
+      }
+      /* Info disc — small "i" in the card's top-right when the item
+         has an infoUrl. Opens the in-app iframe sheet. */
+      body[data-layout="magazine"] .info-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        border: 0;
+        background: rgba(0, 0, 0, 0.55);
+        color: #fff;
+        display: grid;
+        place-items: center;
+        cursor: pointer;
+        z-index: 3;
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+        transition: background 0.15s ease;
+      }
+      body[data-layout="magazine"] .info-btn:hover {
+        background: var(--brand);
+      }
+      body[data-layout="magazine"] .info-btn svg { width: 14px; height: 14px; }
+
+      /* ── In-app iframe sheet ───────────────────────────────────
+         Tapping the info disc on a card opens this full-height sheet.
+         Matches the cart sheet visually so the embed feels native. */
+      .info-sheet {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.55);
+        display: flex;
+        align-items: stretch;
+        justify-content: center;
+        z-index: 60;
+      }
+      .info-sheet[hidden] { display: none; }
+      .info-sheet-card {
+        width: 100%;
+        max-width: 720px;
+        background: var(--bg);
+        border-top-left-radius: 18px;
+        border-top-right-radius: 18px;
+        margin-top: 24px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+      .info-sheet-head {
+        flex-shrink: 0;
+        padding: 12px 14px env(safe-area-inset-top);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-bottom: 1px solid var(--border);
+        background: var(--surface);
+      }
+      .info-sheet-head .back {
+        width: 36px;
+        height: 36px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: var(--surface-2);
+        color: var(--text);
+        display: grid;
+        place-items: center;
+        cursor: pointer;
+      }
+      .info-sheet-head .meta {
+        flex: 1;
+        min-width: 0;
+      }
+      .info-sheet-head .title {
+        font-weight: 600;
+        font-size: 15px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+      .info-sheet-head .host {
+        font-size: 11px;
+        color: var(--text-muted);
+        text-transform: lowercase;
+        letter-spacing: 0.04em;
+        margin-top: 2px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+      .info-sheet-head .ext {
+        flex-shrink: 0;
+        text-decoration: none;
+        color: var(--text-muted);
+        padding: 8px 10px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: var(--surface-2);
+        font-size: 12px;
+        font-weight: 500;
+      }
+      .info-sheet-body {
+        flex: 1;
+        position: relative;
+        overflow-y: auto;
+        background: var(--bg);
+      }
+      .info-card {
+        padding: 0 0 28px;
+      }
+      .info-hero {
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        background: var(--surface-2);
+        object-fit: cover;
+        display: block;
+      }
+      .info-hero.placeholder {
+        display: grid;
+        place-items: center;
+        color: var(--text-dim);
+      }
+      .info-meta {
+        padding: 18px 18px 0;
+      }
+      .info-card .heading {
+        font-size: 20px;
+        font-weight: 600;
+        line-height: 1.25;
+        margin: 0 0 6px;
+        color: var(--text);
+      }
+      .info-card .site {
+        font-size: 12px;
+        text-transform: lowercase;
+        letter-spacing: 0.04em;
+        color: var(--text-muted);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .info-card .rating {
+        margin-top: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--text);
+        font-size: 13px;
+      }
+      .info-card .rating .stars {
+        color: #f5b301;
+        letter-spacing: 1px;
+        font-size: 15px;
+      }
+      .info-card .description {
+        margin: 14px 0 0;
+        color: var(--text-muted);
+        font-size: 14px;
+        line-height: 1.55;
+        white-space: pre-wrap;
+      }
+      .info-card .open-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin: 20px 18px 0;
+        padding: 11px 18px;
+        border-radius: 12px;
+        background: var(--brand);
+        color: #fff;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 14px;
+      }
+      .info-state {
+        padding: 40px 24px;
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 14px;
+      }
+      .info-state.error strong { color: var(--text); display: block; margin-bottom: 6px; }
+      .info-state a.cta {
+        display: inline-block;
+        margin-top: 14px;
+        padding: 10px 16px;
+        border-radius: 12px;
+        background: var(--brand);
+        color: #fff;
+        text-decoration: none;
+        font-weight: 500;
+      }
+      .info-skeleton {
+        padding: 0 0 28px;
+      }
+      .info-skeleton .bar {
+        background: linear-gradient(90deg, var(--surface-2) 0%, var(--surface-3) 50%, var(--surface-2) 100%);
+        background-size: 200% 100%;
+        border-radius: 6px;
+        animation: shimmer 1.4s infinite;
+      }
+      .info-skeleton .hero { aspect-ratio: 16 / 9; border-radius: 0; }
+      .info-skeleton .lines { padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+      .info-skeleton .lines .bar.h { height: 16px; }
+      .info-skeleton .lines .bar.l { height: 11px; width: 80%; }
+      .info-skeleton .lines .bar.m { height: 11px; width: 60%; }
+      @keyframes shimmer {
+        0%   { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+      }
+
+      /* Search bar — always visible, sits above the item rows. */
+      .search-wrap {
+        position: relative;
+        margin: 0 0 14px;
+      }
+      .search-wrap input.search {
+        width: 100%;
+        padding: 11px 14px 11px 38px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: var(--surface-2);
+        color: var(--text);
+        font: inherit;
+        font-size: 14px;
+      }
+      .search-wrap input.search::placeholder {
+        color: var(--text-dim);
+      }
+      .search-wrap .search-icon {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-dim);
+        pointer-events: none;
+      }
+
+      /* ── Layout: compact ────────────────────────────────────────
+         Edge-to-edge dense rows with hairline dividers — printed-
+         menu feel. Hides the category badge per row, tightens the
+         padding, drops the card chrome entirely. */
+      body[data-layout="compact"] .grid {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+      @media (min-width: 640px) {
+        body[data-layout="compact"] .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      body[data-layout="compact"] .item {
+        border-radius: 0;
+        border: 0;
+        border-bottom: 1px solid var(--border);
+        box-shadow: none;
+        padding: 10px 12px;
+      }
+      body[data-layout="compact"] .item:hover { filter: none; background: var(--surface-2); }
+      body[data-layout="compact"] .cat-tag { display: none; }
+      body[data-layout="compact"] .item-name { font-size: 14px; margin-top: 0; }
+      body[data-layout="compact"] .item-desc { font-size: 11px; margin-top: 2px; }
+      body[data-layout="compact"] .item-price { margin-top: 4px; font-size: 14px; }
       .item:active {
         transform: scale(0.98);
       }
@@ -324,36 +748,199 @@
         background: rgba(52, 211, 153, 0.12);
         color: #34d399;
       }
+
+      /* ── Service-request buttons ───────────────────────────────
+         Two pills above the menu — "request the waiter" and
+         "request the bill". Tapping POSTs to the table-request
+         endpoint so a staff member sees the alert on the floor plan
+         straight away. */
+      .actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin: 0 0 14px;
+      }
+      .action-btn {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 14px;
+        border-radius: 14px;
+        background: var(--surface-2);
+        border: 1px solid var(--border);
+        color: var(--text);
+        font: inherit;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        text-align: left;
+        transition: background 0.15s ease, border-color 0.15s ease;
+      }
+      .action-btn:hover {
+        background: var(--surface-3);
+        border-color: var(--text-dim);
+      }
+      .action-btn:active { transform: scale(0.99); }
+      .action-btn.busy { opacity: 0.7; pointer-events: none; }
+      .action-btn.sent {
+        background: rgba(52, 211, 153, 0.12);
+        border-color: rgba(52, 211, 153, 0.4);
+        color: #34d399;
+      }
+      .action-icon {
+        flex-shrink: 0;
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: var(--surface-3);
+        display: grid;
+        place-items: center;
+        color: var(--brand-bright);
+      }
+      .action-icon svg { width: 18px; height: 18px; }
+      .action-btn.sent .action-icon { background: rgba(52, 211, 153, 0.18); color: #34d399; }
+      .action-text {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.2;
+        min-width: 0;
+      }
+      .action-text .l { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+      .action-text .v { font-size: 14px; font-weight: 600; color: var(--text); }
+      .action-btn.sent .action-text .v { color: #34d399; }
+
+      /* Discreet NL/FR/EN segmented control in the header so a
+         francophone or English-speaking guest can switch without the
+         operator having to do anything. NL is the default. */
+      .lang-switch {
+        display: inline-flex;
+        gap: 2px;
+        background: var(--surface-2);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 2px;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+      }
+      .lang-switch button {
+        background: transparent;
+        border: 0;
+        color: var(--text-muted);
+        padding: 4px 9px;
+        border-radius: 999px;
+        cursor: pointer;
+        font: inherit;
+      }
+      .lang-switch button.active {
+        background: var(--surface);
+        color: var(--text);
+      }
+      .header-row {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 8px;
+      }
     </style>
   </head>
   <body>
     <div class="wrap" id="wrap">
       <header>
-        <div class="restaurant" id="restaurant">…</div>
-        <h1 id="title">Order</h1>
-        <div class="table-meta" id="meta"></div>
+        <div class="header-row">
+          <div style="min-width:0; flex:1">
+            <div class="restaurant" id="restaurant">…</div>
+            <h1 id="title">Bestel</h1>
+            <div class="table-meta" id="meta"></div>
+          </div>
+          <div class="lang-switch" id="lang-switch" role="group" aria-label="Language">
+            <button type="button" data-lang="nl">NL</button>
+            <button type="button" data-lang="fr">FR</button>
+            <button type="button" data-lang="en">EN</button>
+          </div>
+        </div>
       </header>
 
-      <div id="loading" class="empty">Loading menu…</div>
+      <div id="loading" class="empty">Menu laden…</div>
 
       <div id="content" hidden>
-        <div class="cats" id="cats"></div>
+        <div class="actions" id="actions">
+          <button class="action-btn" type="button" data-action="waiter">
+            <span class="action-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="6" r="2.5" />
+                <path d="M5 21l3-9h8l3 9" />
+                <path d="M9 12V9h6v3" />
+              </svg>
+            </span>
+            <span class="action-text">
+              <span class="l" data-i18n="action.req">Vraag aan</span>
+              <span class="v" data-i18n="action.waiter">de kelner</span>
+            </span>
+          </button>
+          <button class="action-btn" type="button" data-action="bill">
+            <span class="action-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 3h14v18l-3-2-2 2-2-2-2 2-2-2-3 2z" />
+                <path d="M9 8h6" />
+                <path d="M9 12h6" />
+                <path d="M9 16h4" />
+              </svg>
+            </span>
+            <span class="action-text">
+              <span class="l" data-i18n="action.req">Vraag aan</span>
+              <span class="v" data-i18n="action.bill">de rekening</span>
+            </span>
+          </button>
+        </div>
+        <div class="cats parents" id="cats"></div>
+        <div class="cats subs" id="subcats" hidden></div>
+        <div class="search-wrap">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="7" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+          <input id="search" class="search" type="search" placeholder="Zoek in het menu" autocomplete="off" />
+        </div>
         <div class="grid" id="grid"></div>
       </div>
     </div>
 
     <div class="cart" id="cart" hidden>
       <div>
-        <div class="cart-meta"><span id="cart-count">0</span> in cart</div>
+        <div class="cart-meta"><span id="cart-count">0</span> <span id="cart-count-label">in winkelmandje</span></div>
         <div class="cart-total" id="cart-total">€0.00</div>
       </div>
-      <button class="cart-btn" id="cart-review">Review &amp; send</button>
+      <button class="cart-btn" id="cart-review">Bekijk &amp; verstuur</button>
+    </div>
+
+    <!-- In-app webpage sheet — opens when the customer taps the info
+         disc on an item card. Header tracks the destination, the
+         iframe loads the page, and a fallback reveals an external
+         link if the destination refuses to be framed. -->
+    <div class="info-sheet" id="info-sheet" hidden>
+      <div class="info-sheet-card" onclick="event.stopPropagation()">
+        <div class="info-sheet-head">
+          <button class="back" id="info-back" aria-label="Close">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="19" y1="12" x2="5" y2="12" />
+              <polyline points="12 19 5 12 12 5" />
+            </svg>
+          </button>
+          <div class="meta">
+            <div class="title" id="info-title" data-i18n="info.loading">Laden…</div>
+            <div class="host" id="info-host"></div>
+          </div>
+          <a class="ext" id="info-ext" data-i18n="info.openExt" target="_blank" rel="noopener noreferrer">Open ↗</a>
+        </div>
+        <div class="info-sheet-body" id="info-body"></div>
+      </div>
     </div>
 
     <!-- Item modifier sheet -->
     <div class="sheet" id="item-sheet" hidden>
       <div class="sheet-card" onclick="event.stopPropagation()">
-        <div class="step-label">Item</div>
+        <div class="step-label" data-i18n="order.label.item">Gerecht</div>
         <div id="sheet-name" style="font-weight: 500; font-size: 16px"></div>
         <div
           id="sheet-price"
@@ -361,11 +948,11 @@
         ></div>
 
         <div id="sheet-sizes-wrap" hidden>
-          <div class="step-label">Size</div>
+          <div class="step-label" data-i18n="order.size">Maat</div>
           <div class="size-grid" id="sheet-sizes"></div>
         </div>
 
-        <div class="step-label">Quantity</div>
+        <div class="step-label" data-i18n="order.qty">Aantal</div>
         <div class="stepper">
           <button id="qty-minus">−</button>
           <span
@@ -376,10 +963,11 @@
           <button id="qty-plus">+</button>
         </div>
 
-        <div class="step-label">Notes / allergies (optional)</div>
+        <div class="step-label" data-i18n="order.notes">Opmerkingen / allergieën (optioneel)</div>
         <textarea
           id="sheet-note"
-          placeholder="No onions, gluten-free, …"
+          data-i18n-placeholder="order.notesPlaceholder"
+          placeholder="Geen ui, glutenvrij, …"
         ></textarea>
 
         <div style="display: flex; gap: 8px; margin-top: 14px">
@@ -392,11 +980,12 @@
               box-shadow: none;
             "
             id="sheet-cancel"
+            data-i18n="common.cancel"
           >
-            Cancel
+            Annuleer
           </button>
           <button class="cart-btn" style="flex: 2" id="sheet-add">
-            Add to order — <span id="sheet-add-total">€0.00</span>
+            <span data-i18n="order.add">Toevoegen</span> — <span id="sheet-add-total">€0.00</span>
           </button>
         </div>
       </div>
@@ -405,13 +994,12 @@
     <!-- Cart review sheet -->
     <div class="sheet" id="cart-sheet" hidden>
       <div class="sheet-card" onclick="event.stopPropagation()">
-        <div class="step-label">Your order</div>
+        <div class="step-label" data-i18n="order.yourOrder">Uw bestelling</div>
         <div class="lines" id="cart-lines"></div>
 
-        <div class="step-label">Send to the kitchen?</div>
-        <p style="color: var(--text-muted); font-size: 13px; margin: 0 0 8px">
-          Your waiter still handles payment. Tap below to send what's in the
-          cart so they can start preparing.
+        <div class="step-label" data-i18n="order.sendToKitchenQ">Naar de keuken sturen?</div>
+        <p data-i18n="order.send.helper" style="color: var(--text-muted); font-size: 13px; margin: 0 0 8px">
+          Uw kelner regelt de betaling. Tik hieronder om te versturen wat in het mandje zit, zodat ze kunnen beginnen.
         </p>
         <div id="cart-feedback"></div>
         <div style="display: flex; gap: 8px">
@@ -424,11 +1012,12 @@
               box-shadow: none;
             "
             id="cart-back"
+            data-i18n="common.back"
           >
-            Back
+            Terug
           </button>
-          <button class="cart-btn" style="flex: 2" id="cart-send">
-            Send to kitchen
+          <button class="cart-btn" style="flex: 2" id="cart-send" data-i18n="order.send">
+            Naar de keuken
           </button>
         </div>
       </div>
@@ -436,17 +1025,241 @@
 
     <script>
       (function () {
+        // ──────────────────────────────────────────────────────────
+        // Inline i18n. Belgium-first: NL is the default. The active
+        // language is picked from ?lang=nl|fr|en first, then
+        // localStorage, then the browser preference (only if NL),
+        // and finally falls back to NL. Customers can also tap the
+        // pill in the header to switch.
+        // ──────────────────────────────────────────────────────────
+        var I18N_KEY = "patron.lang";
+        var SUPPORTED = ["nl", "fr", "en"];
+        var TRANSLATIONS = {
+          nl: {
+            "order.title":             "Bestel aan tafel",
+            "order.titleH":            "Bestel",
+            "order.loading":           "Menu laden…",
+            "order.error":             "We konden het menu niet laden. Vraag uw kelner om hulp.",
+            "order.noTable":           "Geen tafel opgegeven. Scan de QR-code aan uw tafel opnieuw.",
+            "order.searchPlaceholder": "Zoek in het menu",
+            "order.cart.label":        "in winkelmandje",
+            "order.cart.review":       "Bekijk &amp; verstuur",
+            "order.label.item":        "Gerecht",
+            "order.size":              "Maat",
+            "order.qty":               "Aantal",
+            "order.notes":             "Opmerkingen / allergieën (optioneel)",
+            "order.notesPlaceholder":  "Geen ui, glutenvrij, …",
+            "order.add":               "Toevoegen",
+            "order.yourOrder":         "Uw bestelling",
+            "order.sendToKitchenQ":    "Naar de keuken sturen?",
+            "order.send":              "Naar de keuken",
+            "order.send.helper":       "Uw kelner regelt de betaling. Tik hieronder om te versturen wat in het mandje zit, zodat ze kunnen beginnen.",
+            "order.empty.category":    "Niets in deze categorie op dit moment.",
+            "order.empty.search":      "Geen gerechten met \u201C{q}\u201D.",
+            "order.cats.all":          "Alles",
+            "common.cancel":           "Annuleer",
+            "common.back":             "Terug",
+            "info.title.fallback":     "Meer info",
+            "info.loading":            "Laden…",
+            "info.openExt":            "Open \u2197",
+            "info.error.title":        "We konden geen voorbeeld laden.",
+            "info.error.body":         "De site is misschien offline of blokkeert previews. U kunt de site nog steeds rechtstreeks openen.",
+            "info.openTab":            "Open in een nieuw tabblad",
+            "info.noImage":            "Geen voorbeeldafbeelding",
+            "info.ratings":            "beoordelingen",
+            "info.readMore":           "Lees meer op {host} \u2197",
+            "info.readMore.fallback":  "de bron",
+            "action.req":              "Vraag aan",
+            "action.waiter":           "de kelner",
+            "action.bill":             "de rekening",
+            "action.sent.waiter":      "Kelner is onderweg",
+            "action.sent.bill":        "Rekening is onderweg",
+            "action.error":            "Even niet gelukt — probeer opnieuw.",
+          },
+          fr: {
+            "order.title":             "Commander à table",
+            "order.titleH":            "Commander",
+            "order.loading":           "Chargement du menu…",
+            "order.error":             "Impossible de charger le menu. Demandez de l'aide à votre serveur.",
+            "order.noTable":           "Aucune table indiquée. Veuillez scanner à nouveau le QR à votre table.",
+            "order.searchPlaceholder": "Rechercher dans le menu",
+            "order.cart.label":        "dans le panier",
+            "order.cart.review":       "Vérifier &amp; envoyer",
+            "order.label.item":        "Plat",
+            "order.size":              "Taille",
+            "order.qty":               "Quantité",
+            "order.notes":             "Notes / allergies (optionnel)",
+            "order.notesPlaceholder":  "Sans oignon, sans gluten, …",
+            "order.add":               "Ajouter",
+            "order.yourOrder":         "Votre commande",
+            "order.sendToKitchenQ":    "Envoyer en cuisine ?",
+            "order.send":              "Envoyer en cuisine",
+            "order.send.helper":       "Votre serveur gère le paiement. Touchez ci-dessous pour envoyer ce qui est dans le panier afin qu'ils puissent préparer.",
+            "order.empty.category":    "Rien dans cette catégorie pour le moment.",
+            "order.empty.search":      "Aucun article ne correspond à \u00AB {q} \u00BB.",
+            "order.cats.all":          "Tout",
+            "common.cancel":           "Annuler",
+            "common.back":             "Retour",
+            "info.title.fallback":     "Plus d'infos",
+            "info.loading":            "Chargement…",
+            "info.openExt":            "Ouvrir \u2197",
+            "info.error.title":        "Impossible de charger un aperçu.",
+            "info.error.body":         "Le site est peut-être hors ligne ou bloque les aperçus. Vous pouvez tout de même l'ouvrir directement.",
+            "info.openTab":            "Ouvrir dans un nouvel onglet",
+            "info.noImage":            "Pas d'image d'aperçu",
+            "info.ratings":            "avis",
+            "info.readMore":           "En savoir plus sur {host} \u2197",
+            "info.readMore.fallback":  "la source",
+            "action.req":              "Appeler",
+            "action.waiter":           "le serveur",
+            "action.bill":             "l'addition",
+            "action.sent.waiter":      "Le serveur arrive",
+            "action.sent.bill":        "L'addition arrive",
+            "action.error":            "Erreur — veuillez réessayer.",
+          },
+          en: {
+            "order.title":             "Order at your table",
+            "order.titleH":            "Order",
+            "order.loading":           "Loading menu…",
+            "order.error":             "Couldn\u2019t load the menu. Please ask your waiter for help.",
+            "order.noTable":           "No table specified. Please scan the QR code at your table again.",
+            "order.searchPlaceholder": "Search the menu",
+            "order.cart.label":        "in cart",
+            "order.cart.review":       "Review &amp; send",
+            "order.label.item":        "Item",
+            "order.size":              "Size",
+            "order.qty":               "Quantity",
+            "order.notes":             "Notes / allergies (optional)",
+            "order.notesPlaceholder":  "No onions, gluten-free, …",
+            "order.add":               "Add",
+            "order.yourOrder":         "Your order",
+            "order.sendToKitchenQ":    "Send to the kitchen?",
+            "order.send":              "Send to kitchen",
+            "order.send.helper":       "Your waiter still handles payment. Tap below to send what\u2019s in the cart so they can start preparing.",
+            "order.empty.category":    "Nothing in this category right now.",
+            "order.empty.search":      "No items match \u201C{q}\u201D.",
+            "order.cats.all":          "All",
+            "common.cancel":           "Cancel",
+            "common.back":             "Back",
+            "info.title.fallback":     "More info",
+            "info.loading":            "Loading…",
+            "info.openExt":            "Open \u2197",
+            "info.error.title":        "We couldn\u2019t load a preview.",
+            "info.error.body":         "The site might be down or blocking previews. You can still open it directly.",
+            "info.openTab":            "Open in a new tab",
+            "info.noImage":            "No preview image",
+            "info.ratings":            "ratings",
+            "info.readMore":           "Read more on {host} \u2197",
+            "info.readMore.fallback":  "the source",
+            "action.req":              "Request",
+            "action.waiter":           "the waiter",
+            "action.bill":             "the bill",
+            "action.sent.waiter":      "Waiter is on the way",
+            "action.sent.bill":        "Bringing the bill",
+            "action.error":            "Couldn\u2019t send — please try again.",
+          },
+        };
         var qs = new URLSearchParams(location.search);
+        var lang = (function detectLang() {
+          var fromUrl = (qs.get("lang") || "").toLowerCase();
+          if (SUPPORTED.indexOf(fromUrl) !== -1) return fromUrl;
+          try {
+            var saved = localStorage.getItem(I18N_KEY);
+            if (saved && SUPPORTED.indexOf(saved) !== -1) return saved;
+          } catch (e) { /* ignore */ }
+          var nav = (navigator.language || "").toLowerCase();
+          if (nav.indexOf("nl") === 0) return "nl";
+          // Belgium-first default — even fr/en browsers land on NL
+          // unless they explicitly switch.
+          return "nl";
+        })();
+        function t(key, vars) {
+          var dict = TRANSLATIONS[lang] || TRANSLATIONS.nl;
+          var s = dict[key];
+          if (s === undefined) s = (TRANSLATIONS.en && TRANSLATIONS.en[key]) || key;
+          if (vars && typeof s === "string") {
+            for (var v in vars) {
+              s = s.replace(new RegExp("\\{" + v + "\\}", "g"), String(vars[v]));
+            }
+          }
+          return s;
+        }
+        function applyStaticI18n() {
+          // Walks data-i18n + data-i18n-placeholder attributes.
+          document.querySelectorAll("[data-i18n]").forEach(function (el) {
+            el.textContent = t(el.getAttribute("data-i18n"));
+          });
+          document.querySelectorAll("[data-i18n-placeholder]").forEach(function (el) {
+            el.placeholder = t(el.getAttribute("data-i18n-placeholder"));
+          });
+          document.documentElement.setAttribute("lang", lang);
+          document.title = t("order.title");
+          // Header / static UI
+          var search = document.getElementById("search");
+          if (search) search.placeholder = t("order.searchPlaceholder");
+          var cartLabel = document.getElementById("cart-count-label");
+          if (cartLabel) cartLabel.textContent = t("order.cart.label");
+          var cartReview = document.getElementById("cart-review");
+          if (cartReview) cartReview.innerHTML = t("order.cart.review");
+          var titleH = document.getElementById("title");
+          // Only seed the header when no real table label has loaded yet.
+          if (titleH && titleH.dataset.tableLabel === undefined) {
+            titleH.textContent = t("order.titleH");
+          }
+        }
+        function setLang(next) {
+          if (SUPPORTED.indexOf(next) === -1) return;
+          lang = next;
+          try { localStorage.setItem(I18N_KEY, next); } catch (e) {}
+          applyStaticI18n();
+          updateLangSwitch();
+          // renderCats/renderGrid are declared later in this same
+          // IIFE; they'll exist by the time the user clicks. Guard
+          // anyway so applyStaticI18n still works on cold load.
+          try {
+            if (state && state.menu) { renderCats(); renderGrid(); }
+          } catch (e) { /* not yet ready */ }
+        }
+        function updateLangSwitch() {
+          var sw = document.getElementById("lang-switch");
+          if (!sw) return;
+          sw.querySelectorAll("button[data-lang]").forEach(function (b) {
+            if (b.getAttribute("data-lang") === lang) b.classList.add("active");
+            else b.classList.remove("active");
+          });
+        }
+        document.addEventListener("DOMContentLoaded", function () {
+          var sw = document.getElementById("lang-switch");
+          if (sw) {
+            sw.addEventListener("click", function (e) {
+              var b = e.target.closest("button[data-lang]");
+              if (!b) return;
+              setLang(b.getAttribute("data-lang"));
+            });
+          }
+          applyStaticI18n();
+          updateLangSwitch();
+        });
+        // Run once before DOMContentLoaded so the loading screen
+        // already shows in the right language for slow networks.
+        applyStaticI18n();
+        updateLangSwitch();
+
         var tableId = qs.get("table") || qs.get("t");
         if (!tableId) {
-          document.getElementById("loading").textContent =
-            "No table specified. Please scan the QR code at your table again.";
+          document.getElementById("loading").textContent = t("order.noTable");
           return;
         }
 
         var state = {
           menu: null,
-          activeCat: "all",
+          // Two-tier filter state. activeParent is "all" or a parent
+          // category id; activeSub is "all" or a child id. Picking a
+          // parent resets activeSub to "all" so the customer sees
+          // everything in that section before drilling further.
+          activeParent: "all",
+          activeSub: "all",
+          searchQ: "",
           cart: [], // [{ itemId, name, price, qty, sizeLabel, note }]
           currency: "EUR",
           sheetItem: null,
@@ -460,7 +1273,215 @@
         var elLoading = document.getElementById("loading");
         var elContent = document.getElementById("content");
         var elCats = document.getElementById("cats");
+        var elSubCats = document.getElementById("subcats");
         var elGrid = document.getElementById("grid");
+        var elSearch = document.getElementById("search");
+        elSearch.addEventListener("input", function () {
+          state.searchQ = elSearch.value;
+          renderGrid();
+        });
+
+        // ── Service-request buttons ────────────────────────────────
+        // Tap "request the waiter" or "request the bill" → POST to
+        // the public endpoint. Visual state: idle → busy (spinner-y
+        // disabled) → sent (green confirmation, locked for 60s so a
+        // nervous guest can't spam the staff). After the cool-down
+        // the button returns to idle so they can call again later.
+        document
+          .querySelectorAll(".action-btn[data-action]")
+          .forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              var kind = btn.getAttribute("data-action");
+              if (btn.classList.contains("busy") || btn.classList.contains("sent")) return;
+              btn.classList.add("busy");
+              fetch(
+                "/api/public/menu/" + encodeURIComponent(tableId) + "/request",
+                {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ kind: kind }),
+                }
+              )
+                .then(function (r) {
+                  if (!r.ok) throw new Error("HTTP " + r.status);
+                  return r.json();
+                })
+                .then(function () {
+                  btn.classList.remove("busy");
+                  btn.classList.add("sent");
+                  // Replace the header text with the "sent" version.
+                  var v = btn.querySelector(".action-text .v");
+                  var l = btn.querySelector(".action-text .l");
+                  if (l && v) {
+                    l.textContent = "✓";
+                    v.textContent = t("action.sent." + kind);
+                  }
+                  // Cool-down — reverts after 60 s so they can call
+                  // again if the staff hasn't shown up.
+                  setTimeout(function () {
+                    btn.classList.remove("sent");
+                    if (l && v) {
+                      l.textContent = t("action.req");
+                      v.textContent = t("action." + kind);
+                    }
+                  }, 60000);
+                })
+                .catch(function () {
+                  btn.classList.remove("busy");
+                  // Brief shake/error tone — keeps the existing label.
+                  var v = btn.querySelector(".action-text .v");
+                  if (v) {
+                    var saved = v.textContent;
+                    v.textContent = t("action.error");
+                    v.style.color = "#f87171";
+                    setTimeout(function () {
+                      v.textContent = saved;
+                      v.style.color = "";
+                    }, 2400);
+                  }
+                });
+            });
+          });
+
+        // Info-sheet refs + handlers — opens when the customer taps
+        // the "i" disc on a card. We call the backend /unfurl
+        // endpoint to fetch OpenGraph / Twitter / JSON-LD metadata
+        // for the destination URL and render it natively. This
+        // sidesteps X-Frame-Options / CSP frame-ancestors entirely
+        // and keeps the look consistent with the rest of the menu.
+        var elInfoSheet = document.getElementById("info-sheet");
+        var elInfoBody = document.getElementById("info-body");
+        var elInfoTitle = document.getElementById("info-title");
+        var elInfoHost = document.getElementById("info-host");
+        var elInfoExt = document.getElementById("info-ext");
+        var elInfoBack = document.getElementById("info-back");
+        var infoReqToken = 0;
+
+        function closeInfoSheet() {
+          elInfoSheet.hidden = true;
+          elInfoBody.innerHTML = "";
+          infoReqToken += 1; // invalidate any in-flight fetch
+        }
+
+        function escapeHTML(s) {
+          return String(s == null ? "" : s)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;");
+        }
+
+        function renderStars(value, best) {
+          var max = Number(best) || 5;
+          var v = Math.max(0, Math.min(max, Number(value) || 0));
+          // Convert to a 5-star scale for display, regardless of the
+          // source's `bestRating` (Untappd uses 5; some sites use 10).
+          var ratio = v / max;
+          var full = Math.floor(ratio * 5);
+          var half = ratio * 5 - full >= 0.5 ? 1 : 0;
+          var empty = 5 - full - half;
+          return (
+            "★".repeat(full) +
+            (half ? "☆" : "") +
+            "☆".repeat(Math.max(0, empty - (half ? 0 : 0)))
+          );
+        }
+
+        function infoSkeleton() {
+          return (
+            '<div class="info-skeleton">' +
+            '  <div class="bar hero"></div>' +
+            '  <div class="lines">' +
+            '    <div class="bar h"></div>' +
+            '    <div class="bar l"></div>' +
+            '    <div class="bar m"></div>' +
+            '  </div>' +
+            "</div>"
+          );
+        }
+
+        function infoErrorState(url) {
+          return (
+            '<div class="info-state error">' +
+            '  <strong>' + escapeHTML(t("info.error.title")) + '</strong>' +
+            '  ' + escapeHTML(t("info.error.body")) +
+            '  <br/><a class="cta" href="' + escapeHTML(url) + '" target="_blank" rel="noopener noreferrer">' + escapeHTML(t("info.openTab")) + '</a>' +
+            "</div>"
+          );
+        }
+
+        function renderInfoCard(data, fallbackTitle, fallbackUrl) {
+          var title = data.title || fallbackTitle || "";
+          var image = data.image || "";
+          var desc = data.description || "";
+          var site = data.siteName || data.host || "";
+          var openUrl = data.url || fallbackUrl;
+          var ratingHtml = "";
+          if (data.rating) {
+            var stars = renderStars(data.rating, data.ratingBest || 5);
+            ratingHtml =
+              '<div class="rating">' +
+              '<span class="stars">' + escapeHTML(stars) + "</span>" +
+              "<span>" + escapeHTML(String(data.rating)) +
+              (data.ratingBest ? " / " + escapeHTML(String(data.ratingBest)) : "") +
+              (data.ratingCount ? " · " + escapeHTML(String(data.ratingCount)) + " " + escapeHTML(t("info.ratings")) : "") +
+              "</span>" +
+              "</div>";
+          }
+          var noImg = t("info.noImage");
+          var heroHtml = image
+            ? '<img class="info-hero" src="' + escapeHTML(image) + '" alt="" referrerpolicy="no-referrer" onerror="this.replaceWith(Object.assign(document.createElement(\'div\'),{className:\'info-hero placeholder\',textContent:' + JSON.stringify(noImg) + '}))" />'
+            : '<div class="info-hero placeholder">' + escapeHTML(noImg) + '</div>';
+
+          return (
+            '<div class="info-card">' +
+            heroHtml +
+            '<div class="info-meta">' +
+            '<h2 class="heading">' + escapeHTML(title) + "</h2>" +
+            (site ? '<div class="site">' + escapeHTML(site) + "</div>" : "") +
+            ratingHtml +
+            (desc ? '<p class="description">' + escapeHTML(desc) + "</p>" : "") +
+            "</div>" +
+            '<a class="open-cta" href="' + escapeHTML(openUrl) + '" target="_blank" rel="noopener noreferrer">' + escapeHTML(t("info.readMore", { host: data.host || site || t("info.readMore.fallback") })) + '</a>' +
+            "</div>"
+          );
+        }
+
+        function openInfoSheet(item) {
+          if (!item || !item.infoUrl) return;
+          var url = item.infoUrl;
+          var host = "";
+          try { host = new URL(url, location.origin).host; } catch (e) { host = ""; }
+          elInfoTitle.textContent = item.name || t("info.title.fallback");
+          elInfoHost.textContent = host;
+          elInfoExt.href = url;
+          elInfoBody.innerHTML = infoSkeleton();
+          elInfoSheet.hidden = false;
+
+          // Issue + track the request so a quick close-then-reopen
+          // doesn't paint stale data.
+          infoReqToken += 1;
+          var token = infoReqToken;
+          fetch("/api/public/unfurl?url=" + encodeURIComponent(url))
+            .then(function (r) {
+              if (!r.ok) throw new Error("HTTP " + r.status);
+              return r.json();
+            })
+            .then(function (data) {
+              if (token !== infoReqToken) return; // user closed/reopened
+              if (!data || data.ok === false) {
+                elInfoBody.innerHTML = infoErrorState(url);
+                return;
+              }
+              elInfoBody.innerHTML = renderInfoCard(data, item.name, url);
+            })
+            .catch(function () {
+              if (token !== infoReqToken) return;
+              elInfoBody.innerHTML = infoErrorState(url);
+            });
+        }
+        elInfoBack.addEventListener("click", closeInfoSheet);
+        elInfoSheet.addEventListener("click", closeInfoSheet);
         var elCart = document.getElementById("cart");
         var elCartCount = document.getElementById("cart-count");
         var elCartTotal = document.getElementById("cart-total");
@@ -496,6 +1517,103 @@
           }
         }
 
+        // ---- Customer-menu styling ----
+        // Settings.customerMenu lands here as `style`. We apply it as
+        // CSS-variable overrides + optional cover image / tagline /
+        // heading font so the manager's chosen look reaches the guest.
+
+        // Pulls an unsaved-style override from `#preview=<json>` —
+        // used by the Settings page to live-preview tweaks before the
+        // manager hits Save. Returns {} on any parse failure or when
+        // the hash isn't present, so the caller can spread safely.
+        function readPreviewOverride() {
+          var m = (location.hash || "").match(/preview=([^&]+)/);
+          if (!m) return {};
+          try {
+            return JSON.parse(decodeURIComponent(m[1])) || {};
+          } catch (e) {
+            return {};
+          }
+        }
+
+        function applyStyle(style) {
+          var root = document.documentElement;
+          if (style.brandColor) root.style.setProperty("--brand", style.brandColor);
+          if (style.accentColor) root.style.setProperty("--brand-bright", style.accentColor);
+
+          // Mode override beats prefers-color-scheme. Sets the matching
+          // palette regardless of the user's OS preference.
+          if (style.mode === "light") {
+            root.style.setProperty("--bg", "#f8fafc");
+            root.style.setProperty("--surface", "#ffffff");
+            root.style.setProperty("--surface-2", "#f1f5f9");
+            root.style.setProperty("--surface-3", "#e2e8f0");
+            root.style.setProperty("--border", "#e2e8f0");
+            root.style.setProperty("--text", "#0f172a");
+            root.style.setProperty("--text-muted", "#475569");
+            root.style.setProperty("--text-dim", "#94a3b8");
+            // Light cards look cleaner flat — keep .item shadows off
+            // when the manager has explicitly picked the light palette.
+            root.style.setProperty("--shadow", "none");
+          } else if (style.mode === "dark") {
+            root.style.setProperty("--bg", "#141414");
+            root.style.setProperty("--surface", "#1c1c1d");
+            root.style.setProperty("--surface-2", "#232325");
+            root.style.setProperty("--surface-3", "#2c2c2e");
+            root.style.setProperty("--border", "rgba(255, 255, 255, 0.06)");
+            root.style.setProperty("--text", "#f5f5f5");
+            root.style.setProperty("--text-muted", "#a3a3a3");
+            root.style.setProperty("--text-dim", "#737373");
+            // Restore the lifted-card shadow if a previous style
+            // (e.g. live preview) had switched it off.
+            root.style.setProperty(
+              "--shadow",
+              "0 12px 32px -12px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.05)"
+            );
+          }
+
+          // Optional Google Font for headings + body copy.
+          if (style.headingFont && style.headingFont.trim()) {
+            var fontName = style.headingFont.trim();
+            var link = document.createElement("link");
+            link.rel = "stylesheet";
+            link.href =
+              "https://fonts.googleapis.com/css2?family=" +
+              encodeURIComponent(fontName.replace(/ /g, "+")) +
+              ":wght@400;500;600;700&display=swap";
+            document.head.appendChild(link);
+            document.body.style.fontFamily =
+              '"' + fontName + '", Inter, system-ui, sans-serif';
+          }
+
+          // Cover image — sits above the restaurant name.
+          if (style.coverImageUrl) {
+            var img = document.createElement("img");
+            img.src = style.coverImageUrl;
+            img.alt = "";
+            img.style.cssText =
+              "display:block;width:calc(100% + 32px);max-height:180px;object-fit:cover;margin:-16px -16px 12px;border-radius:0 0 14px 14px";
+            var header = document.querySelector("header");
+            if (header) header.insertBefore(img, header.firstChild);
+          }
+
+          // Tagline — small italic line under the restaurant name.
+          if (style.tagline) {
+            var tag = document.createElement("div");
+            tag.textContent = style.tagline;
+            tag.style.cssText =
+              "font-size:13px;color:var(--text-muted);font-style:italic;margin-top:6px";
+            elTitle.parentNode.insertBefore(tag, elTitle.nextSibling);
+          }
+
+          // Layout drives the .grid/.item CSS via a body data-attr.
+          // CSS rules at the top of this file react accordingly.
+          // 'magazine' is the new default — explicit fallback so the
+          // body always carries a layout attribute the renderer can
+          // branch on.
+          document.body.setAttribute("data-layout", style.layout || "magazine");
+        }
+
         function load() {
           fetch("/api/public/menu/" + encodeURIComponent(tableId))
             .then(function (r) {
@@ -505,6 +1623,14 @@
             .then(function (j) {
               state.menu = j;
               state.currency = j.restaurant.currency || "EUR";
+              // The Settings page's "Preview" link drops the
+              // in-progress customerMenu into the URL hash so the
+              // manager can see unsaved edits without round-tripping
+              // through Save. We merge it over the server response so
+              // any field they didn't touch still uses the saved value.
+              applyStyle(
+                Object.assign({}, j.style || {}, readPreviewOverride())
+              );
               elRestaurant.textContent = j.restaurant.name;
               elTitle.textContent = "Table " + j.table.label;
               elMeta.textContent =
@@ -515,26 +1641,87 @@
               elContent.hidden = false;
             })
             .catch(function () {
-              elLoading.textContent =
-                "Couldn\u2019t load the menu. Please ask your waiter for help.";
+              elLoading.textContent = t("order.error");
             });
         }
         load();
 
-        function renderCats() {
-          elCats.innerHTML = "";
-          var all = mkCat("all", "All");
-          elCats.appendChild(all);
-          state.menu.categories.forEach(function (c) {
-            elCats.appendChild(mkCat(c.id, c.name));
+        // Pull parent and child categories out of the flat list. A
+        // category with no parent is top-level (Food, Drinks); the
+        // rest are children of one of those parents. Categories with
+        // a parent that we don't know about are treated as top-level
+        // — defensive against bad data.
+        function getParents() {
+          if (!state.menu) return [];
+          var byId = {};
+          state.menu.categories.forEach(function (c) { byId[c.id] = c; });
+          return state.menu.categories.filter(function (c) {
+            return !c.parent || !byId[c.parent];
           });
         }
-        function mkCat(id, label) {
+        function getChildrenOf(parentId) {
+          if (!state.menu) return [];
+          return state.menu.categories.filter(function (c) {
+            return c.parent === parentId;
+          });
+        }
+        // Walk an item's category up to its top-level parent so the
+        // parent filter ("Food") matches items whose direct category
+        // is a child ("Mains"). Falls back to the item's own category
+        // when it has no parent.
+        function topLevelOf(catId) {
+          if (!state.menu || !catId) return null;
+          var byId = {};
+          state.menu.categories.forEach(function (c) { byId[c.id] = c; });
+          var c = byId[catId];
+          if (!c) return null;
+          if (!c.parent || !byId[c.parent]) return c.id;
+          return c.parent;
+        }
+
+        function renderCats() {
+          elCats.innerHTML = "";
+          elCats.appendChild(mkParentBtn("all", t("order.cats.all")));
+          getParents().forEach(function (p) {
+            elCats.appendChild(mkParentBtn(p.id, p.name));
+          });
+
+          // Sub-row only appears when a specific parent is active and
+          // it has children to drill into.
+          var subs =
+            state.activeParent === "all"
+              ? []
+              : getChildrenOf(state.activeParent);
+          if (!subs.length) {
+            elSubCats.hidden = true;
+            elSubCats.innerHTML = "";
+            return;
+          }
+          elSubCats.hidden = false;
+          elSubCats.innerHTML = "";
+          elSubCats.appendChild(mkSubBtn("all", t("order.cats.all")));
+          subs.forEach(function (c) {
+            elSubCats.appendChild(mkSubBtn(c.id, c.name));
+          });
+        }
+        function mkParentBtn(id, label) {
           var btn = document.createElement("button");
-          btn.className = "cat" + (state.activeCat === id ? " active" : "");
+          btn.className = "cat" + (state.activeParent === id ? " active" : "");
           btn.textContent = label;
           btn.addEventListener("click", function () {
-            state.activeCat = id;
+            state.activeParent = id;
+            state.activeSub = "all";
+            renderCats();
+            renderGrid();
+          });
+          return btn;
+        }
+        function mkSubBtn(id, label) {
+          var btn = document.createElement("button");
+          btn.className = "cat" + (state.activeSub === id ? " active" : "");
+          btn.textContent = label;
+          btn.addEventListener("click", function () {
+            state.activeSub = id;
             renderCats();
             renderGrid();
           });
@@ -543,42 +1730,162 @@
 
         function renderGrid() {
           elGrid.innerHTML = "";
+          var q = (state.searchQ || "").trim().toLowerCase();
           var items = state.menu.items.filter(function (i) {
-            return (
-              state.activeCat === "all" ||
-              (i.category && i.category.id === state.activeCat)
-            );
+            // Category filter — sub is most specific, else parent.
+            if (i.category) {
+              if (state.activeSub !== "all") {
+                if (i.category.id !== state.activeSub) return false;
+              } else if (state.activeParent !== "all") {
+                if (topLevelOf(i.category.id) !== state.activeParent) return false;
+              }
+            } else if (state.activeParent !== "all") {
+              return false;
+            }
+            // Free-text search — name + description.
+            if (q) {
+              var hay =
+                (i.name || "").toLowerCase() +
+                " " +
+                (i.description || "").toLowerCase();
+              if (hay.indexOf(q) === -1) return false;
+            }
+            return true;
           });
           if (!items.length) {
             var empty = document.createElement("div");
             empty.className = "empty";
-            empty.textContent = "Nothing in this category right now.";
+            empty.textContent = q
+              ? t("order.empty.search", { q: state.searchQ })
+              : t("order.empty.category");
             empty.style.gridColumn = "1/-1";
             elGrid.appendChild(empty);
             return;
           }
-          items.forEach(function (i) {
-            var btn = document.createElement("button");
-            btn.className = "item";
-            btn.innerHTML =
-              '<div class="cat-tag" style="color:' +
-              ((i.category && i.category.color) || "var(--text-muted)") +
-              '">' +
-              (i.category ? i.category.name : "") +
-              "</div>" +
-              '<div class="item-name"></div>' +
-              (i.description ? '<div class="item-desc"></div>' : "") +
-              '<div class="item-price">' +
-              fmtMoney(i.price) +
-              "</div>";
-            btn.querySelector(".item-name").textContent = i.name;
-            if (i.description)
-              btn.querySelector(".item-desc").textContent = i.description;
-            btn.addEventListener("click", function () {
-              openItemSheet(i);
+
+          var layout = document.body.getAttribute("data-layout") || "magazine";
+          if (layout === "magazine") {
+            items.forEach(function (i) {
+              elGrid.appendChild(renderMagazineRow(i));
             });
-            elGrid.appendChild(btn);
+          } else {
+            items.forEach(function (i) {
+              elGrid.appendChild(renderCardItem(i));
+            });
+          }
+        }
+
+        // Magazine row — title + description + price on the left, a
+        // Photo-tile design — the photo fills the tile, with a
+        // translucent dark strip at the bottom holding the name +
+        // price + a small white "+" button. Tapping the tile (or the
+        // optional info disc top-right) opens the order sheet so the
+        // customer can pick a size, add a note, or read more about
+        // the item.
+        function renderMagazineRow(i) {
+          var tile = document.createElement("button");
+          tile.type = "button";
+          tile.className = "item";
+          tile.setAttribute("aria-label", i.name);
+
+          var photo = document.createElement("div");
+          photo.className = "item-photo";
+          if (i.imageUrl) {
+            var img = document.createElement("img");
+            img.src = i.imageUrl;
+            img.alt = "";
+            img.loading = "lazy";
+            img.addEventListener("error", function () {
+              img.replaceWith(buildPhotoPlaceholder());
+            });
+            photo.appendChild(img);
+          } else {
+            photo.appendChild(buildPhotoPlaceholder());
+          }
+          tile.appendChild(photo);
+
+          var body = document.createElement("div");
+          body.className = "item-body";
+          var copy = document.createElement("div");
+          copy.style.minWidth = "0";
+          var name = document.createElement("div");
+          name.className = "item-name";
+          name.textContent = i.name;
+          copy.appendChild(name);
+          var price = document.createElement("div");
+          price.className = "item-price";
+          price.textContent = fmtMoney(i.price);
+          copy.appendChild(price);
+          body.appendChild(copy);
+
+          var add = document.createElement("span");
+          add.className = "add-btn";
+          add.setAttribute("role", "button");
+          add.setAttribute("aria-label", t("order.add") + " " + i.name);
+          add.textContent = "+";
+          body.appendChild(add);
+          tile.appendChild(body);
+
+          // Optional info disc — top-right of the tile, only when an
+          // info URL is set.
+          if (i.infoUrl) {
+            var info = document.createElement("button");
+            info.className = "info-btn";
+            info.type = "button";
+            info.setAttribute("aria-label", t("info.title.fallback") + " — " + i.name);
+            info.innerHTML =
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+              '<circle cx="12" cy="12" r="9" />' +
+              '<line x1="12" y1="11" x2="12" y2="16" />' +
+              '<circle cx="12" cy="8" r="0.6" fill="currentColor" />' +
+              "</svg>";
+            info.addEventListener("click", function (e) {
+              e.stopPropagation();
+              openInfoSheet(i);
+            });
+            tile.appendChild(info);
+          }
+
+          // Whole tile is the tap target — opens the order sheet.
+          tile.addEventListener("click", function () { openItemSheet(i); });
+          return tile;
+        }
+
+        function buildPhotoPlaceholder() {
+          var ph = document.createElement("div");
+          ph.className = "ph";
+          // Lightweight cutlery glyph so the placeholder reads as
+          // "food/drink" rather than a missing-image icon.
+          ph.innerHTML =
+            '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+            '<path d="M5 3v18M3 3h4v8H3z" />' +
+            '<path d="M19 3l-3 6v3h3v9" />' +
+            "</svg>";
+          return ph;
+        }
+
+        // Legacy card item — used by the grid / list / compact layouts.
+        function renderCardItem(i) {
+          var btn = document.createElement("button");
+          btn.className = "item";
+          btn.innerHTML =
+            '<div class="cat-tag" style="color:' +
+            ((i.category && i.category.color) || "var(--text-muted)") +
+            '">' +
+            (i.category ? i.category.name : "") +
+            "</div>" +
+            '<div class="item-name"></div>' +
+            (i.description ? '<div class="item-desc"></div>' : "") +
+            '<div class="item-price">' +
+            fmtMoney(i.price) +
+            "</div>";
+          btn.querySelector(".item-name").textContent = i.name;
+          if (i.description)
+            btn.querySelector(".item-desc").textContent = i.description;
+          btn.addEventListener("click", function () {
+            openItemSheet(i);
           });
+          return btn;
         }
 
         function openItemSheet(item) {

@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { api, fmtEur } from '../api.js';
 import Modal from '../components/Modal.jsx';
+import { useT } from '../i18n/index.jsx';
 
 const empty = { name: '', unit: 'pcs', quantity: 0, minQuantity: 0, costPerUnit: 0, supplier: '', supplierEmail: '', reorderQuantity: 0 };
 
 export default function Stock() {
+  const { t } = useT();
   const [list, setList] = useState([]);
   const [editing, setEditing] = useState(null);
   const [search, setSearch] = useState('');
@@ -37,7 +39,7 @@ export default function Stock() {
     load();
   }
   async function remove(id) {
-    if (!confirm('Delete stock item?')) return;
+    if (!confirm(t('stock.deleteConfirm'))) return;
     await api.deleteStock(id);
     load();
   }
@@ -52,20 +54,20 @@ export default function Stock() {
     <div className="p-3 sm:p-6 space-y-3 sm:space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <div>
-          <h1 className="text-xl sm:text-2xl font-semibold">Stock</h1>
+          <h1 className="text-xl sm:text-2xl font-semibold">{t('stock.title')}</h1>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
-            {list.length} items · {lowCount} below threshold
+            {t('stock.sub')}
           </p>
         </div>
         <div className="flex gap-2">
-          <input className="input flex-1 sm:w-64" placeholder="Search..." value={search}
+          <input className="input flex-1 sm:w-64" placeholder={t('common.search')} value={search}
             onChange={(e) => setSearch(e.target.value)} />
-          <button className="btn-ghost shrink-0" onClick={openShopping} title="Shopping list">
-            <span className="hidden sm:inline">Shopping list{lowCount > 0 ? ` (${lowCount})` : ''}</span>
+          <button className="btn-ghost shrink-0" onClick={openShopping} title={t('stock.shoppingList')}>
+            <span className="hidden sm:inline">{t('stock.shoppingList')}{lowCount > 0 ? ` (${lowCount})` : ''}</span>
             <span className="sm:hidden">📋</span>
           </button>
           <button className="btn-primary shrink-0" onClick={() => setEditing({ ...empty })}>
-            <span className="hidden sm:inline">+ Stock item</span>
+            <span className="hidden sm:inline">{t('stock.add')}</span>
             <span className="sm:hidden">+</span>
           </button>
         </div>
@@ -76,13 +78,13 @@ export default function Stock() {
         <table className="w-full text-sm min-w-[640px]">
           <thead className="bg-slate-50 dark:bg-surface-950 text-slate-500 dark:text-slate-400 text-left">
             <tr>
-              <th className="px-4 py-2">Name</th>
-              <th className="px-4 py-2">Unit</th>
-              <th className="px-4 py-2">On hand</th>
-              <th className="px-4 py-2">Min</th>
-              <th className="px-4 py-2">Cost / unit</th>
-              <th className="px-4 py-2">Value</th>
-              <th className="px-4 py-2">Quick adjust</th>
+              <th className="px-4 py-2">{t('stock.col.name')}</th>
+              <th className="px-4 py-2">{t('stock.col.unit')}</th>
+              <th className="px-4 py-2">{t('stock.col.qty')}</th>
+              <th className="px-4 py-2">{t('stock.col.min')}</th>
+              <th className="px-4 py-2">{t('stock.col.cost')}</th>
+              <th className="px-4 py-2">{t('stock.col.adjust')}</th>
+              <th className="px-4 py-2">{t('stock.col.adjust')}</th>
               <th className="px-4 py-2"></th>
             </tr>
           </thead>
@@ -113,7 +115,7 @@ export default function Stock() {
               );
             })}
             {!filtered.length && (
-              <tr><td colSpan="8" className="text-center py-8 text-slate-400 dark:text-slate-500">No stock items.</td></tr>
+              <tr><td colSpan="8" className="text-center py-8 text-slate-400 dark:text-slate-500">{t('stock.empty')}</td></tr>
             )}
           </tbody>
         </table>
@@ -123,11 +125,11 @@ export default function Stock() {
       <Modal
         open={!!editing}
         onClose={() => setEditing(null)}
-        title={editing?._id ? 'Edit stock item' : 'New stock item'}
+        title={editing?._id ? t('stock.modal.edit') : t('stock.modal.new')}
         footer={
           <>
-            <button className="btn-ghost" onClick={() => setEditing(null)}>Cancel</button>
-            <button className="btn-primary" onClick={save}>Save</button>
+            <button className="btn-ghost" onClick={() => setEditing(null)}>{t('common.cancel')}</button>
+            <button className="btn-primary" onClick={save}>{t('common.save')}</button>
           </>
         }
       >
