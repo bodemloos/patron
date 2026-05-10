@@ -134,6 +134,13 @@ export const api = {
   deleteShift: (id) => request(`/api/shifts/${id}`, { method: 'DELETE' }),
   payroll: (from, to) => request(`/api/shifts/payroll/summary?from=${from}&to=${to}`),
 
+  // Absences (ziekte, verlof, ongeval, klein verlet, ...)
+  absences: (q = '') => request('/api/absences' + (q ? `?${q}` : '')),
+  saveAbsence: (a) => (a._id
+    ? request(`/api/absences/${a._id}`, { method: 'PATCH', body: a })
+    : request('/api/absences', { method: 'POST', body: a })),
+  deleteAbsence: (id) => request(`/api/absences/${id}`, { method: 'DELETE' }),
+
   pnl: (range) => request(`/api/reports/pnl?range=${range}`),
   topItems: (range) => request(`/api/reports/top-items?range=${range}`),
 
