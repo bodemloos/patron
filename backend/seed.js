@@ -15,6 +15,7 @@ const HaccpTemperatureLog = require("./models/HaccpTemperatureLog");
 const HaccpCleaningTask = require("./models/HaccpCleaningTask");
 const HaccpCleaningLog = require("./models/HaccpCleaningLog");
 const HaccpReceivingLog = require("./models/HaccpReceivingLog");
+const Absence = require("./models/Absence");
 
 async function run() {
   await connectDB(process.env.MONGO_URI || "mongodb://127.0.0.1:27017/patron");
@@ -35,6 +36,7 @@ async function run() {
     HaccpCleaningTask.deleteMany({}),
     HaccpCleaningLog.deleteMany({}),
     HaccpReceivingLog.deleteMany({}),
+    Absence.deleteMany({}),
   ]);
 
   console.log("[seed] rooms...");
@@ -1371,30 +1373,45 @@ async function run() {
       role: "manager",
       hourlyRate: 22,
       email: "sophie@patron.cafe",
+      mutuality: "CM (Christelijke Mutualiteit)",
+      mealVouchersOptIn: true,
+      commuteKm: 18,
     },
     {
       name: "Lucas De Smet",
       role: "waiter",
       hourlyRate: 14,
       email: "lucas@patron.cafe",
+      mutuality: "Solidaris (Socialistische Mutualiteit)",
+      mealVouchersOptIn: true,
+      commuteKm: 9,
     },
     {
       name: "Emma Janssens",
       role: "waiter",
       hourlyRate: 14,
       email: "emma@patron.cafe",
+      mutuality: "Liberale Mutualiteit",
+      mealVouchersOptIn: true,
+      commuteKm: 6,
     },
     {
       name: "Karim El Amrani",
       role: "kitchen",
       hourlyRate: 17,
       email: "karim@patron.cafe",
+      mutuality: "Onafhankelijke Ziekenfondsen",
+      mealVouchersOptIn: true,
+      commuteKm: 22,
     },
     {
       name: "Noor Peeters",
       role: "kitchen",
       hourlyRate: 16,
       email: "noor@patron.cafe",
+      mutuality: "Helan",
+      mealVouchersOptIn: false,
+      commuteKm: 0,
     },
   ]);
 
@@ -1622,6 +1639,50 @@ async function run() {
       packagingOk: true,
       expiryOk: false,
       correctiveAction: "Short-dated kabeljauw — used same day, supplier notified.",
+    },
+  ]);
+
+  console.log("[seed] absences...");
+  // A handful of realistic absences across the past 30 days so the
+  // payroll preview lights up: one short sick spell with a medical
+  // certificate, one workplace accident, one block of paid holiday,
+  // and one unpaid family-affairs day.
+  await Absence.create([
+    {
+      staff: staff[1]._id, // Lucas
+      kind: "sick",
+      startsAt: new Date(now - 9 * day),
+      endsAt: new Date(now - 7 * day),
+      paidByEmployer: true,
+      hasMedicalCertificate: true,
+      notes: "Griep, attest van dokter Vermeulen.",
+    },
+    {
+      staff: staff[3]._id, // Karim
+      kind: "accident",
+      startsAt: new Date(now - 21 * day),
+      endsAt: new Date(now - 20 * day),
+      paidByEmployer: true,
+      hasMedicalCertificate: true,
+      notes: "Snijwonde tijdens prep — aangifte Fedris ingediend.",
+    },
+    {
+      staff: staff[2]._id, // Emma
+      kind: "holiday",
+      startsAt: new Date(now - 14 * day),
+      endsAt: new Date(now - 10 * day),
+      paidByEmployer: true,
+      hasMedicalCertificate: false,
+      notes: "Verlof — 5 dagen.",
+    },
+    {
+      staff: staff[4]._id, // Noor
+      kind: "family",
+      startsAt: new Date(now - 4 * day),
+      endsAt: new Date(now - 4 * day),
+      paidByEmployer: true,
+      hasMedicalCertificate: false,
+      notes: "Klein verlet — overlijden grootouder.",
     },
   ]);
 

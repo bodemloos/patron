@@ -31,6 +31,26 @@ const StaffSchema = new mongoose.Schema(
     nationality: { type: String, default: 'BE' },
     address: { type: AddressSchema, default: () => ({}) },
     iban: { type: String, default: '', trim: true, uppercase: true },
+
+    // Belgian fringe benefits & social-security extras.
+    //
+    // Mutuality (ziekenfonds) — informational, surfaces on payroll docs
+    // and is included in the DmfA payload so the manager has it on file.
+    // Free-text; the UI offers the common Belgian funds as suggestions
+    // (CM, Solidaris, Liberale, Onafhankelijke, Neutrale, Helan, ...).
+    mutuality: { type: String, default: '', trim: true },
+
+    // Maaltijdcheques — typically issued per worked day with ≥4h.
+    // Default split: €6.91 employer + €1.09 worker = €8/day (2024).
+    mealVouchersOptIn: { type: Boolean, default: false },
+    mealVoucherEmployerEur: { type: Number, default: 6.91 },
+    mealVoucherEmployeeEur: { type: Number, default: 1.09 },
+
+    // Kilometervergoeding — federal rate 2024-2025 = €0.4280/km.
+    // `commuteKm` is the default round-trip distance used when a shift
+    // doesn't carry an explicit `kmDriven`.
+    kmAllowanceEurPerKm: { type: Number, default: 0.4280 },
+    commuteKm: { type: Number, default: 0 },
   },
   { timestamps: true }
 );

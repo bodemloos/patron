@@ -6,6 +6,9 @@ const ShiftSchema = new mongoose.Schema(
     clockIn: { type: Date, required: true, default: Date.now },
     clockOut: { type: Date },
     hourlyRateSnapshot: { type: Number, required: true },
+    // Kilometers driven for this shift — overrides Staff.commuteKm in the
+    // mileage-allowance calculation. Leave at 0 to use the staff default.
+    kmDriven: { type: Number, default: 0 },
     note: { type: String, default: '' },
   },
   { timestamps: true }
