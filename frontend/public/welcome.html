@@ -864,6 +864,7 @@
           <a href="#patronize">Patronize-widget</a>
           <a href="#belgian">Belgisch klaar</a>
           <a href="#roles">Rollen</a>
+          <a href="/tour.html">Tour ↗</a>
         </nav>
         <a class="btn btn-primary" href="/">Open de app →</a>
       </div>
@@ -879,11 +880,13 @@
           <h1>Van zaalplan tot <span class="accent">boekhouding.</span></h1>
           <p class="hero-sub">
             Patron is één rustige donkere app voor de zaal, de keuken, het
-            kantoor en je klanten. Reservaties, POS, voorraad, lonen, btw en een
-            mooie inbouwbare reservatiewidget — allemaal op één plek.
+            kantoor en je klanten. Reservaties, POS, voorraad, lonen, FAVV/
+            HACCP-registratie, contracten &amp; RSZ-aangiftes, btw en een mooie
+            inbouwbare reservatiewidget — allemaal op één plek.
           </p>
           <div class="cta-row">
             <a class="btn btn-primary" href="/">Probeer de demo →</a>
+            <a class="btn btn-ghost" href="/tour.html">Bekijk de tour →</a>
             <a
               class="btn btn-ghost"
               href="/patronize.html?open=1"
@@ -894,7 +897,8 @@
           </div>
           <div class="meta-row">
             <span><strong>Real-time</strong> · push-updates via SSE</span>
-            <span><strong>Belgisch klaar</strong> · contracten, RSZ, btw</span>
+            <span><strong>Belgisch klaar</strong> · contracten, RSZ, FAVV</span>
+            <span><strong>Extralegale voordelen</strong> · cheques, km, ziekenfonds</span>
             <span
               ><strong>Vier rollen</strong> · manager, kelner, keuken, bar</span
             >
@@ -1796,8 +1800,35 @@
             <p>
               Genereer ondertekende pdf's voor vast-, flexi-, student-,
               extra-, interim- en stagecontracten. Dien Dimona-in/uit en
-              kwartaalmatige DmfA-urenbatches in, met een volledig audit-spoor
-              van elke aangifte.
+              kwartaalmatige DmfA-urenbatches in — de payload bevat nu ook
+              maaltijdcheques, kilometervergoeding, ziektedagen en ziekenfonds
+              per werknemer, zodat het audit-spoor volledig is.
+            </p>
+          </article>
+
+          <article class="feature reveal">
+            <div class="icon">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M5 8h14l-1.5 11a2 2 0 0 1-2 1.7H8.5a2 2 0 0 1-2-1.7z" />
+                <path d="M9 8V6a3 3 0 1 1 6 0v2" />
+                <path d="M9 13h6" />
+              </svg>
+            </div>
+            <h3>Maaltijdcheques, km &amp; ziekte</h3>
+            <p>
+              Per werknemer: ziekenfonds (CM, Solidaris, Liberale, …),
+              maaltijdcheque-opt-in met de €6,91 / €1,09-verdeling, federale
+              kilometervergoeding (€0,4280/km) en woon-werk-afstand. Een
+              afwezigheidsregister voor ziekte, arbeidsongeval, verlof, klein
+              verlet en onbetaalde dagen — gewaarborgd loon wordt automatisch
+              berekend in de loon-voorbeeldweergave.
             </p>
           </article>
 
@@ -2298,6 +2329,61 @@
               tijdsloten en vertelt de klant waarom.
             </p>
           </article>
+
+          <article class="feature reveal">
+            <div class="icon">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M14 4a2 2 0 1 0-4 0v10.5a4 4 0 1 0 4 0z" />
+                <path d="M12 8v8" />
+                <circle cx="12" cy="17" r="1.6" />
+              </svg>
+            </div>
+            <h3>FAVV / HACCP-register</h3>
+            <p>
+              Het temperatuurregister, de schoonmaakchecklist en het
+              leveringslogboek die de inspecteur vraagt — in één tabblad.
+              Afwijkende metingen blijven gemarkeerd met de getroffen
+              corrigerende actie; dagelijkse, wekelijkse en maandelijkse
+              schoonmaaktegels lichten rood op zodra ze achterstallig zijn.
+              De demo wordt geleverd met zeven dagen voorbeeldmetingen, zodat
+              er meteen een audit-spoor is.
+            </p>
+          </article>
+
+          <article class="feature reveal">
+            <div class="icon">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M5 8h14l-1.5 11a2 2 0 0 1-2 1.7H8.5a2 2 0 0 1-2-1.7z" />
+                <path d="M9 8V6a3 3 0 1 1 6 0v2" />
+                <path d="M9 13h6" />
+              </svg>
+            </div>
+            <h3>Cheques, km, ziekte &amp; ziekenfonds</h3>
+            <p>
+              Per werknemer: opt-in maaltijdcheques (standaardverdeling €6,91 +
+              €1,09), kilometervergoeding aan het federale tarief van
+              €0,4280/km, een vrij tekstveld voor het ziekenfonds (CM,
+              Solidaris, Liberale, Helan, …) en een afwezigheidsregister voor
+              ziekte / arbeidsongeval / verlof / klein verlet / onbetaald.
+              Gewaarborgd loon wordt automatisch berekend; ziektedagen,
+              chequedagen en kilometers vloeien — naast de gewerkte uren —
+              meteen mee in de DmfA-payload.
+            </p>
+          </article>
         </div>
       </div>
     </section>
@@ -2325,7 +2411,9 @@
               <li>Zaalplan + indeling bewerken</li>
               <li>Menu, voorraad, leveranciers</li>
               <li>Personeel, planning, lonen</li>
-              <li>Contracten + RSZ-aangifte</li>
+              <li>Contracten + Dimona + DmfA</li>
+              <li>Cheques, km, ziekte &amp; ziekenfonds</li>
+              <li>HACCP / FAVV-registratie</li>
               <li>Reservaties + klanten</li>
               <li>Rapporten, Z-rapporten, exports</li>
               <li>Instellingen + btw-tarieven</li>
@@ -2352,6 +2440,7 @@
               <li>KDS-kaarten getint op urgentie</li>
               <li>Klaar markeren met één tik</li>
               <li>86-lijst beperkt tot eten</li>
+              <li>HACCP-register — temperatuur, schoonmaak, leveringen</li>
             </ul>
           </article>
 
