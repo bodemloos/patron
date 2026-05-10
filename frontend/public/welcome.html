@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="nl">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="dark light" />
-    <title>Patron — From floor plan to bookkeeping</title>
+    <title>Patron — Van zaalplan tot boekhouding</title>
     <meta
       name="description"
-      content="Patron runs your restaurant: floor plan, POS, kitchen tickets, reservations, stock, payroll, and bookkeeping — in one place."
+      content="Patron runt je restaurant: zaalplan, POS, keukentickets, reservaties, voorraad, loonadministratie en boekhouding — alles op één plek."
     />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -359,6 +359,39 @@
         background: var(--brand-soft);
         color: var(--brand-bright);
         margin-bottom: 14px;
+      }
+      .feature-art {
+        position: relative;
+        height: 132px;
+        margin: -22px -22px 16px;
+        padding: 14px 16px;
+        background: linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.025),
+            rgba(0, 0, 0, 0.18)
+          ),
+          var(--bg);
+        border-bottom: 1px solid var(--border);
+        overflow: hidden;
+      }
+      .feature-art svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+      .feature-art svg text {
+        font-family: Inter, sans-serif;
+      }
+      .feature-art::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          120% 80% at 100% 0%,
+          rgba(234, 88, 12, 0.08),
+          transparent 60%
+        );
+        pointer-events: none;
       }
       .feature h3 {
         margin: 0 0 6px;
@@ -826,14 +859,14 @@
           <span class="brand-name">Patron</span>
         </a>
         <nav class="nav-links">
-          <a href="#features">Features</a>
-          <a href="#flow">How it works</a>
-          <a href="#patronize">Patronize widget</a>
-          <a href="#belgian">Belgian-ready</a>
-          <a href="#roles">Roles</a>
+          <a href="#features">Functies</a>
+          <a href="#flow">Hoe het werkt</a>
+          <a href="#patronize">Patronize-widget</a>
+          <a href="#belgian">Belgisch klaar</a>
+          <a href="#roles">Rollen</a>
           <a href="/tour.html">Tour ↗</a>
         </nav>
-        <a class="btn btn-primary" href="/">Open the app →</a>
+        <a class="btn btn-primary" href="/">Open de app →</a>
       </div>
     </header>
 
@@ -842,32 +875,32 @@
       <div class="hero-inner">
         <div class="reveal">
           <div class="eyebrow">
-            <span class="dot"></span> Run your restaurant end-to-end
+            <span class="dot"></span> Run je restaurant van A tot Z
           </div>
-          <h1>From floor plan to <span class="accent">bookkeeping.</span></h1>
+          <h1>Van zaalplan tot <span class="accent">boekhouding.</span></h1>
           <p class="hero-sub">
-            Patron is one calm dark-themed app for the front of house, the
-            kitchen, the back office, and your customers. Reservations, POS,
-            stock, payroll, FAVV/HACCP register, contracts &amp; RSZ filings,
-            VAT, and a beautiful embeddable booking widget — all in one place.
+            Patron is één rustige donkere app voor de zaal, de keuken, het
+            kantoor en je klanten. Reservaties, POS, voorraad, lonen, FAVV/
+            HACCP-registratie, contracten &amp; RSZ-aangiftes, btw en een mooie
+            inbouwbare reservatiewidget — allemaal op één plek.
           </p>
           <div class="cta-row">
-            <a class="btn btn-primary" href="/">Try the demo →</a>
-            <a class="btn btn-ghost" href="/tour.html">Take the feature tour →</a>
+            <a class="btn btn-primary" href="/">Probeer de demo →</a>
+            <a class="btn btn-ghost" href="/tour.html">Bekijk de tour →</a>
             <a
               class="btn btn-ghost"
               href="/patronize.html?open=1"
               target="_blank"
               rel="noreferrer"
-              >See the widget ↗</a
+              >Bekijk de widget ↗</a
             >
           </div>
           <div class="meta-row">
-            <span><strong>Real-time</strong> · push updates over SSE</span>
-            <span><strong>Belgian-ready</strong> · contracts, RSZ, FAVV</span>
-            <span><strong>Fringe benefits</strong> · cheques, km, ziekenfonds</span>
+            <span><strong>Real-time</strong> · push-updates via SSE</span>
+            <span><strong>Belgisch klaar</strong> · contracten, RSZ, FAVV</span>
+            <span><strong>Extralegale voordelen</strong> · cheques, km, ziekenfonds</span>
             <span
-              ><strong>Four roles</strong> · manager, waiter, kitchen, bar</span
+              ><strong>Vier rollen</strong> · manager, kelner, keuken, bar</span
             >
           </div>
         </div>
@@ -875,7 +908,7 @@
         <!-- Hero artwork: a stylised floor plan card -->
         <div class="reveal hero-art" aria-hidden="true">
           <div class="hero-art-head">
-            <span>Floor plan · Saturday evening</span>
+            <span>Zaalplan · zaterdagavond</span>
             <span class="pill"
               ><span
                 style="
@@ -911,7 +944,7 @@
               font-family="Inter, sans-serif"
               font-weight="600"
             >
-              Main
+              Zaal
             </text>
 
             <!-- Tables -->
@@ -944,7 +977,7 @@
               opacity="0.7"
               font-family="Inter, sans-serif"
             >
-              2 seats
+              2 plaatsen
             </text>
 
             <ellipse
@@ -976,7 +1009,7 @@
               opacity="0.85"
               font-family="Inter, sans-serif"
             >
-              2 seats
+              2 plaatsen
             </text>
             <text
               x="166"
@@ -1020,7 +1053,7 @@
               opacity="0.85"
               font-family="Inter, sans-serif"
             >
-              4 seats
+              4 plaatsen
             </text>
             <text
               x="260"
@@ -1064,7 +1097,7 @@
               opacity="0.7"
               font-family="Inter, sans-serif"
             >
-              6 seats
+              6 plaatsen
             </text>
 
             <ellipse
@@ -1240,7 +1273,7 @@
                   letter-spacing: 0.06em;
                 "
               >
-                Free
+                Vrij
               </div>
               <div style="font-weight: 600; font-size: 18px">8</div>
             </div>
@@ -1261,7 +1294,7 @@
                   letter-spacing: 0.06em;
                 "
               >
-                Active
+                Actief
               </div>
               <div style="font-weight: 600; font-size: 18px">3</div>
             </div>
@@ -1282,7 +1315,7 @@
                   letter-spacing: 0.06em;
                 "
               >
-                Open €
+                Openstaand €
               </div>
               <div style="font-weight: 600; font-size: 18px">€66</div>
             </div>
@@ -1295,318 +1328,481 @@
     <section id="features">
       <div class="container">
         <div class="reveal">
-          <div class="section-eyebrow">What's inside</div>
-          <h2 class="section-title">Everything you need, nothing you don't.</h2>
+          <div class="section-eyebrow">Wat zit erin</div>
+          <h2 class="section-title">Alles wat je nodig hebt, niks wat je niet nodig hebt.</h2>
           <p class="section-sub">
-            Restaurant-grade features stitched together so the front of house,
-            the kitchen, the bar, the back office, and your customers all read
-            from the same picture.
+            Functies van restaurantkwaliteit, zo aan elkaar gekoppeld dat de
+            zaal, de keuken, de bar, het kantoor en je klanten allemaal van
+            hetzelfde beeld vertrekken.
           </p>
         </div>
 
         <div class="features">
           <article class="feature reveal">
-            <div class="icon">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <rect x="3" y="3" width="7" height="7" rx="1.5" />
-                <rect x="14" y="3" width="7" height="7" rx="3.5" />
-                <rect x="3" y="14" width="7" height="7" rx="3.5" />
-                <rect x="14" y="14" width="7" height="7" rx="1.5" />
+            <div class="feature-art" aria-hidden="true">
+              <svg viewBox="0 0 240 110" preserveAspectRatio="xMidYMid meet">
+                <rect x="6" y="6" width="228" height="98" rx="8" fill="rgba(148,163,184,0.04)" stroke="rgba(148,163,184,0.18)"/>
+                <text x="14" y="20" font-size="8" fill="#737373" font-weight="600" letter-spacing="1">ZAAL</text>
+                <circle cx="42" cy="62" r="17" fill="#0f0f10" stroke="#3f3f46" stroke-width="1.5"/>
+                <text x="42" y="60" text-anchor="middle" font-size="11" fill="#e5e5e5" font-weight="600">T1</text>
+                <text x="42" y="71" text-anchor="middle" font-size="7" fill="#737373">vrij</text>
+                <circle cx="92" cy="62" r="17" fill="#3a2208" stroke="#f59e0b" stroke-width="1.5"/>
+                <text x="92" y="60" text-anchor="middle" font-size="11" fill="#fde68a" font-weight="600">T2</text>
+                <text x="92" y="71" text-anchor="middle" font-size="7" fill="#fde68a" opacity="0.85">€18.50</text>
+                <rect x="125" y="46" width="42" height="32" rx="4" fill="#3f1d1d" stroke="#ef4444" stroke-width="1.5"/>
+                <text x="146" y="60" text-anchor="middle" font-size="11" fill="#fecaca" font-weight="600">T3</text>
+                <text x="146" y="70" text-anchor="middle" font-size="7" fill="#fecaca">te laat</text>
+                <circle cx="194" cy="62" r="17" fill="#0f2a18" stroke="#22c55e" stroke-width="1.5"/>
+                <text x="194" y="60" text-anchor="middle" font-size="11" fill="#bbf7d0" font-weight="600">T4</text>
+                <text x="194" y="71" text-anchor="middle" font-size="7" fill="#bbf7d0" opacity="0.85">net door</text>
               </svg>
             </div>
-            <h3>Visual floor plan</h3>
+            <h3>Visueel zaalplan</h3>
             <p>
-              Drag-and-drop tables across indoor and outdoor zones. Tap any
-              table to open its order — colour-coded by status.
+              Sleep en plaats tafels in binnen- en buitenzones. Tik op een
+              tafel om de bestelling te openen — kleurcodes per status.
             </p>
           </article>
 
           <article class="feature reveal">
-            <div class="icon">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path d="M4 6h16M4 12h16M4 18h10" />
+            <div class="feature-art" aria-hidden="true">
+              <svg viewBox="0 0 240 110" preserveAspectRatio="xMidYMid meet">
+                <rect x="6" y="6" width="146" height="98" rx="6" fill="#0f0f10" stroke="rgba(255,255,255,0.06)"/>
+                <rect x="14" y="16" width="50" height="6" rx="2" fill="#3f3f46"/>
+                <rect x="14" y="30" width="130" height="14" rx="3" fill="#1c1c1d"/>
+                <text x="20" y="40" font-size="8" fill="#a3a3a3">Steak frites</text>
+                <text x="138" y="40" font-size="8" fill="#fb923c" text-anchor="end" font-weight="600">€24</text>
+                <rect x="14" y="48" width="130" height="14" rx="3" fill="#1c1c1d"/>
+                <text x="20" y="58" font-size="8" fill="#a3a3a3">Caesar</text>
+                <text x="138" y="58" font-size="8" fill="#fb923c" text-anchor="end" font-weight="600">€16</text>
+                <rect x="14" y="66" width="130" height="14" rx="3" fill="#1c1c1d"/>
+                <text x="20" y="76" font-size="8" fill="#a3a3a3">Tiramisu</text>
+                <text x="138" y="76" font-size="8" fill="#fb923c" text-anchor="end" font-weight="600">€8</text>
+                <rect x="158" y="6" width="76" height="98" rx="6" fill="#1c1c1d" stroke="#ea580c" stroke-width="1"/>
+                <text x="166" y="20" font-size="8" fill="#fb923c" font-weight="600">MANDJE · T2</text>
+                <line x1="166" y1="26" x2="226" y2="26" stroke="rgba(255,255,255,0.08)"/>
+                <text x="166" y="40" font-size="8" fill="#e5e5e5">2× Caesar</text>
+                <text x="226" y="40" font-size="8" fill="#a3a3a3" text-anchor="end">€32</text>
+                <text x="166" y="54" font-size="8" fill="#e5e5e5">1× Steak</text>
+                <text x="226" y="54" font-size="8" fill="#a3a3a3" text-anchor="end">€24</text>
+                <text x="166" y="68" font-size="8" fill="#e5e5e5">1× Tiramisu</text>
+                <text x="226" y="68" font-size="8" fill="#a3a3a3" text-anchor="end">€8</text>
+                <line x1="166" y1="76" x2="226" y2="76" stroke="rgba(255,255,255,0.08)"/>
+                <text x="166" y="88" font-size="9" fill="#fff" font-weight="700">Totaal</text>
+                <text x="226" y="88" font-size="9" fill="#fb923c" font-weight="700" text-anchor="end">€64</text>
+                <rect x="166" y="94" width="60" height="8" rx="3" fill="#ea580c"/>
               </svg>
             </div>
             <h3>Slide-over POS</h3>
             <p>
-              Tap an item to add it; configured sizes prompt for a pick. Mains
-              and desserts open the modifier sheet for allergies and notes.
+              Tik op een item om het toe te voegen; ingestelde formaten vragen
+              om een keuze. Hoofdgerechten en desserts openen het keuzemenu
+              voor allergieën en opmerkingen.
             </p>
           </article>
 
           <article class="feature reveal">
-            <div class="icon">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <rect x="3" y="4.5" width="18" height="16" rx="2" />
-                <path d="M3 9h18M8 3v3M16 3v3" />
+            <div class="feature-art" aria-hidden="true">
+              <svg viewBox="0 0 240 110" preserveAspectRatio="xMidYMid meet">
+                <rect x="6" y="6" width="228" height="98" rx="6" fill="#1c1c1d" stroke="rgba(255,255,255,0.06)"/>
+                <text x="16" y="22" font-size="9" fill="#e5e5e5" font-weight="600">Mei 2026</text>
+                <text x="218" y="22" font-size="8" fill="#737373" text-anchor="end">‹  ›</text>
+                <line x1="6" y1="28" x2="234" y2="28" stroke="rgba(255,255,255,0.06)"/>
+                <g font-size="7" fill="#737373" text-anchor="middle">
+                  <text x="32" y="40">M</text><text x="62" y="40">D</text><text x="92" y="40">W</text>
+                  <text x="122" y="40">D</text><text x="152" y="40">V</text>
+                  <text x="182" y="40" fill="#fb923c" font-weight="700">Z</text>
+                  <text x="212" y="40">Z</text>
+                </g>
+                <g>
+                  <rect x="14" y="48" width="36" height="14" rx="3" fill="#3a2208"/>
+                  <text x="32" y="58" font-size="7" fill="#fde68a" text-anchor="middle">19u · 4p</text>
+                  <rect x="74" y="48" width="36" height="14" rx="3" fill="#0f2a18"/>
+                  <text x="92" y="58" font-size="7" fill="#bbf7d0" text-anchor="middle">20u · 2p</text>
+                  <rect x="164" y="48" width="36" height="14" rx="3" fill="#2a1854"/>
+                  <text x="182" y="58" font-size="7" fill="#c4b5fd" text-anchor="middle">FEEST</text>
+                  <rect x="14" y="68" width="36" height="14" rx="3" fill="#0f2a18"/>
+                  <text x="32" y="78" font-size="7" fill="#bbf7d0" text-anchor="middle">20u · 6p</text>
+                  <rect x="104" y="68" width="36" height="14" rx="3" fill="#3a2208"/>
+                  <text x="122" y="78" font-size="7" fill="#fde68a" text-anchor="middle">19u · 2p</text>
+                  <rect x="164" y="68" width="36" height="14" rx="3" fill="#3a2208"/>
+                  <text x="182" y="78" font-size="7" fill="#fde68a" text-anchor="middle">21u · 4p</text>
+                </g>
+                <rect x="14" y="90" width="64" height="12" rx="3" fill="rgba(234,88,12,0.16)" stroke="#ea580c" stroke-width="0.5"/>
+                <circle cx="22" cy="96" r="2" fill="#fb923c"/>
+                <text x="30" y="99" font-size="7" fill="#fb923c" font-weight="600">via widget</text>
               </svg>
             </div>
-            <h3>Reservations + Patronize</h3>
+            <h3>Reservaties + Patronize</h3>
             <p>
-              Manage bookings in-app and let visitors reserve via the embeddable
-              widget. Per-weekday opening hours and exceptional closure periods
-              (holidays, private events) flow straight to the customer-facing
-              slot grid.
+              Beheer boekingen in de app en laat bezoekers reserveren via de
+              inbouwbare widget. Openingsuren per weekdag en uitzonderlijke
+              sluitingsperiodes (feestdagen, privé-events) belanden meteen in
+              het boekingsraster van de klant.
             </p>
           </article>
 
           <article class="feature reveal">
-            <div class="icon">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <rect x="6" y="3" width="12" height="18" rx="2" />
-                <circle cx="12" cy="18" r="0.5" fill="currentColor" />
+            <div class="feature-art" aria-hidden="true">
+              <svg viewBox="0 0 240 110" preserveAspectRatio="xMidYMid meet">
+                <rect x="68" y="10" width="86" height="86" rx="10" fill="#fff"/>
+                <g fill="#0f0f10">
+                  <rect x="74" y="16" width="14" height="14" rx="2"/>
+                  <rect x="134" y="16" width="14" height="14" rx="2"/>
+                  <rect x="74" y="76" width="14" height="14" rx="2"/>
+                  <rect x="78" y="20" width="6" height="6" fill="#fff"/>
+                  <rect x="138" y="20" width="6" height="6" fill="#fff"/>
+                  <rect x="78" y="80" width="6" height="6" fill="#fff"/>
+                  <rect x="94" y="18" width="4" height="4"/>
+                  <rect x="102" y="18" width="4" height="4"/>
+                  <rect x="110" y="18" width="4" height="4"/>
+                  <rect x="118" y="18" width="4" height="4"/>
+                  <rect x="126" y="18" width="4" height="4"/>
+                  <rect x="94" y="26" width="4" height="4"/>
+                  <rect x="110" y="26" width="4" height="4"/>
+                  <rect x="126" y="26" width="4" height="4"/>
+                  <rect x="74" y="36" width="4" height="4"/>
+                  <rect x="82" y="36" width="4" height="4"/>
+                  <rect x="98" y="36" width="4" height="4"/>
+                  <rect x="106" y="36" width="4" height="4"/>
+                  <rect x="118" y="36" width="4" height="4"/>
+                  <rect x="134" y="36" width="4" height="4"/>
+                  <rect x="146" y="36" width="4" height="4"/>
+                  <rect x="78" y="44" width="4" height="4"/>
+                  <rect x="94" y="44" width="4" height="4"/>
+                  <rect x="106" y="44" width="4" height="4"/>
+                  <rect x="118" y="44" width="4" height="4"/>
+                  <rect x="130" y="44" width="4" height="4"/>
+                  <rect x="142" y="44" width="4" height="4"/>
+                  <rect x="74" y="52" width="4" height="4"/>
+                  <rect x="86" y="52" width="4" height="4"/>
+                  <rect x="98" y="52" width="4" height="4"/>
+                  <rect x="114" y="52" width="4" height="4"/>
+                  <rect x="122" y="52" width="4" height="4"/>
+                  <rect x="138" y="52" width="4" height="4"/>
+                  <rect x="146" y="52" width="4" height="4"/>
+                  <rect x="78" y="60" width="4" height="4"/>
+                  <rect x="94" y="60" width="4" height="4"/>
+                  <rect x="102" y="60" width="4" height="4"/>
+                  <rect x="118" y="60" width="4" height="4"/>
+                  <rect x="134" y="60" width="4" height="4"/>
+                  <rect x="142" y="60" width="4" height="4"/>
+                  <rect x="94" y="68" width="4" height="4"/>
+                  <rect x="106" y="68" width="4" height="4"/>
+                  <rect x="118" y="68" width="4" height="4"/>
+                  <rect x="130" y="68" width="4" height="4"/>
+                  <rect x="146" y="68" width="4" height="4"/>
+                  <rect x="98" y="78" width="4" height="4"/>
+                  <rect x="106" y="78" width="4" height="4"/>
+                  <rect x="118" y="78" width="4" height="4"/>
+                  <rect x="130" y="78" width="4" height="4"/>
+                  <rect x="142" y="78" width="4" height="4"/>
+                </g>
+                <rect x="14" y="38" width="42" height="32" rx="6" fill="#1c1c1d" stroke="#ea580c" stroke-width="1"/>
+                <text x="35" y="54" text-anchor="middle" font-size="10" fill="#fb923c" font-weight="700">T7</text>
+                <text x="35" y="64" text-anchor="middle" font-size="6" fill="#a3a3a3">tafel</text>
+                <path d="M56 54 L66 54" stroke="#ea580c" stroke-width="1.5" stroke-dasharray="2 2"/>
+                <rect x="174" y="40" width="56" height="14" rx="3" fill="#0f2a18" stroke="#22c55e" stroke-width="1"/>
+                <text x="202" y="50" text-anchor="middle" font-size="7" fill="#bbf7d0" font-weight="600">naar keuken ✓</text>
+                <rect x="174" y="60" width="56" height="14" rx="3" fill="#1c1c1d"/>
+                <text x="202" y="70" text-anchor="middle" font-size="7" fill="#a3a3a3">kelner rekent af</text>
               </svg>
             </div>
-            <h3>QR table-side ordering</h3>
+            <h3>QR-bestellen aan tafel</h3>
             <p>
-              Generate a QR per table. Guests scan, browse, and send pending
-              lines straight to the kitchen — the waiter still pays out.
+              Genereer een QR per tafel. Gasten scannen, bladeren en sturen
+              hun bestelling rechtstreeks naar de keuken — de kelner blijft
+              afrekenen.
             </p>
           </article>
 
           <article class="feature reveal">
-            <div class="icon">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <rect x="3" y="3" width="8" height="8" rx="1.5" />
-                <rect x="13" y="3" width="8" height="8" rx="1.5" />
-                <rect x="3" y="13" width="8" height="8" rx="1.5" />
-                <circle cx="17" cy="17" r="3.5" />
-                <line x1="17" y1="15.5" x2="17" y2="18.5" />
-                <line x1="15.5" y1="17" x2="18.5" y2="17" />
+            <div class="feature-art" aria-hidden="true">
+              <svg viewBox="0 0 240 110" preserveAspectRatio="xMidYMid meet">
+                <g>
+                  <rect x="6" y="6" width="72" height="98" rx="8" fill="#1c1c1d" stroke="rgba(255,255,255,0.08)"/>
+                  <rect x="12" y="12" width="60" height="38" rx="5" fill="#3a2208"/>
+                  <circle cx="42" cy="31" r="10" fill="#f59e0b" opacity="0.4"/>
+                  <path d="M30 38 Q42 24 54 38 Z" fill="#fb923c" opacity="0.7"/>
+                  <text x="12" y="62" font-size="8" fill="#e5e5e5" font-weight="600">Steak frites</text>
+                  <text x="12" y="74" font-size="7" fill="#737373">met peperroom...</text>
+                  <text x="12" y="92" font-size="9" fill="#fb923c" font-weight="700">€24</text>
+                  <rect x="48" y="84" width="22" height="14" rx="7" fill="#ea580c"/>
+                  <text x="59" y="93" font-size="9" font-weight="700" fill="#fff" text-anchor="middle">+</text>
+                </g>
+                <g>
+                  <rect x="84" y="6" width="72" height="98" rx="8" fill="#1c1c1d" stroke="rgba(255,255,255,0.08)"/>
+                  <rect x="90" y="12" width="60" height="38" rx="5" fill="#0f2a18"/>
+                  <ellipse cx="120" cy="34" rx="22" ry="10" fill="#22c55e" opacity="0.45"/>
+                  <text x="90" y="62" font-size="8" fill="#e5e5e5" font-weight="600">Caesar</text>
+                  <text x="90" y="74" font-size="7" fill="#737373">romaine, ansjovis</text>
+                  <text x="90" y="92" font-size="9" fill="#fb923c" font-weight="700">€16</text>
+                  <rect x="126" y="84" width="22" height="14" rx="7" fill="#ea580c"/>
+                  <text x="137" y="93" font-size="9" font-weight="700" fill="#fff" text-anchor="middle">+</text>
+                </g>
+                <g>
+                  <rect x="162" y="6" width="72" height="98" rx="8" fill="#1c1c1d" stroke="rgba(255,255,255,0.08)"/>
+                  <rect x="168" y="12" width="60" height="38" rx="5" fill="#451a03"/>
+                  <circle cx="198" cy="31" r="11" fill="#92400e" opacity="0.65"/>
+                  <text x="168" y="62" font-size="8" fill="#e5e5e5" font-weight="600">Tiramisu</text>
+                  <text x="168" y="74" font-size="7" fill="#737373">huisgemaakt</text>
+                  <text x="168" y="92" font-size="9" fill="#fb923c" font-weight="700">€8</text>
+                  <rect x="204" y="84" width="22" height="14" rx="7" fill="#ea580c"/>
+                  <text x="215" y="93" font-size="9" font-weight="700" fill="#fff" text-anchor="middle">+</text>
+                </g>
               </svg>
             </div>
-            <h3>Magazine-style menu</h3>
+            <h3>Magazine-stijl menu</h3>
             <p>
-              Each menu item gets a photo, a description, and a tap-to-add
-              button. Guests browse a card grid that feels like a delivery
-              app — not a printed PDF.
+              Elk menugerecht krijgt een foto, een beschrijving en een knop
+              om toe te voegen. Gasten bladeren door een kaartenraster dat
+              aanvoelt als een bezorg-app — geen geprinte pdf.
             </p>
           </article>
 
           <article class="feature reveal">
-            <div class="icon">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <circle cx="12" cy="12" r="9" />
-                <line x1="12" y1="11" x2="12" y2="16" />
-                <circle cx="12" cy="8" r="0.8" fill="currentColor" />
+            <div class="feature-art" aria-hidden="true">
+              <svg viewBox="0 0 240 110" preserveAspectRatio="xMidYMid meet">
+                <rect x="48" y="8" width="144" height="94" rx="10" fill="#1c1c1d" stroke="rgba(255,255,255,0.08)"/>
+                <rect x="56" y="16" width="42" height="60" rx="6" fill="#451a03"/>
+                <rect x="62" y="24" width="30" height="44" rx="3" fill="#92400e"/>
+                <ellipse cx="77" cy="32" rx="14" ry="3" fill="#fde68a" opacity="0.7"/>
+                <rect x="62" y="36" width="30" height="20" fill="#a16207"/>
+                <text x="106" y="28" font-size="8" fill="#737373" font-weight="600" letter-spacing="1">UNTAPPD</text>
+                <text x="106" y="44" font-size="11" fill="#e5e5e5" font-weight="700">Westmalle Tripel</text>
+                <text x="106" y="56" font-size="7" fill="#a3a3a3">Belgian Tripel · 9.5%</text>
+                <circle cx="118" cy="76" r="9" fill="none" stroke="#fb923c" stroke-width="1.5"/>
+                <text x="118" y="79" text-anchor="middle" font-size="8" fill="#fb923c" font-weight="700">4.1</text>
+                <text x="132" y="79" font-size="7" fill="#737373">★ 28k beoordelingen</text>
+                <rect x="56" y="84" width="56" height="12" rx="6" fill="rgba(234,88,12,0.16)" stroke="#ea580c" stroke-width="0.5"/>
+                <text x="84" y="93" text-anchor="middle" font-size="7" fill="#fb923c" font-weight="600">+ Bestel · €5.20</text>
               </svg>
             </div>
-            <h3>Untappd &amp; tasting-note previews</h3>
+            <h3>Untappd &amp; proefnota-previews</h3>
             <p>
-              Paste an Untappd URL on a beer, a producer page on a wine, or
-              a recipe link on a dish. The customer gets a native preview
-              card — hero image, rating, description — without leaving the
-              menu and without the iframe-blocked-by-CSP nonsense.
+              Plak een Untappd-link bij een bier, een producentenpagina bij
+              een wijn of een receptlink bij een gerecht. De klant krijgt
+              een eigen preview-kaart — beeld, score, beschrijving — zonder
+              het menu te verlaten en zonder iframe-CSP-gedoe.
             </p>
           </article>
 
           <article class="feature reveal">
-            <div class="icon">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path d="M3 6h18" />
-                <path d="M6 6v3a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V6" />
-                <path d="M9 12v6" />
-                <path d="M15 12v6" />
-                <circle cx="9" cy="20" r="0.6" fill="currentColor" />
-                <circle cx="15" cy="20" r="0.6" fill="currentColor" />
+            <div class="feature-art" aria-hidden="true">
+              <svg viewBox="0 0 240 110" preserveAspectRatio="xMidYMid meet">
+                <rect x="86" y="44" width="68" height="22" rx="4" fill="#1c1c1d" stroke="#ea580c" stroke-width="1"/>
+                <text x="120" y="58" text-anchor="middle" font-size="9" fill="#fb923c" font-weight="700">MENU</text>
+                <path d="M86 55 L60 22" stroke="#3f3f46" stroke-width="1.5" fill="none"/>
+                <path d="M86 55 L60 88" stroke="#3f3f46" stroke-width="1.5" fill="none"/>
+                <path d="M154 55 L180 22" stroke="#3f3f46" stroke-width="1.5" fill="none"/>
+                <path d="M154 55 L180 88" stroke="#3f3f46" stroke-width="1.5" fill="none"/>
+                <rect x="14" y="14" width="48" height="16" rx="3" fill="#3a2208"/>
+                <text x="38" y="25" text-anchor="middle" font-size="8" fill="#fde68a" font-weight="600">Eten</text>
+                <text x="14" y="42" font-size="6" fill="#737373">Voor · Hoofd · Dessert</text>
+                <rect x="14" y="80" width="48" height="16" rx="3" fill="#0f2a18"/>
+                <text x="38" y="91" text-anchor="middle" font-size="8" fill="#bbf7d0" font-weight="600">Dranken</text>
+                <text x="14" y="76" font-size="6" fill="#737373">Bier · Wijn · Frisdrank</text>
+                <rect x="180" y="14" width="50" height="22" rx="4" fill="#1c1c1d" stroke="rgba(255,255,255,0.08)"/>
+                <text x="205" y="22" text-anchor="middle" font-size="6" fill="#737373" letter-spacing="0.5">→ ROUTE</text>
+                <text x="205" y="32" text-anchor="middle" font-size="9" fill="#f59e0b" font-weight="700">KEUKEN</text>
+                <rect x="180" y="80" width="50" height="22" rx="4" fill="#1c1c1d" stroke="rgba(255,255,255,0.08)"/>
+                <text x="205" y="88" text-anchor="middle" font-size="6" fill="#737373" letter-spacing="0.5">→ ROUTE</text>
+                <text x="205" y="98" text-anchor="middle" font-size="9" fill="#22c55e" font-weight="700">BAR</text>
               </svg>
             </div>
-            <h3>Hierarchical menu &amp; auto-routing</h3>
+            <h3>Hiërarchisch menu &amp; auto-routering</h3>
             <p>
-              Group categories under Food and Drinks. Customers see a
-              two-tier filter on the QR menu; the backend uses the parent to
-              route lines automatically — anything under Drinks lands at the
-              bar, everything else at the kitchen. No per-item config.
+              Groepeer categorieën onder Eten en Dranken. Klanten zien een
+              filter op twee niveaus in het QR-menu; de backend gebruikt de
+              hoofdcategorie om lijnen automatisch te routeren — alles onder
+              Dranken belandt aan de bar, de rest in de keuken. Geen
+              instellingen per item nodig.
             </p>
           </article>
 
           <article class="feature reveal">
-            <div class="icon">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path
-                  d="M5 3v8a4 4 0 0 0 8 0V3M9 3v6M17 3l3 5v3a3 3 0 1 1-6 0V8z"
-                />
+            <div class="feature-art" aria-hidden="true">
+              <svg viewBox="0 0 240 110" preserveAspectRatio="xMidYMid meet">
+                <rect x="14" y="10" width="100" height="92" rx="6" fill="#1c1c1d" stroke="rgba(255,255,255,0.08)"/>
+                <rect x="14" y="10" width="100" height="6" rx="3" fill="#ef4444"/>
+                <text x="22" y="32" font-size="9" fill="#e5e5e5" font-weight="700">T7 · 4 plaatsen</text>
+                <text x="106" y="32" font-size="7" fill="#ef4444" text-anchor="end" font-weight="700">12:42</text>
+                <line x1="22" y1="38" x2="106" y2="38" stroke="rgba(255,255,255,0.06)"/>
+                <text x="22" y="50" font-size="7" fill="#737373" letter-spacing="1">VOOR</text>
+                <text x="22" y="62" font-size="8" fill="#e5e5e5">2× Caesar</text>
+                <rect x="74" y="55" width="32" height="10" rx="5" fill="#0f2a18" stroke="#22c55e" stroke-width="0.5"/>
+                <text x="90" y="62" text-anchor="middle" font-size="6" fill="#bbf7d0" font-weight="600">✓ klaar</text>
+                <text x="22" y="76" font-size="7" fill="#737373" letter-spacing="1">HOOFD</text>
+                <text x="22" y="88" font-size="8" fill="#e5e5e5">1× Steak (med)</text>
+                <rect x="22" y="92" width="38" height="9" rx="4" fill="#3f1d1d"/>
+                <text x="41" y="99" text-anchor="middle" font-size="6" fill="#fecaca" font-weight="600">⚠ noten</text>
+                <rect x="124" y="10" width="100" height="92" rx="6" fill="#1c1c1d" stroke="rgba(255,255,255,0.08)"/>
+                <rect x="124" y="10" width="100" height="6" rx="3" fill="#f59e0b"/>
+                <text x="132" y="32" font-size="9" fill="#e5e5e5" font-weight="700">T3 · 2 plaatsen</text>
+                <text x="216" y="32" font-size="7" fill="#f59e0b" text-anchor="end" font-weight="700">04:11</text>
+                <line x1="132" y1="38" x2="216" y2="38" stroke="rgba(255,255,255,0.06)"/>
+                <text x="132" y="50" font-size="7" fill="#737373" letter-spacing="1">VOOR</text>
+                <text x="132" y="62" font-size="8" fill="#e5e5e5">1× Soep</text>
+                <text x="132" y="76" font-size="7" fill="#737373" letter-spacing="1">HOOFD</text>
+                <text x="132" y="88" font-size="8" fill="#e5e5e5">2× Pasta</text>
+                <text x="132" y="100" font-size="7" fill="#a3a3a3">+ Tiramisu (1×)</text>
               </svg>
             </div>
-            <h3>Premium KDS tickets</h3>
+            <h3>Premium KDS-tickets</h3>
             <p>
-              Push-based via SSE — no polling. Each table is a dark ticket card
-              with a glowing urgency bar (fresh / aging / late), course-grouped
-              lines, allergy pills, and per-line ✓ buttons.
+              Push via SSE — geen polling. Elke tafel is een donkere
+              ticketkaart met een oplichtende urgentiebalk (vers / verouderd
+              / te laat), lijnen per gang gegroepeerd, allergie-pillen en
+              ✓-knoppen per lijn.
             </p>
           </article>
 
           <article class="feature reveal">
-            <div class="icon">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path d="M3 4h18l-7 9v6" />
-                <path d="M14 19h-4" />
-                <path d="M10 19v-6L3 4" />
+            <div class="feature-art" aria-hidden="true">
+              <svg viewBox="0 0 240 110" preserveAspectRatio="xMidYMid meet">
+                <rect x="6" y="6" width="110" height="98" rx="6" fill="#1c1c1d" stroke="rgba(255,255,255,0.08)"/>
+                <rect x="6" y="6" width="110" height="14" rx="6" fill="#1c1c1d"/>
+                <text x="14" y="16" font-size="7" fill="#f59e0b" font-weight="700" letter-spacing="1">KEUKEN</text>
+                <circle cx="106" cy="13" r="3" fill="#22c55e"/>
+                <rect x="14" y="26" width="92" height="22" rx="4" fill="#0f0f10" stroke="rgba(245,158,11,0.4)"/>
+                <text x="20" y="38" font-size="7" fill="#e5e5e5" font-weight="600">T2 · Steak (med)</text>
+                <text x="20" y="46" font-size="6" fill="#737373">+ frites</text>
+                <rect x="14" y="54" width="92" height="22" rx="4" fill="#0f0f10" stroke="rgba(245,158,11,0.4)"/>
+                <text x="20" y="66" font-size="7" fill="#e5e5e5" font-weight="600">T5 · 2× Pasta</text>
+                <text x="20" y="74" font-size="6" fill="#737373">1× zonder kaas</text>
+                <rect x="14" y="82" width="92" height="16" rx="4" fill="#0f0f10" stroke="rgba(245,158,11,0.4)"/>
+                <text x="20" y="93" font-size="7" fill="#e5e5e5" font-weight="600">T7 · Caesar ×2</text>
+                <rect x="124" y="6" width="110" height="98" rx="6" fill="#1c1c1d" stroke="rgba(255,255,255,0.08)"/>
+                <rect x="124" y="6" width="110" height="14" rx="6" fill="#1c1c1d"/>
+                <text x="132" y="16" font-size="7" fill="#22c55e" font-weight="700" letter-spacing="1">BAR</text>
+                <rect x="200" y="9" width="28" height="9" rx="3" fill="#3f1d1d"/>
+                <text x="214" y="16" text-anchor="middle" font-size="6" fill="#fecaca" font-weight="600">86: 2</text>
+                <rect x="132" y="26" width="94" height="22" rx="4" fill="#0f0f10" stroke="rgba(34,197,94,0.4)"/>
+                <text x="138" y="38" font-size="7" fill="#e5e5e5" font-weight="600">T2 · 2× Tripel</text>
+                <text x="138" y="46" font-size="6" fill="#737373">+ 1 cola</text>
+                <rect x="132" y="54" width="94" height="22" rx="4" fill="#0f0f10" stroke="rgba(34,197,94,0.4)"/>
+                <text x="138" y="66" font-size="7" fill="#e5e5e5" font-weight="600">T5 · Wijn rosé</text>
+                <text x="138" y="74" font-size="6" fill="#737373">2 glazen</text>
+                <rect x="132" y="82" width="94" height="16" rx="4" fill="#0f0f10" stroke="rgba(34,197,94,0.4)"/>
+                <text x="138" y="93" font-size="7" fill="#e5e5e5" font-weight="600">T7 · Espresso</text>
               </svg>
             </div>
-            <h3>Bar runs alongside</h3>
+            <h3>Bar draait parallel</h3>
             <p>
-              Drink lines route to a dedicated Bar view while the kitchen sees
-              only food. Bartender role gets the same ticket UI plus an 86 list
-              scoped to drink-category items.
+              Drankjes worden naar een aparte bar-weergave gerouteerd terwijl
+              de keuken enkel eten ziet. De barman-rol krijgt dezelfde ticket-UI
+              plus een 86-lijst beperkt tot drank-categorieën.
             </p>
           </article>
 
           <article class="feature reveal">
-            <div class="icon">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path d="M3 7l9-4 9 4-9 4-9-4z" />
-                <path d="M3 7v10l9 4 9-4V7" />
-                <path d="M12 11v10" />
+            <div class="feature-art" aria-hidden="true">
+              <svg viewBox="0 0 240 110" preserveAspectRatio="xMidYMid meet">
+                <rect x="6" y="6" width="228" height="98" rx="6" fill="#1c1c1d" stroke="rgba(255,255,255,0.08)"/>
+                <text x="14" y="20" font-size="8" fill="#737373" font-weight="600" letter-spacing="1">VOORRAAD · BAR</text>
+                <line x1="14" y1="84" x2="226" y2="84" stroke="rgba(255,255,255,0.04)"/>
+                <line x1="14" y1="68" x2="226" y2="68" stroke="rgba(239,68,68,0.5)" stroke-dasharray="2 3"/>
+                <text x="222" y="65" font-size="6" fill="#ef4444" text-anchor="end">drempel</text>
+                <rect x="22" y="34" width="20" height="50" rx="2" fill="#22c55e" opacity="0.7"/>
+                <text x="32" y="96" text-anchor="middle" font-size="6" fill="#a3a3a3">Tripel</text>
+                <rect x="50" y="48" width="20" height="36" rx="2" fill="#22c55e" opacity="0.7"/>
+                <text x="60" y="96" text-anchor="middle" font-size="6" fill="#a3a3a3">Pils</text>
+                <rect x="78" y="74" width="20" height="10" rx="2" fill="#ef4444"/>
+                <text x="88" y="96" text-anchor="middle" font-size="6" fill="#fecaca" font-weight="600">Rosé</text>
+                <rect x="106" y="40" width="20" height="44" rx="2" fill="#22c55e" opacity="0.7"/>
+                <text x="116" y="96" text-anchor="middle" font-size="6" fill="#a3a3a3">Tonic</text>
+                <rect x="134" y="76" width="20" height="8" rx="2" fill="#ef4444"/>
+                <text x="144" y="96" text-anchor="middle" font-size="6" fill="#fecaca" font-weight="600">Cola</text>
+                <rect x="162" y="42" width="20" height="42" rx="2" fill="#22c55e" opacity="0.7"/>
+                <text x="172" y="96" text-anchor="middle" font-size="6" fill="#a3a3a3">Espresso</text>
+                <rect x="190" y="20" width="40" height="14" rx="3" fill="#ea580c"/>
+                <text x="210" y="30" text-anchor="middle" font-size="7" fill="#fff" font-weight="700">Bestel ✉</text>
               </svg>
             </div>
-            <h3>Stock that closes the loop</h3>
+            <h3>Voorraad die de cirkel sluit</h3>
             <p>
-              Recipes auto-decrement on payment. A shopping-list view groups
-              everything below threshold by supplier, with one-click email
-              orders.
+              Recepten verlagen automatisch de voorraad bij betaling. Een
+              boodschappenlijst groepeert alles onder de drempel per
+              leverancier, met bestellen per e-mail in één klik.
             </p>
           </article>
 
           <article class="feature reveal">
-            <div class="icon">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <circle cx="12" cy="8" r="4" />
-                <path d="M4 21a8 8 0 0 1 16 0" />
+            <div class="feature-art" aria-hidden="true">
+              <svg viewBox="0 0 240 110" preserveAspectRatio="xMidYMid meet">
+                <rect x="6" y="6" width="228" height="98" rx="6" fill="#1c1c1d" stroke="rgba(255,255,255,0.08)"/>
+                <g font-size="6" fill="#737373" text-anchor="middle">
+                  <text x="58" y="20">M</text><text x="84" y="20">D</text><text x="110" y="20">W</text>
+                  <text x="136" y="20">D</text><text x="162" y="20">V</text>
+                  <text x="188" y="20" fill="#fb923c" font-weight="700">Z</text>
+                  <text x="214" y="20">Z</text>
+                </g>
+                <line x1="46" y1="24" x2="226" y2="24" stroke="rgba(255,255,255,0.06)"/>
+                <text x="14" y="38" font-size="7" fill="#a3a3a3">Lisa</text>
+                <rect x="46" y="32" width="38" height="10" rx="3" fill="#ea580c"/>
+                <text x="65" y="40" text-anchor="middle" font-size="6" fill="#fff" font-weight="600">17–23</text>
+                <rect x="98" y="32" width="38" height="10" rx="3" fill="#ea580c" opacity="0.7"/>
+                <text x="117" y="40" text-anchor="middle" font-size="6" fill="#fff" font-weight="600">17–23</text>
+                <rect x="176" y="32" width="51" height="10" rx="3" fill="#ea580c"/>
+                <text x="201" y="40" text-anchor="middle" font-size="6" fill="#fff" font-weight="600">15–01</text>
+                <text x="14" y="56" font-size="7" fill="#a3a3a3">Tom</text>
+                <rect x="72" y="50" width="38" height="10" rx="3" fill="#22c55e" opacity="0.6"/>
+                <text x="91" y="58" text-anchor="middle" font-size="6" fill="#fff" font-weight="600">11–17</text>
+                <rect x="124" y="50" width="38" height="10" rx="3" fill="#22c55e" opacity="0.6"/>
+                <text x="143" y="58" text-anchor="middle" font-size="6" fill="#fff" font-weight="600">11–17</text>
+                <rect x="176" y="50" width="51" height="10" rx="3" fill="#22c55e"/>
+                <text x="201" y="58" text-anchor="middle" font-size="6" fill="#fff" font-weight="600">11–22</text>
+                <text x="14" y="74" font-size="7" fill="#a3a3a3">Ines</text>
+                <rect x="46" y="68" width="38" height="10" rx="3" fill="#8b5cf6" opacity="0.7"/>
+                <text x="65" y="76" text-anchor="middle" font-size="6" fill="#fff" font-weight="600">17–23</text>
+                <rect x="150" y="68" width="38" height="10" rx="3" fill="#8b5cf6"/>
+                <text x="169" y="76" text-anchor="middle" font-size="6" fill="#fff" font-weight="600">17–23</text>
+                <rect x="14" y="86" width="212" height="16" rx="4" fill="#0f0f10" stroke="rgba(255,255,255,0.06)"/>
+                <text x="20" y="97" font-size="7" fill="#a3a3a3">156u gepland</text>
+                <text x="120" y="97" font-size="7" fill="#a3a3a3">·</text>
+                <text x="220" y="97" font-size="7" fill="#fb923c" font-weight="700" text-anchor="end">€2 348 loon</text>
               </svg>
             </div>
-            <h3>Staff, shifts &amp; schedules</h3>
+            <h3>Personeel, shifts &amp; planning</h3>
             <p>
-              Clock-in / clock-out plus a published schedule that toggles
-              between week and month views. Planned hours and forecasted payroll
-              cost roll up at the top.
+              Inklokken / uitklokken plus een gepubliceerd uurrooster dat
+              wisselt tussen week- en maandweergave. Geplande uren en
+              voorspelde loonkosten staan bovenaan opgeteld.
             </p>
           </article>
 
           <article class="feature reveal">
-            <div class="icon">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path d="M12 2l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V6z" />
-                <path d="M9 12l2 2 4-4" />
+            <div class="feature-art" aria-hidden="true">
+              <svg viewBox="0 0 240 110" preserveAspectRatio="xMidYMid meet">
+                <rect x="14" y="10" width="120" height="92" rx="4" fill="#f5f5f5"/>
+                <rect x="14" y="10" width="120" height="14" rx="4" fill="#e5e5e5"/>
+                <text x="22" y="20" font-size="7" fill="#525252" font-weight="700" letter-spacing="1">FLEXI-CONTRACT</text>
+                <line x1="22" y1="32" x2="126" y2="32" stroke="#d4d4d4"/>
+                <line x1="22" y1="40" x2="100" y2="40" stroke="#d4d4d4"/>
+                <line x1="22" y1="48" x2="118" y2="48" stroke="#d4d4d4"/>
+                <line x1="22" y1="56" x2="86" y2="56" stroke="#d4d4d4"/>
+                <line x1="22" y1="64" x2="110" y2="64" stroke="#d4d4d4"/>
+                <line x1="22" y1="72" x2="96" y2="72" stroke="#d4d4d4"/>
+                <text x="22" y="86" font-size="6" fill="#737373">Handtekening</text>
+                <path d="M64 92 q6 -6 12 0 q6 6 14 -2 q4 -3 8 0" stroke="#1c1c1d" stroke-width="1.2" fill="none"/>
+                <g transform="translate(168 26) rotate(-8)">
+                  <rect x="0" y="0" width="60" height="32" rx="3" fill="none" stroke="#22c55e" stroke-width="1.5"/>
+                  <text x="30" y="13" text-anchor="middle" font-size="8" fill="#22c55e" font-weight="700">DIMONA</text>
+                  <text x="30" y="25" text-anchor="middle" font-size="9" fill="#22c55e" font-weight="700">✓ INGEDIEND</text>
+                </g>
+                <text x="168" y="74" font-size="6" fill="#737373" font-weight="600" letter-spacing="0.5">DmfA Q2 2026</text>
+                <rect x="168" y="78" width="60" height="20" rx="3" fill="#0f2a18" stroke="#22c55e" stroke-width="0.5"/>
+                <text x="174" y="91" font-size="7" fill="#bbf7d0">412u · €</text>
+                <text x="222" y="91" font-size="7" fill="#bbf7d0" font-weight="700" text-anchor="end">8 240</text>
               </svg>
             </div>
-            <h3>Belgian contracts &amp; RSZ</h3>
+            <h3>Belgische contracten &amp; RSZ</h3>
             <p>
-              Generate signed PDFs for vast, flexi, student, extra, interim, and
-              stage contracts. Submit Dimona-in/out and quarterly DmfA hours
-              batches — the payload now folds in maaltijdcheques, kilometer­
-              vergoeding, ziektedagen and ziekenfonds per worker, so the
-              audit trail is complete.
-            </p>
-          </article>
-
-          <article class="feature reveal">
-            <div class="icon">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path d="M14 4a2 2 0 1 0-4 0v10.5a4 4 0 1 0 4 0z" />
-                <path d="M12 8v8" />
-                <circle cx="12" cy="17" r="1.6" />
-              </svg>
-            </div>
-            <h3>HACCP-registratie · FAVV-klaar</h3>
-            <p>
-              Temperatuurcontroles van fridges, freezers en hot-hold-units met
-              min/max-bandes; elke afwijkende meting eist een corrigerende
-              actie en blijft rood gemarkeerd in het logboek. Daarbij een
-              dagelijks/wekelijks/maandelijks schoonmaakprogramma met
-              overdue-alerts en een leveringsregister voor koudeketen,
-              verpakking en houdbaarheid.
+              Genereer ondertekende pdf's voor vast-, flexi-, student-,
+              extra-, interim- en stagecontracten. Dien Dimona-in/uit en
+              kwartaalmatige DmfA-urenbatches in — de payload bevat nu ook
+              maaltijdcheques, kilometervergoeding, ziektedagen en ziekenfonds
+              per werknemer, zodat het audit-spoor volledig is.
             </p>
           </article>
 
@@ -1628,54 +1824,159 @@
             <h3>Maaltijdcheques, km &amp; ziekte</h3>
             <p>
               Per werknemer: ziekenfonds (CM, Solidaris, Liberale, …),
-              maaltijdcheque-opt-in met de €6,91 / €1,09 split, federale
+              maaltijdcheque-opt-in met de €6,91 / €1,09-verdeling, federale
               kilometervergoeding (€0,4280/km) en woon-werk-afstand. Een
-              afwezigheids­register voor ziekte, arbeidsongeval, verlof, klein
+              afwezigheidsregister voor ziekte, arbeidsongeval, verlof, klein
               verlet en onbetaalde dagen — gewaarborgd loon wordt automatisch
-              berekend in de payroll-preview.
+              berekend in de loon-voorbeeldweergave.
             </p>
           </article>
 
           <article class="feature reveal">
-            <div class="icon">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path d="M3 3v18h18" />
-                <path d="M7 15l4-6 4 4 5-7" />
+            <div class="feature-art" aria-hidden="true">
+              <svg viewBox="0 0 240 110" preserveAspectRatio="xMidYMid meet">
+                <rect x="6" y="6" width="148" height="98" rx="6" fill="#1c1c1d" stroke="rgba(255,255,255,0.08)"/>
+                <text x="14" y="20" font-size="7" fill="#737373" font-weight="600" letter-spacing="1">Z-RAPPORT · DI 09-05</text>
+                <defs>
+                  <linearGradient id="vatGrad" x1="0" x2="0" y1="0" y2="1">
+                    <stop offset="0%" stop-color="#fb923c" stop-opacity="0.5"/>
+                    <stop offset="100%" stop-color="#fb923c" stop-opacity="0"/>
+                  </linearGradient>
+                </defs>
+                <path d="M14 84 L34 70 L56 76 L78 56 L102 62 L124 38 L146 46 L146 96 L14 96 Z" fill="url(#vatGrad)"/>
+                <path d="M14 84 L34 70 L56 76 L78 56 L102 62 L124 38 L146 46" stroke="#fb923c" stroke-width="1.5" fill="none"/>
+                <circle cx="124" cy="38" r="2.5" fill="#fb923c"/>
+                <text x="14" y="98" font-size="6" fill="#525252">11u</text>
+                <text x="146" y="98" font-size="6" fill="#525252" text-anchor="end">23u</text>
+                <rect x="162" y="6" width="72" height="98" rx="6" fill="#1c1c1d" stroke="rgba(255,255,255,0.08)"/>
+                <text x="170" y="20" font-size="7" fill="#737373" font-weight="600" letter-spacing="1">BTW</text>
+                <text x="170" y="36" font-size="7" fill="#a3a3a3">6%</text>
+                <text x="226" y="36" font-size="7" fill="#e5e5e5" text-anchor="end" font-weight="600">€124</text>
+                <line x1="170" y1="40" x2="226" y2="40" stroke="rgba(255,255,255,0.04)"/>
+                <text x="170" y="52" font-size="7" fill="#a3a3a3">12%</text>
+                <text x="226" y="52" font-size="7" fill="#e5e5e5" text-anchor="end" font-weight="600">€286</text>
+                <line x1="170" y1="56" x2="226" y2="56" stroke="rgba(255,255,255,0.04)"/>
+                <text x="170" y="68" font-size="7" fill="#a3a3a3">21%</text>
+                <text x="226" y="68" font-size="7" fill="#e5e5e5" text-anchor="end" font-weight="600">€412</text>
+                <rect x="170" y="78" width="56" height="20" rx="3" fill="rgba(234,88,12,0.16)" stroke="#ea580c" stroke-width="0.5"/>
+                <text x="176" y="91" font-size="7" fill="#fb923c" font-weight="700">CSV</text>
+                <text x="220" y="91" font-size="7" fill="#fb923c" font-weight="700" text-anchor="end">↓</text>
               </svg>
             </div>
-            <h3>VAT, Z-reports, exports</h3>
+            <h3>Btw, Z-rapporten, exports</h3>
             <p>
-              Per-category tax rates, per-rate VAT breakdowns, end-of-day
-              Z-reports, and CSV exports your accountant will actually like.
+              Btw-tarieven per categorie, btw-uitsplitsing per tarief, Z-
+              rapporten op het einde van de dag en CSV-exports waar je
+              boekhouder wél blij mee wordt.
             </p>
           </article>
 
           <article class="feature reveal">
-            <div class="icon">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path
-                  d="M21 15a4 4 0 0 1-4 4H7l-4 4V5a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"
-                />
+            <div class="feature-art" aria-hidden="true">
+              <svg viewBox="0 0 240 110" preserveAspectRatio="xMidYMid meet">
+                <rect x="6" y="6" width="228" height="98" rx="8" fill="#1c1c1d" stroke="rgba(255,255,255,0.08)"/>
+                <circle cx="38" cy="42" r="20" fill="#3a2208"/>
+                <text x="38" y="48" text-anchor="middle" font-size="16" fill="#fb923c" font-weight="700">M</text>
+                <rect x="20" y="68" width="36" height="10" rx="5" fill="rgba(234,88,12,0.16)" stroke="#ea580c" stroke-width="0.5"/>
+                <text x="38" y="76" text-anchor="middle" font-size="7" fill="#fb923c" font-weight="700">★ VIP</text>
+                <text x="68" y="22" font-size="11" fill="#e5e5e5" font-weight="700">Marie Dubois</text>
+                <text x="68" y="34" font-size="7" fill="#737373">marie@example.be · sinds 2024</text>
+                <rect x="68" y="42" width="160" height="1" fill="rgba(255,255,255,0.06)"/>
+                <g>
+                  <text x="68" y="56" font-size="7" fill="#737373" letter-spacing="1">BEZOEKEN</text>
+                  <text x="68" y="68" font-size="13" fill="#e5e5e5" font-weight="700">23</text>
+                </g>
+                <g>
+                  <text x="128" y="56" font-size="7" fill="#737373" letter-spacing="1">UITGEGEVEN</text>
+                  <text x="128" y="68" font-size="13" fill="#fb923c" font-weight="700">€1 842</text>
+                </g>
+                <g>
+                  <text x="68" y="84" font-size="7" fill="#737373" letter-spacing="1">ALLERGIEËN</text>
+                  <rect x="68" y="88" width="34" height="12" rx="3" fill="#3f1d1d"/>
+                  <text x="85" y="97" text-anchor="middle" font-size="7" fill="#fecaca" font-weight="600">noten</text>
+                  <rect x="106" y="88" width="38" height="12" rx="3" fill="#3f1d1d"/>
+                  <text x="125" y="97" text-anchor="middle" font-size="7" fill="#fecaca" font-weight="600">gluten</text>
+                </g>
+                <g>
+                  <text x="178" y="84" font-size="7" fill="#737373" letter-spacing="1">VOORKEUR</text>
+                  <text x="178" y="96" font-size="8" fill="#bbf7d0">Tafel 4 · raam</text>
+                </g>
               </svg>
             </div>
-            <h3>Customer loyalty</h3>
+            <h3>Klantenloyaliteit</h3>
             <p>
-              Reservations and paid orders quietly build a customer record. Mark
-              VIPs, capture allergy notes, see lifetime spend.
+              Reservaties en betaalde bestellingen bouwen stilletjes een
+              klantfiche op. Markeer VIP's, noteer allergieën, zie hun
+              levenslange uitgaven.
+            </p>
+          </article>
+
+          <article class="feature reveal">
+            <div class="feature-art" aria-hidden="true">
+              <svg viewBox="0 0 240 110" preserveAspectRatio="xMidYMid meet">
+                <rect x="6" y="6" width="228" height="98" rx="6" fill="#1c1c1d" stroke="rgba(255,255,255,0.08)"/>
+                <text x="14" y="20" font-size="7" fill="#737373" font-weight="600" letter-spacing="1">FRIGO 2 · 7 DAGEN</text>
+                <text x="226" y="20" font-size="7" fill="#22c55e" text-anchor="end" font-weight="600">FAVV-export ↓</text>
+                <line x1="14" y1="44" x2="226" y2="44" stroke="rgba(34,197,94,0.3)" stroke-dasharray="2 3"/>
+                <text x="226" y="42" font-size="6" fill="#22c55e" text-anchor="end">max 7°C</text>
+                <line x1="14" y1="80" x2="226" y2="80" stroke="rgba(255,255,255,0.06)"/>
+                <path d="M22 60 L52 56 L82 62 L112 32 L142 58 L172 54 L202 60 L226 58" stroke="#fb923c" stroke-width="1.5" fill="none"/>
+                <circle cx="22" cy="60" r="2" fill="#22c55e"/>
+                <circle cx="52" cy="56" r="2" fill="#22c55e"/>
+                <circle cx="82" cy="62" r="2" fill="#22c55e"/>
+                <circle cx="112" cy="32" r="3" fill="#ef4444" stroke="#7f1d1d" stroke-width="2"/>
+                <text x="112" y="26" text-anchor="middle" font-size="7" fill="#fecaca" font-weight="700">⚠ 12°</text>
+                <circle cx="142" cy="58" r="2" fill="#22c55e"/>
+                <circle cx="172" cy="54" r="2" fill="#22c55e"/>
+                <circle cx="202" cy="60" r="2" fill="#22c55e"/>
+                <text x="14" y="92" font-size="6" fill="#525252">ma</text>
+                <text x="44" y="92" font-size="6" fill="#525252">di</text>
+                <text x="74" y="92" font-size="6" fill="#525252">wo</text>
+                <text x="108" y="92" font-size="6" fill="#ef4444" font-weight="700">do</text>
+                <text x="138" y="92" font-size="6" fill="#525252">vr</text>
+                <text x="168" y="92" font-size="6" fill="#525252">za</text>
+                <text x="198" y="92" font-size="6" fill="#525252">zo</text>
+                <rect x="14" y="98" width="220" height="1" fill="rgba(255,255,255,0.04)"/>
+              </svg>
+            </div>
+            <h3>HACCP-logboek</h3>
+            <p>
+              Temperatuurmetingen voor frigo's, diepvriezers en warmhoudkasten,
+              schoonmaaktaken op een terugkerend ritme en ontvangstcontroles
+              van leveringen — alles op één tijdlijn met afwijkingsalarmen
+              en een exporteerbaar PDF-rapport voor het FAVV.
+            </p>
+          </article>
+
+          <article class="feature reveal">
+            <div class="feature-art" aria-hidden="true">
+              <svg viewBox="0 0 240 110" preserveAspectRatio="xMidYMid meet">
+                <rect x="6" y="6" width="228" height="98" rx="8" fill="rgba(148,163,184,0.04)" stroke="rgba(148,163,184,0.18)"/>
+                <circle cx="50" cy="55" r="16" fill="#0f0f10" stroke="#3f3f46" stroke-width="1.5"/>
+                <text x="50" y="58" text-anchor="middle" font-size="9" fill="#e5e5e5" font-weight="600">T1</text>
+                <circle cx="190" cy="55" r="16" fill="#0f0f10" stroke="#3f3f46" stroke-width="1.5"/>
+                <text x="190" y="58" text-anchor="middle" font-size="9" fill="#e5e5e5" font-weight="600">T5</text>
+                <circle cx="120" cy="55" r="16" fill="#3a2208" stroke="#fb923c" stroke-width="2"/>
+                <circle cx="120" cy="55" r="22" fill="none" stroke="#fb923c" stroke-width="1" opacity="0.6"/>
+                <circle cx="120" cy="55" r="28" fill="none" stroke="#fb923c" stroke-width="1" opacity="0.3"/>
+                <text x="120" y="58" text-anchor="middle" font-size="9" fill="#fde68a" font-weight="700">T3</text>
+                <rect x="158" y="14" width="76" height="38" rx="6" fill="#1c1c1d" stroke="#ea580c" stroke-width="1"/>
+                <circle cx="168" cy="24" r="3" fill="#fb923c"/>
+                <text x="176" y="27" font-size="7" fill="#fb923c" font-weight="700">T3 · ROEPT</text>
+                <text x="166" y="40" font-size="8" fill="#e5e5e5" font-weight="600">"Vraag rekening"</text>
+                <text x="166" y="50" font-size="6" fill="#737373">3 sec geleden</text>
+                <rect x="56" y="86" width="36" height="12" rx="6" fill="#0f2a18" stroke="#22c55e" stroke-width="0.5"/>
+                <text x="74" y="94" text-anchor="middle" font-size="7" fill="#bbf7d0" font-weight="600">✓ ok</text>
+                <rect x="100" y="86" width="42" height="12" rx="6" fill="#1c1c1d" stroke="#fb923c" stroke-width="0.5"/>
+                <text x="121" y="94" text-anchor="middle" font-size="7" fill="#fb923c" font-weight="600">+ water</text>
+              </svg>
+            </div>
+            <h3>Tafelverzoeken in real time</h3>
+            <p>
+              Gasten tikken vanuit het QR-menu op &quot;Roep een kelner&quot;,
+              &quot;Vraag de rekening&quot; of &quot;Meer water&quot;. De
+              vraag verschijnt meteen op het zaalplan met een zachte ping;
+              één tik om te bevestigen — geen handen meer in de lucht.
             </p>
           </article>
         </div>
@@ -1686,41 +1987,41 @@
     <section id="flow" style="background: var(--surface)">
       <div class="container">
         <div class="reveal">
-          <div class="section-eyebrow">How it works</div>
-          <h2 class="section-title">From a chair to a closed book.</h2>
+          <div class="section-eyebrow">Hoe het werkt</div>
+          <h2 class="section-title">Van een stoel tot een gesloten boek.</h2>
           <p class="section-sub">
-            One thread runs through the whole night, linking the customer, the
-            kitchen, and the back office.
+            Eén rode draad loopt door de hele avond en verbindt de klant,
+            de keuken en het kantoor.
           </p>
         </div>
 
         <div class="flow">
           <div class="flow-step reveal">
             <span class="num">1</span>
-            <h4>Guest scans the QR</h4>
+            <h4>Gast scant de QR</h4>
             <p>
-              They land on a clean dark menu, build a cart with size and notes,
-              and send pending lines to the kitchen.
+              Ze landen op een nette donkere kaart, vullen een mandje met
+              formaat en notities, en sturen de lijnen naar de keuken.
             </p>
-            <div class="preview">phone scan → menu → cart → send</div>
+            <div class="preview">scan → menu → mandje → versturen</div>
           </div>
           <div class="flow-step reveal">
             <span class="num">2</span>
-            <h4>Kitchen sees it instantly</h4>
+            <h4>Keuken ziet het meteen</h4>
             <p>
-              SSE pushes the new lines straight to the kitchen view, grouped by
-              course. Mark ready and the waiter is notified.
+              SSE duwt de nieuwe lijnen rechtstreeks naar de keuken,
+              gegroepeerd per gang. Markeer klaar en de kelner krijgt bericht.
             </p>
-            <div class="preview">SSE push · grouped by course</div>
+            <div class="preview">SSE-push · gegroepeerd per gang</div>
           </div>
           <div class="flow-step reveal">
             <span class="num">3</span>
-            <h4>Waiter closes out, books update</h4>
+            <h4>Kelner rekent af, boeken volgen</h4>
             <p>
-              POS captures tip, splits VAT per category, decrements stock, and
-              updates the customer's lifetime spend.
+              De POS legt fooi vast, splitst btw per categorie, verlaagt de
+              voorraad en werkt het levenslange bedrag van de klant bij.
             </p>
-            <div class="preview">tip + VAT + COGS + customer link</div>
+            <div class="preview">fooi + btw + COGS + klantfiche</div>
           </div>
         </div>
       </div>
@@ -1730,14 +2031,14 @@
     <section id="patronize" style="max-width: 99vw">
       <div class="container">
         <div class="reveal">
-          <div class="section-eyebrow">Patronize widget</div>
+          <div class="section-eyebrow">Patronize-widget</div>
           <h2 class="section-title">
-            A reservation pill on every page of your website.
+            Een reservatie-pil op elke pagina van je website.
           </h2>
           <p class="section-sub">
-            Drop one script tag into your HTML. A "Make a reservation" pill pins
-            to the bottom-right; tapping it opens the full booking flow inside
-            an iframe.
+            Plak één script-tag in je HTML. Een &quot;Reserveer een tafel&quot;-pil
+            verschijnt rechtsonder; één tik en de volledige boekingsflow
+            opent in een iframe.
           </p>
         </div>
 
@@ -1755,32 +2056,32 @@
           <div class="reveal">
             <ul class="embed-list">
               <li>
-                <span class="check">✓</span> One <code>&lt;script&gt;</code> tag
-                — no CSS, no setup, no JS API to call.
+                <span class="check">✓</span> Eén <code>&lt;script&gt;</code>-tag
+                — geen CSS, geen setup, geen JS-API om aan te roepen.
               </li>
               <li>
-                <span class="check">✓</span> Bookings land in your Reservations
-                list with a "via widget" tag.
+                <span class="check">✓</span> Boekingen verschijnen in je
+                reservatielijst met een label &quot;via widget&quot;.
               </li>
               <li>
-                <span class="check">✓</span> Auto-assigns the smallest fitting
-                table, prevents double-booking.
+                <span class="check">✓</span> Wijst automatisch de kleinste
+                passende tafel toe en voorkomt dubbele boekingen.
               </li>
               <li>
-                <span class="check">✓</span> Honors
-                <code>prefers-color-scheme</code> — looks native on light or
-                dark sites.
+                <span class="check">✓</span> Volgt
+                <code>prefers-color-scheme</code> — past zich aan licht of
+                donker thema aan.
               </li>
               <li>
-                <span class="check">✓</span> Cross-origin friendly via
-                <code>data-api</code> override.
+                <span class="check">✓</span> Cross-origin-vriendelijk via
+                de <code>data-api</code>-override.
               </li>
             </ul>
 
             <pre
               class="code"
-            ><span style="color:var(--text-dim)">&lt;!-- Drop this just before &lt;/body&gt; --&gt;</span>
-<span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="str">"https://your-domain/patronize.js"</span> <span class="attr">defer</span><span class="tag">&gt;&lt;/script&gt;</span></pre>
+            ><span style="color:var(--text-dim)">&lt;!-- Plak dit net vóór &lt;/body&gt; --&gt;</span>
+<span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="str">"https://jouw-domein/patronize.js"</span> <span class="attr">defer</span><span class="tag">&gt;&lt;/script&gt;</span></pre>
           </div>
         </div>
       </div>
@@ -1795,13 +2096,13 @@
             <div class="phone">
               <div class="phone-inner">
                 <div class="phone-line">Bistro Lumière</div>
-                <div class="phone-title">Table 12</div>
+                <div class="phone-title">Tafel 12</div>
                 <div class="phone-cats">
-                  <span class="phone-cat active">Food</span>
-                  <span class="phone-cat">Drinks</span>
+                  <span class="phone-cat active">Eten</span>
+                  <span class="phone-cat">Dranken</span>
                 </div>
                 <div class="phone-cats" style="margin-top:-4px">
-                  <span class="phone-cat active" style="background:var(--surface-3);border-color:var(--border);color:var(--text)">Mains</span>
+                  <span class="phone-cat active" style="background:var(--surface-3);border-color:var(--border);color:var(--text)">Hoofdgerechten</span>
                   <span class="phone-cat" style="background:var(--surface-2)">Desserts</span>
                 </div>
                 <div class="phone-search">
@@ -1809,32 +2110,32 @@
                     <circle cx="11" cy="11" r="7"/>
                     <line x1="21" y1="21" x2="16.65" y2="16.65"/>
                   </svg>
-                  <span>Search the menu</span>
+                  <span>Zoek in het menu</span>
                 </div>
                 <div class="phone-grid">
                   <div class="phone-item">
                     <div class="ph"><div class="ph-add">+</div></div>
                     <div class="body">
                       <div class="it">Steak frites</div>
-                      <div class="desc">28-day aged</div>
-                      <div class="pr">€24.00</div>
+                      <div class="desc">28 dagen gerijpt</div>
+                      <div class="pr">€24,00</div>
                     </div>
                   </div>
                   <div class="phone-item">
                     <div class="ph"><div class="ph-add">+</div></div>
                     <div class="info">i</div>
                     <div class="body">
-                      <div class="it">House red</div>
+                      <div class="it">Huiswijn rood</div>
                       <div class="desc">Côtes du Rhône</div>
-                      <div class="pr">€7.50</div>
+                      <div class="pr">€7,50</div>
                     </div>
                   </div>
                   <div class="phone-item">
                     <div class="ph"><div class="ph-add">+</div></div>
                     <div class="body">
                       <div class="it">Ratatouille</div>
-                      <div class="desc">Provençal</div>
-                      <div class="pr">€18.00</div>
+                      <div class="desc">Provençaals</div>
+                      <div class="pr">€18,00</div>
                     </div>
                   </div>
                   <div class="phone-item">
@@ -1842,16 +2143,16 @@
                     <div class="info">i</div>
                     <div class="body">
                       <div class="it">Westmalle</div>
-                      <div class="desc">Tripel · 9.5%</div>
-                      <div class="pr">€4.90</div>
+                      <div class="desc">Tripel · 9,5%</div>
+                      <div class="pr">€4,90</div>
                     </div>
                   </div>
                   <div class="phone-item">
                     <div class="ph"><div class="ph-add">+</div></div>
                     <div class="body">
                       <div class="it">Tarte tatin</div>
-                      <div class="desc">Crème fraîche</div>
-                      <div class="pr">€8.50</div>
+                      <div class="desc">Met crème fraîche</div>
+                      <div class="pr">€8,50</div>
                     </div>
                   </div>
                   <div class="phone-item">
@@ -1859,56 +2160,59 @@
                     <div class="body">
                       <div class="it">Espresso</div>
                       <div class="desc">Single origin</div>
-                      <div class="pr">€2.80</div>
+                      <div class="pr">€2,80</div>
                     </div>
                   </div>
                 </div>
                 <div class="phone-cart">
-                  <span>3 in cart</span><span>€39.30</span>
+                  <span>3 in mandje</span><span>€39,30</span>
                 </div>
               </div>
             </div>
           </div>
 
           <div class="reveal">
-            <div class="section-eyebrow">Table-side ordering</div>
+            <div class="section-eyebrow">Bestellen aan tafel</div>
             <h2 class="section-title">
-              A QR per table. A magazine in their pocket.
+              Eén QR per tafel. Een magazine in hun broekzak.
             </h2>
             <p class="section-sub" style="margin-bottom: 18px">
-              Edit a table in the floor plan, click the QR button, print the
-              SVG. Pin it to the table. Guests scan into a photo-driven
-              menu that feels like a delivery app — not a printed PDF.
+              Bewerk een tafel in het zaalplan, klik op de QR-knop, print de
+              SVG. Hang hem aan de tafel. Gasten scannen en belanden in een
+              foto-gedreven menu dat aanvoelt als een bezorg-app — geen
+              geprinte pdf.
             </p>
             <ul class="embed-list">
               <li>
-                <span class="check">✓</span> Magazine layout with photos,
-                descriptions, search bar, and a tap-to-add &quot;+&quot;
-                button on every item.
+                <span class="check">✓</span> Magazine-indeling met foto's,
+                beschrijvingen, zoekbalk en een &quot;+&quot;-knop op elk
+                item.
               </li>
               <li>
-                <span class="check">✓</span> Two-tier filter — Food / Drinks
-                on top, sub-categories below. Drinks auto-route to the bar.
+                <span class="check">✓</span> Filter op twee niveaus — Eten /
+                Dranken bovenaan, subcategorieën eronder. Dranken gaan
+                automatisch naar de bar.
               </li>
               <li>
-                <span class="check">✓</span> Info icon on items pulls a
-                native preview card from the URL you paste — Untappd for a
-                beer, the producer for a wine, a recipe for a dish. No
-                iframe, no &quot;refused to load&quot; message.
+                <span class="check">✓</span> Een info-icoontje op een item
+                haalt een eigen previewkaart op vanuit de URL die je
+                plakt — Untappd bij een bier, de producent bij een wijn,
+                een recept bij een gerecht. Geen iframe, geen
+                &quot;refused to load&quot;-melding.
               </li>
               <li>
-                <span class="check">✓</span> Generates PNG and SVG QR codes
-                per table; &quot;Print all QR codes&quot; lays the entire
-                room out on a single printable sheet.
+                <span class="check">✓</span> Genereert PNG- en SVG-QR-codes
+                per tafel; &quot;Print alle QR-codes&quot; zet de hele zaal
+                op één printbaar blad.
               </li>
               <li>
-                <span class="check">✓</span> Theme presets, cover image,
-                tagline, custom heading font — apply, live-preview without
-                saving, then publish.
+                <span class="check">✓</span> Themepresets, coverafbeelding,
+                slogan en een eigen titel-lettertype — toepassen, live
+                bekijken zonder op te slaan, daarna publiceren.
               </li>
               <li>
-                <span class="check">✓</span> Waiter still finalises payment;
-                guests don't see the till.
+                <span class="check">✓</span> De kelner rondt de betaling
+                nog steeds af; gasten zien de kassa niet.
               </li>
             </ul>
           </div>
@@ -1920,11 +2224,12 @@
     <section id="belgian" style="background: var(--surface)">
       <div class="container">
         <div class="reveal">
-          <div class="section-eyebrow">Belgian-ready</div>
-          <h2 class="section-title">Built for the Belgian horeca rulebook.</h2>
+          <div class="section-eyebrow">Belgisch klaar</div>
+          <h2 class="section-title">Gebouwd voor het Belgische horeca-regelboek.</h2>
           <p class="section-sub">
-            VAT, contracts, and social-security declarations baked in, so a
-            manager isn't living half in this app and half in spreadsheets.
+            Btw, contracten en sociale-zekerheidsaangiftes ingebakken, zodat
+            een uitbater niet half in deze app en half in Excel-bestanden
+            leeft.
           </p>
         </div>
 
@@ -1947,12 +2252,13 @@
                 <path d="M9 17h6" />
               </svg>
             </div>
-            <h3>Official contracts, signed and printed</h3>
+            <h3>Officiële contracten, getekend en geprint</h3>
             <p>
-              Pick a statute (vast, bepaalde duur, flexi-job, student, extra,
-              interim, stage) and generate a print-ready Dutch contract with the
-              right legal clauses, INSZ, IBAN, address, PC 302 references —
-              straight to "Save as PDF" from the browser.
+              Kies een statuut (vast, bepaalde duur, flexi-job, student, extra,
+              interim, stage) en genereer een print-klaar Nederlandstalig
+              contract met de juiste clausules, INSZ, IBAN, adres en
+              PC 302-verwijzingen — meteen via &quot;Opslaan als PDF&quot; in
+              de browser.
             </p>
           </article>
 
@@ -1970,12 +2276,12 @@
                 <path d="M9 12l2 2 4-4" />
               </svg>
             </div>
-            <h3>Dimona + DmfA submission</h3>
+            <h3>Dimona + DmfA-aangifte</h3>
             <p>
-              Submit Dimona-in / Dimona-out for any contract; aggregate clocked
-              shift hours per worker for the quarterly DmfA. Every payload
-              stored as an audit-trail record. Plug your own RSZ web-service
-              credentials when you're ready to go live.
+              Dien Dimona-in / Dimona-uit in voor elk contract; aggregeer de
+              geklokte shift-uren per werknemer voor de DmfA per kwartaal.
+              Elke payload wordt bewaard als audit-record. Plug je eigen
+              RSZ-webservice-credentials in zodra je live wil gaan.
             </p>
           </article>
 
@@ -1993,11 +2299,11 @@
                 <path d="M7 15l4-6 4 4 5-7" />
               </svg>
             </div>
-            <h3>VAT split per category</h3>
+            <h3>Btw gesplitst per categorie</h3>
             <p>
-              Set 6% / 12% / 21% per category and Patron tags every line at
-              create time. Z-report breaks the day's totals down by rate, ready
-              for your accountant.
+              Stel 6% / 12% / 21% in per categorie en Patron labelt elke
+              lijn meteen bij aanmaak. Het Z-rapport splitst de dagtotalen
+              op per tarief, klaar voor je boekhouder.
             </p>
           </article>
 
@@ -2015,12 +2321,12 @@
                 <path d="M3 9h18M8 3v3M16 3v3" />
               </svg>
             </div>
-            <h3>Closures + per-day hours</h3>
+            <h3>Sluitingen + uren per dag</h3>
             <p>
-              Set the regular weekly opening hours per day, plus exceptional
-              closure periods for holidays and private events. The booking
-              widget stops offering slots on those dates and tells the customer
-              why.
+              Stel de gewone wekelijkse openingsuren per dag in, plus
+              uitzonderlijke sluitingsperiodes voor feestdagen en privé-events.
+              De boekingswidget stopt op die dagen met het aanbieden van
+              tijdsloten en vertelt de klant waarom.
             </p>
           </article>
 
@@ -2039,14 +2345,15 @@
                 <circle cx="12" cy="17" r="1.6" />
               </svg>
             </div>
-            <h3>FAVV / HACCP register</h3>
+            <h3>FAVV / HACCP-register</h3>
             <p>
-              The temperature register, cleaning checklist and delivery log the
-              inspector asks for, in one tab. Out-of-range readings stay
-              flagged with the corrective action that was taken; daily,
-              weekly and monthly cleaning tiles glow red when overdue. Seven
-              days of sample readings are seeded with the demo so an audit
-              trail exists from day one.
+              Het temperatuurregister, de schoonmaakchecklist en het
+              leveringslogboek die de inspecteur vraagt — in één tabblad.
+              Afwijkende metingen blijven gemarkeerd met de getroffen
+              corrigerende actie; dagelijkse, wekelijkse en maandelijkse
+              schoonmaaktegels lichten rood op zodra ze achterstallig zijn.
+              De demo wordt geleverd met zeven dagen voorbeeldmetingen, zodat
+              er meteen een audit-spoor is.
             </p>
           </article>
 
@@ -2067,13 +2374,14 @@
             </div>
             <h3>Cheques, km, ziekte &amp; ziekenfonds</h3>
             <p>
-              Per worker: opt-in maaltijdcheques (default split €6,91 +
-              €1,09), kilometervergoeding at the federal €0,4280/km rate, a
-              free-text ziekenfonds (CM, Solidaris, Liberale, Helan, …), and
-              an absence register for ziekte / arbeidsongeval / verlof /
-              klein verlet / onbetaald. Gewaarborgd loon is calculated
-              automatically; sick days, voucher days and mileage all roll
-              into the DmfA payload alongside the worked hours.
+              Per werknemer: opt-in maaltijdcheques (standaardverdeling €6,91 +
+              €1,09), kilometervergoeding aan het federale tarief van
+              €0,4280/km, een vrij tekstveld voor het ziekenfonds (CM,
+              Solidaris, Liberale, Helan, …) en een afwezigheidsregister voor
+              ziekte / arbeidsongeval / verlof / klein verlet / onbetaald.
+              Gewaarborgd loon wordt automatisch berekend; ziektedagen,
+              chequedagen en kilometers vloeien — naast de gewerkte uren —
+              meteen mee in de DmfA-payload.
             </p>
           </article>
         </div>
@@ -2084,11 +2392,11 @@
     <section id="roles">
       <div class="container">
         <div class="reveal">
-          <div class="section-eyebrow">Roles</div>
-          <h2 class="section-title">One app, four jobs done well.</h2>
+          <div class="section-eyebrow">Rollen</div>
+          <h2 class="section-title">Eén app, vier jobs goed gedaan.</h2>
           <p class="section-sub">
-            Switch role at the top of the app and the surface area shrinks to
-            exactly what that person needs.
+            Wissel bovenaan van rol en de app krimpt tot exact wat die
+            persoon nodig heeft.
           </p>
         </div>
 
@@ -2098,52 +2406,52 @@
         >
           <article class="role reveal">
             <div class="role-name">Manager</div>
-            <h4>Runs the whole house</h4>
+            <h4>Stuurt het hele huis</h4>
             <ul>
-              <li>Floor plan + edit layout</li>
-              <li>Menu, stock, suppliers</li>
-              <li>Staff, schedules, payroll</li>
-              <li>Contracts + Dimona + DmfA</li>
+              <li>Zaalplan + indeling bewerken</li>
+              <li>Menu, voorraad, leveranciers</li>
+              <li>Personeel, planning, lonen</li>
+              <li>Contracten + Dimona + DmfA</li>
               <li>Cheques, km, ziekte &amp; ziekenfonds</li>
-              <li>HACCP / FAVV register</li>
-              <li>Reservations + customers</li>
-              <li>Reports, Z-reports, exports</li>
-              <li>Settings + tax rates</li>
+              <li>HACCP / FAVV-registratie</li>
+              <li>Reservaties + klanten</li>
+              <li>Rapporten, Z-rapporten, exports</li>
+              <li>Instellingen + btw-tarieven</li>
             </ul>
           </article>
 
           <article class="role reveal">
-            <div class="role-name">Waiter</div>
-            <h4>Floor + POS, nothing else</h4>
+            <div class="role-name">Kelner</div>
+            <h4>Zaal + POS, niks anders</h4>
             <ul>
-              <li>Floor plan with live status</li>
-              <li>Slide-over POS panel</li>
-              <li>Course-paced order taking</li>
-              <li>Reservations list for the day</li>
+              <li>Zaalplan met live status</li>
+              <li>Slide-over POS-paneel</li>
+              <li>Bestellen op maat van de gangen</li>
+              <li>Reservatielijst voor vandaag</li>
             </ul>
           </article>
 
           <article class="role reveal">
-            <div class="role-name">Kitchen</div>
-            <h4>Food tickets only</h4>
+            <div class="role-name">Keuken</div>
+            <h4>Enkel eten-tickets</h4>
             <ul>
-              <li>Live ticket feed via SSE</li>
-              <li>Grouped by table and course</li>
-              <li>Urgency-tinted KDS cards</li>
-              <li>Mark-ready in one tap</li>
-              <li>86-list scoped to food</li>
-              <li>HACCP register — temps, cleaning, deliveries</li>
+              <li>Live ticket-feed via SSE</li>
+              <li>Gegroepeerd per tafel en gang</li>
+              <li>KDS-kaarten getint op urgentie</li>
+              <li>Klaar markeren met één tik</li>
+              <li>86-lijst beperkt tot eten</li>
+              <li>HACCP-register — temperatuur, schoonmaak, leveringen</li>
             </ul>
           </article>
 
           <article class="role reveal">
             <div class="role-name">Bar</div>
-            <h4>Drinks only</h4>
+            <h4>Enkel dranken</h4>
             <ul>
-              <li>Same ticket UI as the kitchen</li>
-              <li>Drinks-only queue</li>
-              <li>86-list scoped to drink categories</li>
-              <li>Coffees and cocktails in one place</li>
+              <li>Dezelfde ticket-UI als de keuken</li>
+              <li>Wachtrij met enkel dranken</li>
+              <li>86-lijst beperkt tot drank-categorieën</li>
+              <li>Koffies en cocktails op één plek</li>
             </ul>
           </article>
         </div>
@@ -2154,13 +2462,13 @@
     <section class="final-cta">
       <div class="container">
         <div class="reveal">
-          <h2>Ready to take a look?</h2>
+          <h2>Zin om eens te kijken?</h2>
           <p>
-            Open the demo to play with the floor plan, or pop the booking widget
-            to see what a guest experiences.
+            Open de demo om met het zaalplan te spelen, of open de
+            boekingswidget om te zien wat een gast krijgt voorgeschoteld.
           </p>
           <div class="cta-row" style="justify-content: center">
-            <a class="btn btn-primary" href="/">Open the app →</a>
+            <a class="btn btn-primary" href="/">Open de app →</a>
             <a
               class="btn btn-ghost"
               href="/patronize.html?open=1"
@@ -2175,14 +2483,14 @@
 
     <footer>
       <div class="row">
-        <a href="#features">Features</a>
-        <a href="#flow">How it works</a>
-        <a href="#patronize">Patronize widget</a>
-        <a href="#qr">QR ordering</a>
-        <a href="/">Open the app</a>
+        <a href="#features">Functies</a>
+        <a href="#flow">Hoe het werkt</a>
+        <a href="#patronize">Patronize-widget</a>
+        <a href="#qr">QR-bestellen</a>
+        <a href="/">Open de app</a>
       </div>
       <div>
-        © <span id="year"></span> Patron · Built with React, Express, and
+        © <span id="year"></span> Patron · Gebouwd met React, Express en
         MongoDB.
       </div>
     </footer>
